@@ -1,7 +1,7 @@
 import { createEnv, LogLevel, RuntimeEnvironment } from "@agro/shared/utils";
 import { z } from "zod";
 
-import { environmentDefaults } from "./constants";
+import { environmentDefaults } from "./constants.util";
 
 /**
  * API-specific environment schema.
@@ -20,13 +20,16 @@ const apiEnvSchema = z.object({
 	LOG_TO_CONSOLE: z.stringbool().default(environmentDefaults.LOG_TO_CONSOLE),
 
 	/** Port the API server will listen on */
-	API_PORT: z.coerce.number().int().positive().default(environmentDefaults.PORT),
+	API_PORT: z.coerce.number().int().positive().default(environmentDefaults.API_PORT),
 
 	/** Database connection URL */
-	API_DATABASE_URL: z.url().default(environmentDefaults.DATABASE_URL),
+	API_DATABASE_PATH: z.string().default(environmentDefaults.API_DATABASE_PATH),
 
 	/** API base path (e.g., "/api/v1") */
 	API_BASE_PATH: z.string().default(environmentDefaults.API_BASE_PATH),
+
+	/** Whether to enable database query logging */
+	API_DATABASE_LOGGING: z.stringbool().default(environmentDefaults.API_DATABASE_LOGGING),
 });
 
 /** Type-safe environment variables for the API application */

@@ -1,7 +1,7 @@
 import { createEnv, LogLevel, RuntimeEnvironment } from "@agro/shared/utils";
 import { z } from "zod";
 
-import { environmentDefaults } from "./constants";
+import { environmentDefaults } from "./constants.util";
 
 /**
  * Web application environment schema.

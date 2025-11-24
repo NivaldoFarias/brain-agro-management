@@ -184,6 +184,10 @@ dist/
 # SQLite database files
 *.sqlite
 *.sqlite-journal
+*.db
+*.db-journal
+*.db-shm
+*.db-wal
 
 # Github Copilot
 .github/instructions/

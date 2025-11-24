@@ -5,7 +5,7 @@
  * farm management operations.
  */
 
-import { env, logger } from "./config";
+import { env, logger } from "./utils";
 
 /**
  * Starts the API server.
@@ -14,7 +14,7 @@ async function startServer(): Promise<void> {
 	logger.info({ env: env.NODE_ENV, port: env.API_PORT }, "Starting Agro Management API");
 	logger.info("Server placeholder - to be implemented");
 
-	// TODO: Initialize server (Hono/Elysia), database, routes
+	// TODO: Initialize server (Nestjs), database, routes
 }
 
 try {

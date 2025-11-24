@@ -21,11 +21,12 @@ Agro Management is a comprehensive platform for managing rural producers, farms,
 ### Backend
 
 - **Runtime**: Bun (Node.js replacement)
+- **Framework**: NestJS
 - **Language**: TypeScript
-- **Database**: PostgreSQL + Prisma ORM
-- **API**: REST with OpenAPI specification
-- **Logging**: Pino (structured JSON logs)
-- **Testing**: Bun test runner
+- **Database**: SQLite + TypeORM (Data Mapper pattern)
+- **API**: REST with OpenAPI specification (@nestjs/swagger)
+- **Logging**: Pino (structured JSON logs via nestjs-pino)
+- **Testing**: Jest + Supertest (NestJS testing utilities)
 
 ### Frontend
 
@@ -83,13 +84,16 @@ bun run build
 
 ## Documentation
 
+- [Architecture](./docs/ARCHITECTURE.md) - System design, patterns, and component structure with diagrams
+- [Database Schema](./docs/DATABASE_SCHEMA.md) - Entity-relationship diagram and data model
+- [Environment Variables](./docs/ENVIRONMENT.md) - Configuration and environment setup
 - [Monorepo Structure](./docs/MONOREPO.md) - Workspace configuration and development workflow
 
 ## Requirements
 
 - **Bun**: v1.0.0+ (as Node.js/npm replacement)
-- **Docker**: v20.0.0+ (for PostgreSQL)
-- **PostgreSQL**: v15+
+- **Docker**: v20.0.0+ (optional, for production database)
+- **SQLite**: Included via better-sqlite3 (no external installation needed)
 
 ## License
 

@@ -1,7 +1,6 @@
 import { defineConfig } from "@eslint/config-helpers";
 import eslint from "@eslint/js";
 import eslintConfigPrettier from "eslint-config-prettier";
-import importPlugin from "eslint-plugin-import";
 import unicornPlugin from "eslint-plugin-unicorn";
 import globals from "globals";
 import tseslint from "typescript-eslint";
@@ -23,7 +22,6 @@ export default defineConfig(
 		files: ["**/*.{js,cjs,mjs,ts,mts,cts}"],
 		plugins: {
 			"@typescript-eslint": tseslint.plugin,
-			"import": importPlugin,
 			"unicorn": unicornPlugin,
 		},
 		languageOptions: {
@@ -31,6 +29,12 @@ export default defineConfig(
 				...globals.node,
 				Bun: "readonly",
 				NodeJS: "readonly",
+				jest: "readonly",
+				describe: "readonly",
+				it: "readonly",
+				expect: "readonly",
+				beforeEach: "readonly",
+				afterEach: "readonly",
 			},
 			parser: tseslint.parser,
 			parserOptions: {
@@ -58,26 +62,6 @@ export default defineConfig(
 			],
 			"@typescript-eslint/no-explicit-any": "error",
 			"@typescript-eslint/no-floating-promises": "error",
-
-			/* Import Plugin */
-			"import/order": [
-				"error",
-				{
-					"groups": [
-						"builtin",
-						"external",
-						"internal",
-						["parent", "sibling"],
-						"index",
-						"object",
-						"type",
-					],
-					"newlines-between": "always",
-					"alphabetize": { order: "asc", caseInsensitive: true },
-				},
-			],
-			"import/no-duplicates": "error",
-			"import/no-unresolved": "off", // TypeScript handles this
 
 			/* Unicorn Plugin - Selected useful rules */
 			"unicorn/better-regex": "error",

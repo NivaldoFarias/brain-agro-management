@@ -57,7 +57,8 @@ export const environmentDefaults = {
 	NODE_ENV: RuntimeEnvironment.Development,
 	LOG_LEVEL: LogLevel.Info,
 	LOG_TO_CONSOLE: true,
-	PORT: 3000,
-	DATABASE_URL: "",
+	API_PORT: 3000,
+	API_DATABASE_PATH: "data/agro.db",
 	API_BASE_PATH: "/api",
+	API_DATABASE_LOGGING: false,
 } as const;

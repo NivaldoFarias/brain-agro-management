@@ -41,4 +41,5 @@ export default {
 		"",
 		"^[.]/",
 	],
+	importOrderParserPlugins: ["typescript", "jsx", "classProperties", "decorators"],
 };
