@@ -84,7 +84,6 @@ bun run build
 ## Documentation
 
 - [Monorepo Structure](./docs/MONOREPO.md) - Workspace configuration and development workflow
-- [Roadmap](./docs/roadmap.instructions.md) - Implementation plan and technical requirements
 
 ## Requirements
 

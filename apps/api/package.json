@@ -1,6 +1,7 @@
 {
 	"name": "@agro/api",
 	"version": "0.0.1",
+	"description": "Rural producer and farm management system API",
 	"private": true,
 	"type": "module",
 	"scripts": {

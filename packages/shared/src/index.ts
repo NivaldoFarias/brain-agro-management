@@ -5,6 +5,6 @@
  * including types, utilities, validators, and common business logic.
  */
 
-export * from "./types/index.js";
-export * from "./utils/index.js";
-export * from "./validators/index.js";
+export * from "./types/index";
+export * from "./utils/";
+export * from "./validators/index";
