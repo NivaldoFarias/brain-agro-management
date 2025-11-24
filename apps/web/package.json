@@ -1,0 +1,24 @@
+{
+	"name": "@agro/web",
+	"version": "0.0.1",
+	"private": true,
+	"type": "module",
+	"scripts": {
+		"dev": "echo 'Web app dev server - to be configured with Vite'",
+		"build": "echo 'Web app build - to be configured with Vite'",
+		"preview": "echo 'Web app preview - to be configured with Vite'",
+		"type-check": "tsc --build",
+		"test": "bun test",
+		"clean": "rm -rf dist .turbo node_modules"
+	},
+	"dependencies": {
+		"@agro/shared": "workspace:*",
+		"react": "^18.3.1",
+		"react-dom": "^18.3.1",
+		"zod": "^4.1.9"
+	},
+	"devDependencies": {
+		"@types/react": "^18.3.12",
+		"@types/react-dom": "^18.3.1"
+	}
+}

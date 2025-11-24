@@ -1,0 +1,15 @@
+{
+    "extends": "../../tsconfig.base.json",
+    "compilerOptions": {
+        "outDir": "./dist",
+        "rootDir": "./src",
+        "baseUrl": ".",
+        "paths": {
+            "@/*": ["./src/*"],
+            "@agro/shared": ["../../packages/shared/src"],
+            "@agro/shared/*": ["../../packages/shared/src/*"]
+        }
+    },
+    "include": ["src/**/*"],
+    "references": [{ "path": "../../packages/shared" }]
+}
