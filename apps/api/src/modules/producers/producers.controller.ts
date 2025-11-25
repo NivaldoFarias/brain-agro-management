@@ -1,6 +1,8 @@
 import { Body, Controller, Delete, Get, HttpStatus, Param, Patch, Post } from "@nestjs/common";
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 
+import { ParseUUIDPipe } from "@/common";
+
 import { CreateProducerDto, ProducerResponseDto, UpdateProducerDto } from "./dto";
 import { ProducersService } from "./producers.service";
 
@@ -93,7 +95,7 @@ export class ProducersController {
 		type: ProducerResponseDto,
 	})
 	@ApiResponse({ status: HttpStatus.NOT_FOUND, description: "Producer not found" })
-	findOne(@Param("id") id: string): Promise<ProducerResponseDto> {
+	findOne(@Param("id", ParseUUIDPipe) id: string): Promise<ProducerResponseDto> {
 		return this.producersService.findOne(id);
 	}
 
@@ -124,7 +126,7 @@ export class ProducersController {
 	@ApiResponse({ status: HttpStatus.NOT_FOUND, description: "Producer not found" })
 	@ApiResponse({ status: HttpStatus.CONFLICT, description: "Document already exists" })
 	update(
-		@Param("id") id: string,
+		@Param("id", ParseUUIDPipe) id: string,
 		@Body() updateProducerDto: UpdateProducerDto,
 	): Promise<ProducerResponseDto> {
 		return this.producersService.update(id, updateProducerDto);
@@ -145,7 +147,7 @@ export class ProducersController {
 	@ApiOperation({ summary: "Delete producer" })
 	@ApiResponse({ status: HttpStatus.OK, description: "Producer deleted successfully" })
 	@ApiResponse({ status: HttpStatus.NOT_FOUND, description: "Producer not found" })
-	remove(@Param("id") id: string): Promise<void> {
+	remove(@Param("id", ParseUUIDPipe) id: string): Promise<void> {
 		return this.producersService.delete(id);
 	}
 }

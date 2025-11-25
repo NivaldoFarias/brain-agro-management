@@ -1,11 +1,11 @@
+import { assertValidFarmArea } from "@agro/shared/validators";
 import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 
 import type { BrazilianState } from "@/common";
 
-import { assertValidFarmArea } from "@agro/shared/validators";
-
+import { SortBy } from "@/common/enums/enums";
 import { Producer } from "@/modules/producers/entities/producer.entity";
 
 import { CreateFarmDto, FarmResponseDto, UpdateFarmDto } from "./dto";
@@ -113,7 +113,7 @@ export class FarmsService {
 	 */
 	async findAll(): Promise<Array<FarmResponseDto>> {
 		const farms = await this.farmRepository.find({
-			order: { name: "ASC" },
+			order: { name: SortBy.Ascending },
 		});
 
 		return farms.map((farm) => this.mapToResponseDto(farm));
@@ -234,7 +234,7 @@ export class FarmsService {
 	async findByProducer(producerId: string): Promise<Array<FarmResponseDto>> {
 		const farms = await this.farmRepository.find({
 			where: { producerId },
-			order: { name: "ASC" },
+			order: { name: SortBy.Ascending },
 		});
 
 		return farms.map((farm) => this.mapToResponseDto(farm));
@@ -252,10 +252,10 @@ export class FarmsService {
 	 * const farms = await service.findByState(BrazilianState.SP);
 	 * ```
 	 */
-	async findByState(state: string): Promise<Array<FarmResponseDto>> {
+	async findByState(state: BrazilianState): Promise<Array<FarmResponseDto>> {
 		const farms = await this.farmRepository.find({
-			where: { state: state as BrazilianState },
-			order: { name: "ASC" },
+			where: { state },
+			order: { name: SortBy.Ascending },
 		});
 
 		return farms.map((farm) => this.mapToResponseDto(farm));

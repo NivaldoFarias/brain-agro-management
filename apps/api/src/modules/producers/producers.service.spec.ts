@@ -11,6 +11,8 @@ import { getRepositoryToken } from "@nestjs/typeorm";
 import { fixtures, TestConstants } from "test/fixtures";
 import { Repository } from "typeorm";
 
+import { SortBy } from "@/common/enums/enums";
+
 import { UpdateProducerDto } from "./dto";
 import { Producer } from "./entities/producer.entity";
 import { ProducersService } from "./producers.service";
@@ -164,7 +166,7 @@ describe("ProducersService", () => {
 
 			if (second) expect(second.name).toBe("Maria Santos");
 
-			expect(mockRepository.find).toHaveBeenCalledWith({ order: { name: "ASC" } });
+			expect(mockRepository.find).toHaveBeenCalledWith({ order: { name: SortBy.Ascending } });
 		});
 
 		it("should return an empty array when no producers exist", async () => {

@@ -10,10 +10,9 @@
  * @module DatabaseSeeds
  */
 
+import { createLogger, generateDocument, LogLevel, RuntimeEnvironment } from "@agro/shared/utils";
 import { faker } from "@faker-js/faker/locale/pt_BR";
 import { DataSource } from "typeorm";
-
-import { createLogger, generateDocument, LogLevel, RuntimeEnvironment } from "@agro/shared/utils";
 
 import { BrazilianState, CropType } from "@/common/enums/enums";
 import { AppDataSource } from "@/config/database.config";
@@ -71,13 +70,13 @@ const STATE_WEIGHTS: Record<BrazilianState, number> = {
  * Crop combinations that commonly appear together in Brazilian farms.
  */
 const CROP_COMBINATIONS = [
-	[CropType.SOJA, CropType.MILHO],
-	[CropType.SOJA],
-	[CropType.MILHO],
-	[CropType.ALGODAO, CropType.SOJA],
-	[CropType.CAFE],
-	[CropType.CANA_DE_ACUCAR],
-	[CropType.SOJA, CropType.MILHO, CropType.ALGODAO],
+	[CropType.Soja, CropType.Milho],
+	[CropType.Soja],
+	[CropType.Milho],
+	[CropType.Algodao, CropType.Soja],
+	[CropType.Cafe],
+	[CropType.CanaDeAcucar],
+	[CropType.Soja, CropType.Milho, CropType.Algodao],
 ];
 
 if (import.meta.main) {

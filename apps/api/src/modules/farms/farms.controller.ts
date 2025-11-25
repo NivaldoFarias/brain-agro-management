@@ -1,6 +1,8 @@
 import { Body, Controller, Delete, Get, HttpStatus, Param, Patch, Post } from "@nestjs/common";
 import { ApiBearerAuth, ApiOperation, ApiQuery, ApiResponse, ApiTags } from "@nestjs/swagger";
 
+import { BrazilianState, ParseUUIDPipe } from "@/common";
+
 import { CreateFarmDto, FarmResponseDto, UpdateFarmDto } from "./dto";
 import { FarmsService } from "./farms.service";
 
@@ -96,7 +98,7 @@ export class FarmsController {
 		type: FarmResponseDto,
 	})
 	@ApiResponse({ status: HttpStatus.NOT_FOUND, description: "Farm not found" })
-	findOne(@Param("id") id: string): Promise<FarmResponseDto> {
+	findOne(@Param("id", ParseUUIDPipe) id: string): Promise<FarmResponseDto> {
 		return this.farmsService.findOne(id);
 	}
 
@@ -116,7 +118,9 @@ export class FarmsController {
 		description: "List of farms for the producer",
 		type: [FarmResponseDto],
 	})
-	findByProducer(@Param("producerId") producerId: string): Promise<Array<FarmResponseDto>> {
+	findByProducer(
+		@Param("producerId", ParseUUIDPipe) producerId: string,
+	): Promise<Array<FarmResponseDto>> {
 		return this.farmsService.findByProducer(producerId);
 	}
 
@@ -137,7 +141,7 @@ export class FarmsController {
 		description: "List of farms in the state",
 		type: [FarmResponseDto],
 	})
-	findByState(@Param("state") state: string): Promise<Array<FarmResponseDto>> {
+	findByState(@Param("state") state: BrazilianState): Promise<Array<FarmResponseDto>> {
 		return this.farmsService.findByState(state);
 	}
 
@@ -167,7 +171,10 @@ export class FarmsController {
 		description: "Invalid input data or area constraints violated",
 	})
 	@ApiResponse({ status: HttpStatus.NOT_FOUND, description: "Farm or producer not found" })
-	update(@Param("id") id: string, @Body() updateFarmDto: UpdateFarmDto): Promise<FarmResponseDto> {
+	update(
+		@Param("id", ParseUUIDPipe) id: string,
+		@Body() updateFarmDto: UpdateFarmDto,
+	): Promise<FarmResponseDto> {
 		return this.farmsService.update(id, updateFarmDto);
 	}
 
@@ -186,7 +193,7 @@ export class FarmsController {
 	@ApiOperation({ summary: "Delete farm" })
 	@ApiResponse({ status: HttpStatus.OK, description: "Farm deleted successfully" })
 	@ApiResponse({ status: HttpStatus.NOT_FOUND, description: "Farm not found" })
-	remove(@Param("id") id: string): Promise<void> {
+	remove(@Param("id", ParseUUIDPipe) id: string): Promise<void> {
 		return this.farmsService.delete(id);
 	}
 

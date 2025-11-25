@@ -1,4 +1,10 @@
 import {
+	stripCNPJFormatting,
+	stripCPFFormatting,
+	validateCNPJ,
+	validateCPF,
+} from "@agro/shared/validators";
+import {
 	BadRequestException,
 	ConflictException,
 	Injectable,
@@ -7,12 +13,7 @@ import {
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 
-import {
-	stripCNPJFormatting,
-	stripCPFFormatting,
-	validateCNPJ,
-	validateCPF,
-} from "@agro/shared/validators";
+import { SortBy } from "@/common/enums/enums";
 
 import { CreateProducerDto, ProducerResponseDto, UpdateProducerDto } from "./dto";
 import { Producer } from "./entities/producer.entity";
@@ -97,7 +98,7 @@ export class ProducersService {
 	 */
 	async findAll(): Promise<Array<ProducerResponseDto>> {
 		const producers = await this.producerRepository.find({
-			order: { name: "ASC" },
+			order: { name: SortBy.Ascending },
 		});
 
 		return producers.map((producer) => this.mapToResponseDto(producer));

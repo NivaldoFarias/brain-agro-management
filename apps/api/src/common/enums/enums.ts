@@ -41,9 +41,19 @@ export enum BrazilianState {
  * as specified in the project requirements.
  */
 export enum CropType {
-	SOJA = "Soja",
-	MILHO = "Milho",
-	ALGODAO = "Algodão",
-	CAFE = "Café",
-	CANA_DE_ACUCAR = "Cana de Açúcar",
+	Soja = "Soja",
+	Milho = "Milho",
+	Algodao = "Algodão",
+	Cafe = "Café",
+	CanaDeAcucar = "Cana de Açúcar",
+}
+
+/**
+ * Sorting order enumeration
+ *
+ * Used to specify ascending or descending order in queries.
+ */
+export enum SortBy {
+	Ascending = "ASC",
+	Descending = "DESC",
 }

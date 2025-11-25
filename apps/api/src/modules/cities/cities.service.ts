@@ -5,6 +5,7 @@ import { PinoLogger } from "nestjs-pino";
 import { Repository } from "typeorm";
 
 import { BrazilianState } from "@/common";
+import { SortBy } from "@/common/enums/enums";
 
 import { City } from "./entities/city.entity";
 
@@ -45,7 +46,10 @@ export class CitiesService {
 	 */
 	async findByState(state: BrazilianState): Promise<Array<City>> {
 		try {
-			return await this.cityRepository.find({ where: { state }, order: { name: "ASC" } });
+			return await this.cityRepository.find({
+				where: { state },
+				order: { name: SortBy.Ascending },
+			});
 		} catch (error) {
 			this.logger.error({ error, state }, "Failed to fetch cities by state");
 			return [];
