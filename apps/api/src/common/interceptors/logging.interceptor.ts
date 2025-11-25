@@ -49,8 +49,8 @@ export class LoggingInterceptor implements NestInterceptor {
 	/**
 	 * Intercepts incoming requests to log request/response details.
 	 *
-	 * @param context - ExecutionContext providing access to request/response
-	 * @param next - CallHandler to proceed with request handling
+	 * @param context {@link ExecutionContext} providing access to request/response
+	 * @param next {@link CallHandler} to proceed with request handling
 	 *
 	 * @returns Observable that completes when request handling finishes
 	 */
@@ -58,15 +58,12 @@ export class LoggingInterceptor implements NestInterceptor {
 		const request = context.switchToHttp().getRequest<Request>();
 		const response = context.switchToHttp().getResponse<Response>();
 
-		// Skip logging for excluded paths
-		if (this.excludedPaths.some((path) => request.url.startsWith(path))) {
-			return next.handle();
-		}
+		const shouldSkipLogging = this.excludedPaths.some((path) => request.url.startsWith(path));
+		if (shouldSkipLogging) return next.handle();
 
 		const startTime = Date.now();
 		const correlationId = correlationIdStorage.getStore();
 
-		// Log incoming request
 		this.logRequest(request, correlationId);
 
 		return next.handle().pipe(
@@ -84,8 +81,8 @@ export class LoggingInterceptor implements NestInterceptor {
 	/**
 	 * Logs incoming HTTP request details.
 	 *
-	 * @param request - Express request object
-	 * @param correlationId - Correlation ID for request tracking
+	 * @param request Express request object
+	 * @param correlationId Correlation ID for request tracking
 	 */
 	private logRequest(request: Request, correlationId: string | undefined): void {
 		const { method, url, query, headers, body } = request;
@@ -107,11 +104,11 @@ export class LoggingInterceptor implements NestInterceptor {
 	/**
 	 * Logs successful HTTP response details.
 	 *
-	 * @param request - Express request object
-	 * @param response - Express response object
-	 * @param startTime - Request start timestamp
-	 * @param correlationId - Correlation ID for request tracking
-	 * @param data - Response data
+	 * @param request Express request object
+	 * @param response Express response object
+	 * @param startTime Request start timestamp
+	 * @param correlationId Correlation ID for request tracking
+	 * @param data Response data
 	 */
 	private logResponse(
 		request: Request,
@@ -130,24 +127,18 @@ export class LoggingInterceptor implements NestInterceptor {
 		this.logger.info({
 			msg: "Outgoing response",
 			correlationId,
-			http: {
-				method,
-				url,
-				statusCode,
-				duration,
-				responseSize,
-			},
+			http: { method, url, statusCode, duration, responseSize },
 		});
 	}
 
 	/**
 	 * Logs HTTP request error details.
 	 *
-	 * @param request - Express request object
-	 * @param response - Express response object
-	 * @param startTime - Request start timestamp
-	 * @param correlationId - Correlation ID for request tracking
-	 * @param error - Error that occurred during request handling
+	 * @param request Express request object
+	 * @param response Express response object
+	 * @param startTime Request start timestamp
+	 * @param correlationId Correlation ID for request tracking
+	 * @param error Error that occurred during request handling
 	 */
 	private logError(
 		request: Request,
@@ -163,24 +154,15 @@ export class LoggingInterceptor implements NestInterceptor {
 		this.logger.error({
 			msg: "Request failed",
 			correlationId,
-			http: {
-				method,
-				url,
-				statusCode,
-				duration,
-			},
-			error: {
-				name: error.name,
-				message: error.message,
-				stack: error.stack,
-			},
+			http: { method, url, statusCode, duration },
+			error: { name: error.name, message: error.message, stack: error.stack },
 		});
 	}
 
 	/**
 	 * Sanitizes request body by removing sensitive fields.
 	 *
-	 * @param body - Request body object
+	 * @param body Request body object
 	 *
 	 * @returns Sanitized body with sensitive fields masked
 	 */
@@ -203,10 +185,10 @@ export class LoggingInterceptor implements NestInterceptor {
 	/**
 	 * Extracts client IP address from request headers or connection.
 	 *
-	 * Checks common proxy headers (X-Forwarded-For, X-Real-IP) before
+	 * Checks common proxy headers (`X-Forwarded-For`, `X-Real-IP`) before
 	 * falling back to direct connection IP.
 	 *
-	 * @param request - Express request object
+	 * @param request Express request object
 	 *
 	 * @returns Client IP address
 	 */

@@ -6,18 +6,20 @@ import type { CallHandler, ExecutionContext, NestInterceptor } from "@nestjs/com
 
 import { correlationIdStorage } from "./correlation-id.interceptor";
 
-/**
- * Metadata included in transformed API responses.
- */
+/** Metadata included in transformed API responses */
 interface ResponseMeta {
 	/** ISO timestamp when response was generated */
 	timestamp: string;
+
 	/** Correlation ID for request tracking */
 	correlationId?: string;
+
 	/** Current page number (for paginated responses) */
 	page?: number;
+
 	/** Number of items per page (for paginated responses) */
 	limit?: number;
+
 	/** Total number of items (for paginated responses) */
 	total?: number;
 }
@@ -25,11 +27,12 @@ interface ResponseMeta {
 /**
  * Standard API response wrapper with data and metadata.
  *
- * @template T - Type of the response data
+ * @template T Type of the response data
  */
 export interface TransformedResponse<T> {
 	/** Response data payload */
 	data: T;
+
 	/** Response metadata */
 	meta: ResponseMeta;
 }
@@ -43,10 +46,13 @@ export interface TransformedResponse<T> {
 export interface PaginatedData<T> {
 	/** Array of items for current page */
 	items: Array<T>;
+
 	/** Total number of items across all pages */
 	total: number;
+
 	/** Current page number */
 	page: number;
+
 	/** Number of items per page */
 	limit: number;
 }
@@ -57,6 +63,8 @@ export interface PaginatedData<T> {
  * Automatically wraps all successful responses in `{ data, meta }` structure.
  * Includes correlation ID, timestamp, and pagination metadata (if applicable).
  * Does not transform error responses (handled by HttpExceptionFilter).
+ *
+ * @template T Type of the response data
  *
  * @example
  * ```typescript
@@ -101,8 +109,8 @@ export class TransformInterceptor<T> implements NestInterceptor<T, TransformedRe
 	/**
 	 * Intercepts controller responses to apply standard transformation.
 	 *
-	 * @param context - ExecutionContext providing access to request/response
-	 * @param next - CallHandler to proceed with request handling
+	 * @param context ExecutionContext providing access to request/response
+	 * @param next CallHandler to proceed with request handling
 	 *
 	 * @returns Observable of transformed response
 	 */
@@ -110,28 +118,21 @@ export class TransformInterceptor<T> implements NestInterceptor<T, TransformedRe
 		const correlationId = correlationIdStorage.getStore();
 
 		return next.handle().pipe(
-			map((data) => {
+			map((data: T) => {
 				const meta: ResponseMeta = {
 					timestamp: new Date().toISOString(),
 					correlationId,
 				};
 
-				// Check if response is paginated
 				if (this.isPaginatedData(data)) {
 					meta.page = data.page;
 					meta.limit = data.limit;
 					meta.total = data.total;
 
-					return {
-						data: data.items as T,
-						meta,
-					};
+					return { data: data.items as T, meta };
 				}
 
-				return {
-					data,
-					meta,
-				};
+				return { data, meta };
 			}),
 		);
 	}
@@ -146,7 +147,7 @@ export class TransformInterceptor<T> implements NestInterceptor<T, TransformedRe
 	private isPaginatedData(data: unknown): data is PaginatedData<unknown> {
 		return (
 			typeof data === "object" &&
-			data !== null &&
+			data != null &&
 			"items" in data &&
 			"total" in data &&
 			"page" in data &&

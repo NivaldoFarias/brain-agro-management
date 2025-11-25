@@ -1,3 +1,10 @@
+/**
+ * @fileoverview Tests for the {@link LoggingInterceptor}.
+ *
+ * Verifies request/response logging, IP extraction, sensitive field sanitization,
+ * and health check endpoint exclusion.
+ */
+
 import { PinoLogger } from "nestjs-pino";
 import { of, throwError } from "rxjs";
 
@@ -6,12 +13,6 @@ import type { CallHandler, ExecutionContext } from "@nestjs/common";
 import { correlationIdStorage } from "./correlation-id.interceptor";
 import { LoggingInterceptor } from "./logging.interceptor";
 
-/**
- * @fileoverview Tests for the {@link LoggingInterceptor}.
- *
- * Verifies request/response logging, IP extraction, sensitive field sanitization,
- * and health check endpoint exclusion.
- */
 describe("LoggingInterceptor", () => {
 	let interceptor: LoggingInterceptor;
 	let logger: jest.Mocked<PinoLogger>;

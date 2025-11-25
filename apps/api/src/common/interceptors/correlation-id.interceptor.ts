@@ -39,8 +39,8 @@ export class CorrelationIdInterceptor implements NestInterceptor {
 	/**
 	 * Intercepts incoming requests to manage correlation IDs.
 	 *
-	 * @param context - ExecutionContext providing access to request/response
-	 * @param next - CallHandler to proceed with request handling
+	 * @param context {@link ExecutionContext} providing access to request/response
+	 * @param next {@link CallHandler} to proceed with request handling
 	 *
 	 * @returns Observable that completes when request handling finishes
 	 */

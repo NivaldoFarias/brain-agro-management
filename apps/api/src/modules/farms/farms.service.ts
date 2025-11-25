@@ -176,13 +176,11 @@ export class FarmsService {
 			await this.verifyProducerExists(updateFarmDto.producerId);
 		}
 
-		const updatedFields = { ...farm, ...updateFarmDto };
-
 		try {
 			assertValidFarmArea(
-				updatedFields.totalArea,
-				updatedFields.arableArea,
-				updatedFields.vegetationArea,
+				(farm.totalArea || updateFarmDto.totalArea) ?? 0,
+				(farm.arableArea || updateFarmDto.arableArea) ?? 0,
+				(farm.vegetationArea || updateFarmDto.vegetationArea) ?? 0,
 			);
 		} catch (error) {
 			throw new BadRequestException(error instanceof Error ? error.message : String(error));

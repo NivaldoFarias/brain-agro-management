@@ -1,3 +1,9 @@
+/**
+ * @fileoverview Tests for the {@link TransformInterceptor}.
+ *
+ * Verifies response wrapping with metadata, pagination handling, and correlation ID injection.
+ */
+
 import { of } from "rxjs";
 
 import type { PaginatedData } from "./transform.interceptor";
@@ -6,11 +12,6 @@ import type { CallHandler, ExecutionContext } from "@nestjs/common";
 import { correlationIdStorage } from "./correlation-id.interceptor";
 import { TransformInterceptor } from "./transform.interceptor";
 
-/**
- * @fileoverview Tests for the {@link TransformInterceptor}.
- *
- * Verifies response wrapping with metadata, pagination handling, and correlation ID injection.
- */
 describe("TransformInterceptor", () => {
 	let interceptor: TransformInterceptor<unknown>;
 	const mockContext = {} as ExecutionContext;
@@ -32,7 +33,7 @@ describe("TransformInterceptor", () => {
 					expect(result).toEqual({
 						data: responseData,
 						meta: {
-							timestamp: expect.any(String),
+							timestamp: expect(String),
 							correlationId,
 						},
 					});
@@ -73,7 +74,7 @@ describe("TransformInterceptor", () => {
 					expect(result).toEqual({
 						data: [{ id: "1" }, { id: "2" }],
 						meta: {
-							timestamp: expect.any(String),
+							timestamp: expect(String),
 							correlationId: "test-id",
 							page: 1,
 							limit: 20,
@@ -95,7 +96,7 @@ describe("TransformInterceptor", () => {
 					expect(result).toEqual({
 						data: [],
 						meta: {
-							timestamp: expect.any(String),
+							timestamp: expect(String),
 							correlationId: "test-id",
 						},
 					});
@@ -114,7 +115,7 @@ describe("TransformInterceptor", () => {
 					expect(result).toEqual({
 						data: null,
 						meta: {
-							timestamp: expect.any(String),
+							timestamp: expect(String),
 							correlationId: "test-id",
 						},
 					});
@@ -133,7 +134,7 @@ describe("TransformInterceptor", () => {
 					expect(result).toEqual({
 						data: undefined,
 						meta: {
-							timestamp: expect.any(String),
+							timestamp: expect(String),
 							correlationId: "test-id",
 						},
 					});
@@ -182,7 +183,7 @@ describe("TransformInterceptor", () => {
 					expect(result).toEqual({
 						data: "simple string",
 						meta: {
-							timestamp: expect.any(String),
+							timestamp: expect(String),
 							correlationId: "test-id",
 						},
 					});
@@ -201,7 +202,7 @@ describe("TransformInterceptor", () => {
 					expect(result).toEqual({
 						data: 42,
 						meta: {
-							timestamp: expect.any(String),
+							timestamp: expect(String),
 							correlationId: "test-id",
 						},
 					});
