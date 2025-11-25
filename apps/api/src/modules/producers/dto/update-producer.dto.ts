@@ -1,8 +1,7 @@
+import { generateDocument } from "@agro/shared/utils/cpf-cnpj.util";
 import { faker } from "@faker-js/faker/locale/pt_BR";
 import { ApiPropertyOptional } from "@nestjs/swagger";
 import { IsOptional, IsString, Length } from "class-validator";
-
-import { generateDocument } from "@agro/shared/utils/cpf-cnpj.util";
 
 /**
  * Data Transfer Object for updating an existing rural producer.
@@ -56,7 +55,7 @@ export class UpdateProducerDto {
 	 * @example "22.333.444/0001-92"
 	 */
 	@ApiPropertyOptional({
-		description: "Updated CPF (11 digits) or CNPJ (14 digits) document number",
+		description: "Updated CPF or CNPJ document number",
 		example: faker.helpers.arrayElement([
 			generateDocument.cpf({ formatted: true }),
 			generateDocument.cnpj({ formatted: true }),

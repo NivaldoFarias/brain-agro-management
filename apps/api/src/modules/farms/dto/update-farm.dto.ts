@@ -66,7 +66,7 @@ export class UpdateFarmDto {
 	 */
 	@ApiPropertyOptional({
 		description: "Updated Brazilian state (UF)",
-		example: faker.helpers.arrayElement(Object.values(BrazilianState)),
+		example: "RJ",
 		enum: BrazilianState,
 	})
 	@IsOptional()

@@ -1,7 +1,8 @@
+import { faker } from "@faker-js/faker";
 import { Body, Controller, Delete, Get, HttpStatus, Param, Patch, Post } from "@nestjs/common";
-import { ApiBearerAuth, ApiOperation, ApiQuery, ApiResponse, ApiTags } from "@nestjs/swagger";
+import { ApiBearerAuth, ApiOperation, ApiParam, ApiResponse, ApiTags } from "@nestjs/swagger";
 
-import { BrazilianState, ParseUUIDPipe } from "@/common";
+import { BrazilianState, CropType, ParseUUIDPipe } from "@/common";
 
 import { CreateFarmDto, FarmResponseDto, UpdateFarmDto } from "./dto";
 import { FarmsService } from "./farms.service";
@@ -135,13 +136,17 @@ export class FarmsController {
 	 */
 	@Get("state/:state")
 	@ApiOperation({ summary: "Get farms by state" })
-	@ApiQuery({ name: "state", description: "Brazilian state code (UF)", example: "SP" })
+	@ApiParam({
+		name: "state",
+		description: "Brazilian state code (UF)",
+		example: BrazilianState.SP,
+	})
 	@ApiResponse({
 		status: HttpStatus.OK,
 		description: "List of farms in the state",
 		type: [FarmResponseDto],
 	})
-	findByState(@Param("state") state: BrazilianState): Promise<Array<FarmResponseDto>> {
+	findByState(@Param("state") state: string): Promise<Array<FarmResponseDto>> {
 		return this.farmsService.findByState(state);
 	}
 
@@ -209,7 +214,10 @@ export class FarmsController {
 	@ApiResponse({
 		status: HttpStatus.OK,
 		description: "Total farm area in hectares",
-		schema: { type: "number", example: 12_345.67 },
+		schema: {
+			type: "number",
+			example: faker.number.float({ min: 1000, max: 20_000, fractionDigits: 2 }),
+		},
 	})
 	getTotalArea(): Promise<number> {
 		return this.farmsService.getTotalArea();
@@ -230,8 +238,8 @@ export class FarmsController {
 		schema: {
 			type: "array",
 			example: [
-				{ state: "SP", count: 15 },
-				{ state: "MG", count: 8 },
+				{ state: BrazilianState.SP, count: 15 },
+				{ state: BrazilianState.MG, count: 8 },
 			],
 		},
 	})
@@ -280,9 +288,9 @@ export class FarmsController {
 		schema: {
 			type: "array",
 			example: [
-				{ cropType: "Soja", count: 15 },
-				{ cropType: "Milho", count: 12 },
-				{ cropType: "Café", count: 8 },
+				{ cropType: CropType.Soja, count: 15 },
+				{ cropType: CropType.Milho, count: 12 },
+				{ cropType: CropType.Cafe, count: 8 },
 			],
 		},
 	})

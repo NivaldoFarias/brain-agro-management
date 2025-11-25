@@ -72,12 +72,12 @@ export class FarmResponseDto {
 	 */
 	@ApiProperty({
 		description: "Brazilian state (UF)",
-		example: faker.helpers.arrayElement(Object.values(BrazilianState)),
+		example: BrazilianState.SP,
 		enum: BrazilianState,
 		enumName: "BrazilianState",
 	})
 	@Expose()
-	state!: BrazilianState;
+	state!: string;
 
 	/**
 	 * Total area of the farm in hectares.

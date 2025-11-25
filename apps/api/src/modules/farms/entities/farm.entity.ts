@@ -53,8 +53,8 @@ export class Farm {
 	/**
 	 * Brazilian state (UF) where the farm is located
 	 */
-	@Column({ type: "varchar", length: 2, enum: BrazilianState })
-	state!: BrazilianState;
+	@Column({ type: "varchar", length: 2 })
+	state!: string;
 
 	/**
 	 * Total farm area in hectares

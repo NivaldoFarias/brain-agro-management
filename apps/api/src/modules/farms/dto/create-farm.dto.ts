@@ -70,13 +70,13 @@ export class CreateFarmDto {
 	 */
 	@ApiProperty({
 		description: "Brazilian state (UF)",
-		example: faker.helpers.arrayElement(Object.values(BrazilianState)),
+		example: BrazilianState.SP,
 		enum: BrazilianState,
 		enumName: "BrazilianState",
 	})
 	@IsNotEmpty({ message: "State is required" })
 	@IsEnum(BrazilianState, { message: "State must be a valid Brazilian state code" })
-	state!: BrazilianState;
+	state!: string;
 
 	/**
 	 * Total area of the farm in hectares.

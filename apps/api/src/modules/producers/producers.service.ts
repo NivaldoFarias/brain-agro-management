@@ -229,7 +229,7 @@ export class ProducersService {
 			return stripCNPJFormatting(document);
 		}
 
-		throw new BadRequestException("Document must be a valid CPF (11 digits) or CNPJ (14 digits)");
+		throw new BadRequestException("Document must be a valid CPF or CNPJ");
 	}
 
 	/**

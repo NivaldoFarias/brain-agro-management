@@ -44,7 +44,7 @@ export class CitiesService {
 	 * console.log(spCities.length); // 645 cities in São Paulo
 	 * ```
 	 */
-	async findByState(state: BrazilianState): Promise<Array<City>> {
+	async findByState(state: string): Promise<Array<City>> {
 		try {
 			return await this.cityRepository.find({
 				where: { state },

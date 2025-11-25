@@ -252,7 +252,7 @@ export class FarmsService {
 	 * const farms = await service.findByState(BrazilianState.SP);
 	 * ```
 	 */
-	async findByState(state: BrazilianState): Promise<Array<FarmResponseDto>> {
+	async findByState(state: string): Promise<Array<FarmResponseDto>> {
 		const farms = await this.farmRepository.find({
 			where: { state },
 			order: { name: SortBy.Ascending },

@@ -45,7 +45,7 @@ export class City {
 	 * @example "SP"
 	 */
 	@Column({ type: "varchar", length: 2, nullable: false })
-	state!: BrazilianState;
+	state!: string;
 
 	/**
 	 * IBGE municipality code (7 digits)
