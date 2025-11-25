@@ -1,7 +1,9 @@
 import { Module } from "@nestjs/common";
 import { TypeOrmModule } from "@nestjs/typeorm";
 
-import { Farm, Producer } from "../database/entities";
+import { IsCityInStateConstraint } from "../common/validators/city-state.validator";
+import { CitiesModule } from "../database/cities.module";
+import { City, Farm, Producer } from "../database/entities";
 
 import { FarmsController } from "./farms.controller";
 import { FarmsService } from "./farms.service";
@@ -25,9 +27,9 @@ import { FarmsService } from "./farms.service";
  * ```
  */
 @Module({
-	imports: [TypeOrmModule.forFeature([Farm, Producer])],
+	imports: [TypeOrmModule.forFeature([Farm, Producer, City]), CitiesModule],
 	controllers: [FarmsController],
-	providers: [FarmsService],
+	providers: [FarmsService, IsCityInStateConstraint],
 	exports: [FarmsService],
 })
 export class FarmsModule {}

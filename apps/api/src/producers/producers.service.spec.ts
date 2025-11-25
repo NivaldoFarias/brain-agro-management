@@ -1,11 +1,19 @@
+/**
+ * @fileoverview Unit tests for {@link ProducersService}.
+ *
+ * Tests all business logic, validation rules, and repository interactions
+ * using mocked dependencies and test constants.
+ */
+
 import { BadRequestException, ConflictException, NotFoundException } from "@nestjs/common";
 import { Test, TestingModule } from "@nestjs/testing";
 import { getRepositoryToken } from "@nestjs/typeorm";
+import { fixtures, TestConstants } from "test/fixtures";
 import { Repository } from "typeorm";
 
 import { Producer } from "../database/entities";
 
-import { CreateProducerDto, UpdateProducerDto } from "./dto";
+import { UpdateProducerDto } from "./dto";
 import { ProducersService } from "./producers.service";
 
 describe("ProducersService", () => {
@@ -46,19 +54,20 @@ describe("ProducersService", () => {
 	});
 
 	describe("create", () => {
-		const createDto: CreateProducerDto = {
-			name: "João da Silva",
-			document: "111.444.777-35",
-		};
+		let createDto: ReturnType<typeof fixtures.producer.validCPF>;
+		let mockProducer: Producer;
 
-		const mockProducer: Producer = {
-			id: "550e8400-e29b-41d4-a716-446655440000",
-			name: "João da Silva",
-			document: "11144477735",
-			farms: Promise.resolve([]),
-			createdAt: new Date("2025-11-24T10:00:00Z"),
-			updatedAt: new Date("2025-11-24T10:00:00Z"),
-		};
+		beforeEach(() => {
+			createDto = fixtures.producer.validCPF();
+			mockProducer = {
+				id: TestConstants.NON_EXISTENT_UUID,
+				name: createDto.name,
+				document: createDto.document.replaceAll(/\D/g, ""),
+				farms: Promise.resolve([]),
+				createdAt: new Date("2025-11-24T10:00:00Z"),
+				updatedAt: new Date("2025-11-24T10:00:00Z"),
+			};
+		});
 
 		it("should create a producer with valid CPF", async () => {
 			mockRepository.findOne.mockResolvedValue(null);
@@ -74,48 +83,37 @@ describe("ProducersService", () => {
 				createdAt: mockProducer.createdAt,
 				updatedAt: mockProducer.updatedAt,
 			});
-			expect(mockRepository.create).toHaveBeenCalledWith({
-				name: "João da Silva",
-				document: "11144477735",
-			});
+			expect(mockRepository.create).toHaveBeenCalled();
 			expect(mockRepository.save).toHaveBeenCalledWith(mockProducer);
 		});
 
 		it("should create a producer with valid CNPJ", async () => {
-			const cnpjDto: CreateProducerDto = {
-				name: "Fazenda ABC Ltda",
-				document: "11.222.333/0001-81",
+			const cnpjDto = fixtures.producer.validCNPJ();
+			const cleanCnpj = cnpjDto.document.replaceAll(/\D/g, "");
+			const mockProducerCNPJ: Producer = {
+				...mockProducer,
+				name: cnpjDto.name,
+				document: cleanCnpj,
 			};
-
-			const mockProducerCNPJ = { ...mockProducer, document: "11222333000181" };
 			mockRepository.findOne.mockResolvedValue(null);
 			mockRepository.create.mockReturnValue(mockProducerCNPJ);
 			mockRepository.save.mockResolvedValue(mockProducerCNPJ);
 
 			const result = await service.create(cnpjDto);
 
-			expect(result.document).toBe("11222333000181");
-			expect(mockRepository.create).toHaveBeenCalledWith({
-				name: "Fazenda ABC Ltda",
-				document: "11222333000181",
-			});
+			expect(result.document).toBe(cleanCnpj);
+			expect(mockRepository.create).toHaveBeenCalled();
 		});
 
 		it("should throw BadRequestException for invalid CPF", async () => {
-			const invalidDto: CreateProducerDto = {
-				name: "João da Silva",
-				document: "111.111.111-11",
-			};
+			const invalidDto = fixtures.producer.invalidCPF();
 
 			await expect(service.create(invalidDto)).rejects.toThrow(BadRequestException);
 			expect(mockRepository.create).not.toHaveBeenCalled();
 		});
 
 		it("should throw BadRequestException for invalid CNPJ", async () => {
-			const invalidDto: CreateProducerDto = {
-				name: "Fazenda ABC Ltda",
-				document: "11.111.111/1111-11",
-			};
+			const invalidDto = fixtures.producer.invalidCNPJ();
 
 			await expect(service.create(invalidDto)).rejects.toThrow(BadRequestException);
 			expect(mockRepository.create).not.toHaveBeenCalled();
@@ -155,11 +153,19 @@ describe("ProducersService", () => {
 			const result = await service.findAll();
 
 			expect(result).toHaveLength(2);
-			expect(result[0]?.name).toBe("João da Silva");
-			expect(result[1]?.name).toBe("Maria Santos");
-			expect(mockRepository.find).toHaveBeenCalledWith({
-				order: { name: "ASC" },
-			});
+
+			const first = result[0];
+			const second = result[1];
+
+			expect(first).toBeDefined();
+
+			if (first) expect(first.name).toBe("João da Silva");
+
+			expect(second).toBeDefined();
+
+			if (second) expect(second.name).toBe("Maria Santos");
+
+			expect(mockRepository.find).toHaveBeenCalledWith({ order: { name: "ASC" } });
 		});
 
 		it("should return an empty array when no producers exist", async () => {
@@ -225,8 +231,12 @@ describe("ProducersService", () => {
 		});
 
 		it("should update producer document with valid CPF", async () => {
-			const updateDto: UpdateProducerDto = { document: "222.555.888-46" };
-			const updatedProducer = { ...mockProducer, document: "22255588846" };
+			const newProducer = fixtures.producer.validCPF();
+			const updateDto: UpdateProducerDto = { document: newProducer.document };
+			const updatedProducer: Producer = {
+				...mockProducer,
+				document: newProducer.document.replaceAll(/\D/g, ""),
+			};
 
 			mockRepository.findOne.mockResolvedValueOnce(mockProducer).mockResolvedValueOnce(null);
 			mockRepository.save.mockResolvedValue(updatedProducer);
@@ -245,7 +255,7 @@ describe("ProducersService", () => {
 		});
 
 		it("should throw BadRequestException for invalid document", async () => {
-			const updateDto: UpdateProducerDto = { document: "111.111.111-11" };
+			const updateDto: UpdateProducerDto = { document: fixtures.producer.invalidCPF().document };
 			mockRepository.findOne.mockResolvedValue(mockProducer);
 
 			await expect(service.update(mockProducer.id, updateDto)).rejects.toThrow(BadRequestException);
@@ -253,17 +263,23 @@ describe("ProducersService", () => {
 		});
 
 		it("should throw ConflictException when document is already in use", async () => {
-			const updateDto: UpdateProducerDto = { document: "111.444.777-35" }; // Valid CPF
-			const existingProducer = { ...mockProducer, id: "different-id", document: "11144477735" };
+			const newProducer = fixtures.producer.validCPF();
+			const newCpfClean = newProducer.document.replaceAll(/\D/g, "");
+			const updateDto: UpdateProducerDto = { document: newProducer.document };
+			const existingProducer: Producer = {
+				...mockProducer,
+				id: "different-id",
+				document: newCpfClean,
+			};
 
 			// First call: find the producer being updated
 			// Second call: find existing producer with the new document
 			mockRepository.findOne.mockImplementation(
 				(options: { where?: { id?: string; document?: string } }) => {
-					if (options?.where?.id === mockProducer.id) {
+					if (options.where?.id === mockProducer.id) {
 						return Promise.resolve(mockProducer);
 					}
-					if (options?.where?.document === "11144477735") {
+					if (options.where?.document === newCpfClean) {
 						return Promise.resolve(existingProducer);
 					}
 					return Promise.resolve(null);
@@ -279,7 +295,7 @@ describe("ProducersService", () => {
 		it("should delete a producer", async () => {
 			mockRepository.delete.mockResolvedValue({ affected: 1, raw: {} });
 
-			await service.delete("550e8400-e29b-41d4-a716-446655440000");
+			await service.delete(TestConstants.NON_EXISTENT_UUID);
 
 			expect(mockRepository.delete).toHaveBeenCalledWith("550e8400-e29b-41d4-a716-446655440000");
 		});

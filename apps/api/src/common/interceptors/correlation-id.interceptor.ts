@@ -44,12 +44,8 @@ export class CorrelationIdInterceptor implements NestInterceptor {
 	 * @returns Observable that completes when request handling finishes
 	 */
 	intercept(context: ExecutionContext, next: CallHandler): Observable<unknown> {
-		const request = context.switchToHttp().getRequest() as Record<string, unknown> & {
-			headers: Record<string, string>;
-		};
-		const response = context.switchToHttp().getResponse() as Record<string, unknown> & {
-			setHeader(key: string, value: string): void;
-		};
+		const request = context.switchToHttp().getRequest();
+		const response = context.switchToHttp().getResponse();
 
 		const correlationId = request.headers["x-correlation-id"] || randomUUID();
 

@@ -1,6 +1,7 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { IsEnum, IsNotEmpty, IsNumber, IsString, IsUUID, Length, Min } from "class-validator";
 
+import { IsCityInState } from "../../common/validators/city-state.validator";
 import { BrazilianState } from "../../database/entities";
 
 /**
@@ -42,10 +43,13 @@ export class CreateFarmDto {
 	/**
 	 * City where the farm is located.
 	 *
+	 * Must be a valid Brazilian municipality within the specified state.
+	 * Validated against IBGE data to ensure accuracy.
+	 *
 	 * @example "Campinas"
 	 */
 	@ApiProperty({
-		description: "City where the farm is located",
+		description: "City where the farm is located (must exist in the specified state)",
 		example: "Campinas",
 		minLength: 2,
 		maxLength: 100,
@@ -53,6 +57,7 @@ export class CreateFarmDto {
 	@IsNotEmpty({ message: "City is required" })
 	@IsString({ message: "City must be a string" })
 	@Length(2, 100, { message: "City must be between 2 and 100 characters" })
+	@IsCityInState({ message: "City must exist within the specified state" })
 	city!: string;
 
 	/**

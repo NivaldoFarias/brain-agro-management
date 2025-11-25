@@ -1,7 +1,8 @@
-import { assertValidFarmArea } from "@agro/shared/validators";
 import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
+
+import { assertValidFarmArea } from "@agro/shared/validators";
 
 import { BrazilianState, Farm, Producer } from "../database/entities";
 

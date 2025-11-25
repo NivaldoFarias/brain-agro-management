@@ -1,7 +1,7 @@
-import { RuntimeEnvironment } from "@agro/shared/utils";
-
 import type { Params } from "nestjs-pino";
 import type { SerializedRequest, SerializedResponse } from "pino";
+
+import { RuntimeEnvironment } from "@agro/shared/utils";
 
 import { env } from "@/utils";
 

@@ -11,6 +11,7 @@
  */
 
 export { BrazilianState, CropType } from "./enums";
+export { City } from "./city.entity";
 export { FarmHarvestCrop } from "./farm-harvest-crop.entity";
 export { FarmHarvest } from "./farm-harvest.entity";
 export { Farm } from "./farm.entity";

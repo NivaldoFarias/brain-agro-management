@@ -1,9 +1,10 @@
-import { RuntimeEnvironment } from "@agro/shared/utils";
 import { DataSource } from "typeorm";
+
+import { RuntimeEnvironment } from "@agro/shared/utils";
 
 import { env } from "@/utils/env.util";
 
-import { Farm, FarmHarvest, FarmHarvestCrop, Harvest, Producer } from "./entities";
+import { City, Farm, FarmHarvest, FarmHarvestCrop, Harvest, Producer } from "./entities";
 
 /**
  * TypeORM DataSource configuration for CLI operations.
@@ -20,7 +21,7 @@ import { Farm, FarmHarvest, FarmHarvestCrop, Harvest, Producer } from "./entitie
 export const AppDataSource = new DataSource({
 	type: "sqlite",
 	database: env.API_DATABASE_PATH,
-	entities: [Producer, Farm, Harvest, FarmHarvest, FarmHarvestCrop],
+	entities: [Producer, Farm, Harvest, FarmHarvest, FarmHarvestCrop, City],
 	migrations: ["./src/database/migrations/**/*.ts"],
 	// TEMPORARY: Auto-create tables in development (will use migrations in production)
 	synchronize: env.NODE_ENV !== RuntimeEnvironment.Production,

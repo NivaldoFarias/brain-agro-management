@@ -1,6 +1,14 @@
+/**
+ * @fileoverview Unit tests for {@link FarmsService}.
+ *
+ * Tests all business logic, validation rules, and repository interactions
+ * using mocked dependencies and fixture data.
+ */
+
 import { BadRequestException, NotFoundException } from "@nestjs/common";
 import { Test, TestingModule } from "@nestjs/testing";
 import { getRepositoryToken } from "@nestjs/typeorm";
+import { fixtures, TestConstants } from "test/fixtures";
 import { Repository } from "typeorm";
 
 import { BrazilianState, Farm, Producer } from "../database/entities";
@@ -58,30 +66,26 @@ describe("FarmsService", () => {
 	});
 
 	describe("create", () => {
-		const createDto: CreateFarmDto = {
-			name: "Fazenda Boa Vista",
-			city: "Campinas",
-			state: BrazilianState.SP,
-			totalArea: 100.5,
-			arableArea: 70,
-			vegetationArea: 25,
-			producerId: "550e8400-e29b-41d4-a716-446655440000",
-		};
+		let createDto: CreateFarmDto;
+		let mockFarm: Farm;
 
-		const mockFarm: Farm = {
-			id: "770e9600-g40d-63f6-c938-668877662222",
-			name: "Fazenda Boa Vista",
-			city: "Campinas",
-			state: BrazilianState.SP,
-			totalArea: 100.5,
-			arableArea: 70,
-			vegetationArea: 25,
-			producerId: "550e8400-e29b-41d4-a716-446655440000",
-			producer: Promise.resolve({} as Producer),
-			farmHarvests: Promise.resolve([]),
-			createdAt: new Date("2025-11-24T10:00:00Z"),
-			updatedAt: new Date("2025-11-24T10:00:00Z"),
-		};
+		beforeEach(async () => {
+			createDto = await fixtures.farm.valid(TestConstants.NON_EXISTENT_UUID);
+			mockFarm = {
+				id: "770e9600-g40d-63f6-c938-668877662222",
+				name: createDto.name,
+				city: createDto.city,
+				state: createDto.state,
+				totalArea: createDto.totalArea,
+				arableArea: createDto.arableArea,
+				vegetationArea: createDto.vegetationArea,
+				producerId: createDto.producerId,
+				producer: Promise.resolve({} as Producer),
+				farmHarvests: Promise.resolve([]),
+				createdAt: new Date("2025-11-24T10:00:00Z"),
+				updatedAt: new Date("2025-11-24T10:00:00Z"),
+			};
+		});
 
 		it("should create a farm with valid data", async () => {
 			mockProducerRepository.exists.mockResolvedValue(true);
@@ -118,8 +122,9 @@ describe("FarmsService", () => {
 		it("should throw BadRequestException when area validation fails", async () => {
 			const invalidDto: CreateFarmDto = {
 				...createDto,
-				arableArea: 80,
-				vegetationArea: 30,
+				totalArea: 100,
+				arableArea: 70,
+				vegetationArea: 50, // Sum exceeds total
 			};
 
 			mockProducerRepository.exists.mockResolvedValue(true);
@@ -278,7 +283,7 @@ describe("FarmsService", () => {
 		});
 
 		it("should throw BadRequestException when updated areas violate constraints", async () => {
-			const updateDto: UpdateFarmDto = { arableArea: 90.0 };
+			const updateDto: UpdateFarmDto = { arableArea: 90 };
 			mockFarmRepository.findOne.mockResolvedValue(mockFarm);
 
 			await expect(service.update(mockFarm.id, updateDto)).rejects.toThrow(BadRequestException);
