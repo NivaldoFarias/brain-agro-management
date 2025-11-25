@@ -1,8 +1,7 @@
+import { generateDocument } from "@agro/shared/utils";
 import { faker } from "@faker-js/faker/locale/pt_BR";
 
-import type { CreateProducerDto } from "@/producers/dto";
-
-import { generateDocument } from "@agro/shared/utils";
+import type { CreateProducerDto } from "@/modules/producers/dto";
 
 /**
  * Producer test data fixtures using Faker.

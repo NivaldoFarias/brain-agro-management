@@ -2,10 +2,10 @@ import { faker } from "@faker-js/faker/locale/pt_BR";
 
 import type { SetRequired } from "type-fest";
 
-import type { CitiesService } from "@/database/cities.service";
-import type { CreateFarmDto } from "@/farms/dto";
+import type { CitiesService } from "@/modules/cities/cities.service";
+import type { CreateFarmDto } from "@/modules/farms/dto";
 
-import { BrazilianState } from "@/database/entities";
+import { BrazilianState } from "@/common/enums/enums";
 
 enum FarmSize {
 	SMALL = "small",

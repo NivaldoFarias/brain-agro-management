@@ -1,13 +1,15 @@
-import { ValidationPipe } from "@nestjs/common";
+import { BadRequestException, ValidationPipe } from "@nestjs/common";
 import { NestFactory } from "@nestjs/core";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 import helmet from "helmet";
-import { Logger } from "nestjs-pino";
+import { Logger, PinoLogger } from "nestjs-pino";
+
+import { env } from "@/config/env.config";
 
 import { version } from "../package.json";
 
 import { AppModule } from "./app.module";
-import { env } from "./utils";
+import { HttpExceptionFilter } from "./common/filters/http-exception.filter";
 
 /**
  * Bootstrap the NestJS application.
@@ -47,8 +49,27 @@ async function bootstrap(): Promise<void> {
 			transformOptions: {
 				enableImplicitConversion: true,
 			},
+			exceptionFactory: (errors) => {
+				const messages = errors.map((error) => {
+					const constraints = error.constraints ? Object.values(error.constraints) : [];
+					const field = error.property;
+					const value = error.value as unknown;
+
+					const detailedValidationErrors = `${field}: ${constraints.join(", ")} (received: ${JSON.stringify(value)})`;
+
+					return detailedValidationErrors;
+				});
+
+				return new BadRequestException({
+					message: messages,
+					error: "Validation Failed",
+				});
+			},
 		}),
 	);
+
+	const pinoLogger = app.get(PinoLogger);
+	app.useGlobalFilters(new HttpExceptionFilter(pinoLogger));
 
 	app.enableCors({
 		origin: env.API_CORS_ORIGIN,

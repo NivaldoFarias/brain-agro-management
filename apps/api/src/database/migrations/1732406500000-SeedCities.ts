@@ -2,7 +2,7 @@ import { faker } from "@faker-js/faker";
 
 import type { MigrationInterface, QueryRunner } from "typeorm";
 
-import { BrazilianState } from "../entities";
+import { BrazilianState } from "@/common";
 
 /**
  * IBGE city data response interface

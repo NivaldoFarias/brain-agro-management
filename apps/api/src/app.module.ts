@@ -4,13 +4,16 @@ import { ThrottlerGuard, ThrottlerModule } from "@nestjs/throttler";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { LoggerModule } from "nestjs-pino";
 
-import { createPinoConfig } from "./common/config/logger.config";
+import { env } from "@/config/env.config";
+import { createPinoConfig } from "@/config/logger.config";
+
 import { CorrelationIdInterceptor } from "./common/interceptors/correlation-id.interceptor";
-import { AppDataSource } from "./database/data-source";
-import { FarmsModule } from "./farms/farms.module";
-import { HealthModule } from "./health/health.module";
-import { ProducersModule } from "./producers/producers.module";
-import { env } from "./utils";
+import { LoggingInterceptor } from "./common/interceptors/logging.interceptor";
+import { TransformInterceptor } from "./common/interceptors/transform.interceptor";
+import { AppDataSource } from "./config/database.config";
+import { FarmsModule } from "./modules/farms/farms.module";
+import { HealthModule } from "./modules/health/health.module";
+import { ProducersModule } from "./modules/producers/producers.module";
 
 /**
  * Root application module.
@@ -45,6 +48,14 @@ import { env } from "./utils";
 		{
 			provide: APP_INTERCEPTOR,
 			useClass: CorrelationIdInterceptor,
+		},
+		{
+			provide: APP_INTERCEPTOR,
+			useClass: LoggingInterceptor,
+		},
+		{
+			provide: APP_INTERCEPTOR,
+			useClass: TransformInterceptor,
 		},
 		{
 			provide: APP_GUARD,

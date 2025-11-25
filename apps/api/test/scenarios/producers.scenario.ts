@@ -1,6 +1,10 @@
 import type { Response } from "supertest";
 
-import type { CreateProducerDto, ProducerResponseDto, UpdateProducerDto } from "@/producers/dto";
+import type {
+	CreateProducerDto,
+	ProducerResponseDto,
+	UpdateProducerDto,
+} from "@/modules/producers/dto";
 
 import { BaseScenario, TypedResponse } from "./base.scenario";
 

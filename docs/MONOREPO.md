@@ -7,8 +7,15 @@ This project uses a monorepo structure with Bun workspaces and TypeScript projec
 ```
 agro-management/
 ├── apps/
-│   ├── api/                 # Backend REST API (Bun + TypeScript)
+│   ├── api/                 # Backend REST API (NestJS + Bun + TypeORM)
 │   │   ├── src/
+│   │   │   ├── config/      # Configuration modules
+│   │   │   ├── common/      # Cross-cutting concerns
+│   │   │   ├── modules/     # Feature modules (producers, farms, cities, health)
+│   │   │   ├── database/    # Migrations and seeds
+│   │   │   └── utils/       # Backend utilities
+│   │   ├── data/            # SQLite database
+│   │   ├── logs/            # Application logs
 │   │   ├── package.json
 │   │   └── tsconfig.json
 │   └── web/                 # Frontend React app (Vite + TypeScript)
@@ -18,8 +25,19 @@ agro-management/
 ├── packages/
 │   └── shared/              # Shared code (types, utils, validators)
 │       ├── src/
+│       │   ├── types/       # Shared TypeScript interfaces
+│       │   ├── validators/  # CPF, CNPJ, farm area validators
+│       │   └── utils/       # Common utilities
 │       ├── package.json
 │       └── tsconfig.json
+├── docs/                    # Documentation
+│   ├── ARCHITECTURE.md      # System architecture (C4 diagrams)
+│   ├── DATABASE_SCHEMA.md   # Database design
+│   ├── ENVIRONMENT.md       # Environment variables
+│   └── MONOREPO.md          # This file
+├── .github/
+│   ├── instructions/        # AI/LLM coding guidelines
+│   └── copilot-instructions.md
 ├── package.json             # Root workspace configuration
 ├── tsconfig.json            # TypeScript project references
 └── tsconfig.base.json       # Base TypeScript configuration
@@ -31,12 +49,27 @@ This monorepo contains three workspaces:
 
 ### `@agro/api`
 
-Backend REST API handling:
+Backend REST API (NestJS + TypeORM + SQLite) with modular architecture:
 
-- Producer CRUD operations
-- Farm management
-- Dashboard aggregations
-- Business logic validation
+**Feature Modules**:
+
+- **Producers Module**: Producer CRUD operations with CPF/CNPJ validation
+- **Farms Module**: Farm management with area validation and crop assignments
+- **Cities Module**: Brazilian city lookup service (IBGE data)
+- **Health Module**: Application health and readiness checks
+
+**Infrastructure**:
+
+- **Config**: Centralized configuration (database, logger, environment)
+- **Common**: Cross-cutting concerns (decorators, enums, interceptors, filters, guards, pipes)
+- **Database**: Migrations and seed scripts
+
+**Architecture Patterns**:
+
+- Data Mapper pattern with TypeORM repositories
+- Dependency injection throughout
+- Structured logging with correlation IDs
+- Global validation pipes and exception handling
 
 ### `@agro/web`
 

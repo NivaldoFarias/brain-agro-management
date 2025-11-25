@@ -21,10 +21,17 @@ export default defineConfig(
 			".turbo/**",
 			"prettier.config.mjs",
 			"eslint.config.mjs",
+			"reset.d.ts",
+			"**/*.db",
+			"**/*.db-*",
+			"**/logs/**",
+			"**/*.log",
+			"**/.env*",
+			"**/coverage/**",
 		],
 	},
 	{
-		files: ["**/*.{js,cjs,mjs,ts,mts,cts}"],
+		files: ["**/*.{js,cjs,mjs,ts,mts,cts,d.ts}"],
 		plugins: {
 			"@typescript-eslint": tseslint.plugin,
 		},
@@ -33,12 +40,6 @@ export default defineConfig(
 				...globals.node,
 				Bun: "readonly",
 				NodeJS: "readonly",
-				jest: "readonly",
-				describe: "readonly",
-				it: "readonly",
-				expect: "readonly",
-				beforeEach: "readonly",
-				afterEach: "readonly",
 			},
 			parser: tseslint.parser,
 			parserOptions: {
@@ -67,6 +68,7 @@ export default defineConfig(
 			"@typescript-eslint/no-explicit-any": "error",
 			"@typescript-eslint/no-floating-promises": "error",
 			"@typescript-eslint/array-type": ["error", { default: "generic" }],
+			"@typescript-eslint/no-extraneous-class": ["error", { allowWithDecorator: true }],
 
 			/* Unicorn */
 			"unicorn/no-null": "off",
@@ -75,7 +77,14 @@ export default defineConfig(
 	},
 	eslintPluginNestJs.configs.flatRecommended,
 	{
-		files: ["*.spec.*", "*.test.*", "**/tests/**", "**/test/**"],
+		files: [
+			"**/*.spec.*",
+			"**/*.e2e-spec.*",
+			"**/*.test.*",
+			"**/*.e2e-test.*",
+			"**/tests/**",
+			"**/test/**",
+		],
 		languageOptions: {
 			globals: {
 				jest: "readonly",
@@ -87,6 +96,16 @@ export default defineConfig(
 				beforeAll: "readonly",
 				afterAll: "readonly",
 			},
+		},
+		rules: {
+			// Disable strict type checking for test files where mocks and expect matchers are common
+			"@typescript-eslint/no-unsafe-assignment": "off",
+			"@typescript-eslint/no-unsafe-member-access": "off",
+			"@typescript-eslint/no-unsafe-argument": "off",
+			"@typescript-eslint/no-unsafe-return": "off",
+			"@typescript-eslint/no-unsafe-call": "off",
+			"@typescript-eslint/unbound-method": "off",
+			"@typescript-eslint/no-misused-spread": "off",
 		},
 	},
 	{

@@ -212,74 +212,85 @@ brain-ag/
 │   │   │   ├── main.ts               # Application entry point
 │   │   │   ├── app.module.ts         # Root module with imports
 │   │   │   │
-│   │   │   ├── common/               # Shared infrastructure
-│   │   │   │   ├── filters/          # Exception filters
-│   │   │   │   │   └── http-exception.filter.ts
-│   │   │   │   ├── interceptors/     # Request/response interceptors
-│   │   │   │   │   ├── logging.interceptor.ts
-│   │   │   │   │   └── correlation-id.interceptor.ts
-│   │   │   │   ├── guards/           # Route guards (auth, roles)
-│   │   │   │   ├── decorators/       # Custom decorators
-│   │   │   │   └── pipes/            # Validation pipes
-│   │   │   │
 │   │   │   ├── config/               # Configuration modules
 │   │   │   │   ├── database.config.ts
-│   │   │   │   ├── logger.config.ts
-│   │   │   │   └── swagger.config.ts
+│   │   │   │   ├── env.config.ts
+│   │   │   │   └── logger.config.ts
 │   │   │   │
-│   │   │   ├── database/             # Database-related files
-│   │   │   │   ├── data-source.ts    # TypeORM DataSource
-│   │   │   │   ├── entities/         # TypeORM entities
-│   │   │   │   │   ├── producer.entity.ts
-│   │   │   │   │   ├── farm.entity.ts
-│   │   │   │   │   ├── harvest.entity.ts
-│   │   │   │   │   ├── farm-harvest.entity.ts
-│   │   │   │   │   ├── farm-harvest-crop.entity.ts
-│   │   │   │   │   ├── enums.ts
-│   │   │   │   │   └── index.ts
+│   │   │   ├── common/               # Shared infrastructure
+│   │   │   │   ├── decorators/       # Custom decorators
+│   │   │   │   │   ├── city-in-state.decorator.ts
+│   │   │   │   │   └── city-in-state.decorator.spec.ts
+│   │   │   │   ├── enums/            # Shared enums
+│   │   │   │   │   └── enums.ts      # BrazilianState, CropType
+│   │   │   │   ├── filters/          # Exception filters
+│   │   │   │   │   └── (to be implemented)
+│   │   │   │   ├── guards/           # Route guards (auth, roles)
+│   │   │   │   │   └── (to be implemented)
+│   │   │   │   ├── interceptors/     # Request/response interceptors
+│   │   │   │   │   └── correlation-id.interceptor.ts
+│   │   │   │   └── pipes/            # Validation pipes
+│   │   │   │       └── (to be implemented)
+│   │   │   │
+│   │   │   ├── database/             # Database infrastructure only
 │   │   │   │   ├── migrations/       # TypeORM migrations
-│   │   │   │   │   └── 1732406400000-InitialSchema.ts
+│   │   │   │   │   ├── 1732406400000-InitialSchema.ts
+│   │   │   │   │   └── 1732406500000-SeedCities.ts
 │   │   │   │   └── seeds/            # Database seed scripts
 │   │   │   │       └── index.ts
 │   │   │   │
-│   │   │   ├── producers/            # Producer feature module
-│   │   │   │   ├── producers.module.ts
-│   │   │   │   ├── producers.controller.ts
-│   │   │   │   ├── producers.service.ts
-│   │   │   │   ├── producers.service.spec.ts
-│   │   │   │   └── dto/
-│   │   │   │       ├── create-producer.dto.ts
-│   │   │   │       ├── update-producer.dto.ts
-│   │   │   │       └── producer-response.dto.ts
-│   │   │   │
-│   │   │   ├── farms/                # Farm feature module
-│   │   │   │   ├── farms.module.ts
-│   │   │   │   ├── farms.controller.ts
-│   │   │   │   ├── farms.service.ts
-│   │   │   │   ├── farms.service.spec.ts
-│   │   │   │   └── dto/
-│   │   │   │       ├── create-farm.dto.ts
-│   │   │   │       ├── update-farm.dto.ts
-│   │   │   │       └── farm-response.dto.ts
-│   │   │   │
-│   │   │   ├── dashboard/            # Dashboard analytics module
-│   │   │   │   ├── dashboard.module.ts
-│   │   │   │   ├── dashboard.controller.ts
-│   │   │   │   ├── dashboard.service.ts
-│   │   │   │   ├── dashboard.service.spec.ts
-│   │   │   │   └── dto/
-│   │   │   │       └── dashboard-stats.dto.ts
+│   │   │   ├── modules/              # Feature modules
+│   │   │   │   ├── producers/        # Producer feature module
+│   │   │   │   │   ├── entities/
+│   │   │   │   │   │   └── producer.entity.ts
+│   │   │   │   │   ├── dto/
+│   │   │   │   │   │   ├── create-producer.dto.ts
+│   │   │   │   │   │   ├── update-producer.dto.ts
+│   │   │   │   │   │   └── producer-response.dto.ts
+│   │   │   │   │   ├── interfaces/
+│   │   │   │   │   │   └── (service interfaces)
+│   │   │   │   │   ├── producers.module.ts
+│   │   │   │   │   ├── producers.controller.ts
+│   │   │   │   │   ├── producers.service.ts
+│   │   │   │   │   ├── producers.service.spec.ts
+│   │   │   │   │   └── producers.e2e-spec.ts
+│   │   │   │   │
+│   │   │   │   ├── farms/            # Farm feature module
+│   │   │   │   │   ├── entities/
+│   │   │   │   │   │   ├── farm.entity.ts
+│   │   │   │   │   │   ├── farm-harvest.entity.ts
+│   │   │   │   │   │   ├── farm-harvest-crop.entity.ts
+│   │   │   │   │   │   └── harvest.entity.ts
+│   │   │   │   │   ├── dto/
+│   │   │   │   │   │   ├── create-farm.dto.ts
+│   │   │   │   │   │   ├── update-farm.dto.ts
+│   │   │   │   │   │   ├── farm-response.dto.ts
+│   │   │   │   │   │   └── farm-stats-response.dto.ts
+│   │   │   │   │   ├── interfaces/
+│   │   │   │   │   ├── farms.module.ts
+│   │   │   │   │   ├── farms.controller.ts
+│   │   │   │   │   ├── farms.service.ts
+│   │   │   │   │   ├── farms.service.spec.ts
+│   │   │   │   │   └── farms.e2e-spec.ts
+│   │   │   │   │
+│   │   │   │   ├── cities/           # City lookup module
+│   │   │   │   │   ├── entities/
+│   │   │   │   │   │   └── city.entity.ts
+│   │   │   │   │   ├── interfaces/
+│   │   │   │   │   ├── cities.module.ts
+│   │   │   │   │   └── cities.service.ts
+│   │   │   │   │
+│   │   │   │   └── health/           # Health check module
+│   │   │   │       ├── health.module.ts
+│   │   │   │       └── health.controller.ts
 │   │   │   │
 │   │   │   └── utils/                # Backend-specific utilities
-│   │   │       ├── logger.util.ts
 │   │   │       ├── env.util.ts
-│   │   │       └── constants.util.ts
+│   │   │       ├── constants.util.ts
+│   │   │       └── index.ts
 │   │   │
-│   │   ├── test/                     # E2E tests
-│   │   │   ├── app.e2e-spec.ts
-│   │   │   ├── producers.e2e-spec.ts
-│   │   │   └── farms.e2e-spec.ts
-│   │   │
+│   │   ├── data/                     # SQLite database files
+│   │   ├── logs/                     # Application logs
 │   │   ├── package.json
 │   │   ├── tsconfig.json
 │   │   └── nest-cli.json
@@ -521,45 +532,55 @@ graph TD
 graph TD
     AppModule[App Module<br/>Root Module]
 
-    ConfigModule[Config Module<br/>Environment Config]
+    ConfigModule[Config Module<br/>Database, Logger, Env]
     TypeOrmModule[TypeORM Module<br/>Database Connection]
     LoggerModule[Logger Module<br/>Pino Logging]
     ThrottlerModule[Throttler Module<br/>Rate Limiting]
+    HealthModule[Health Module<br/>Health Checks]
 
     ProducersModule[Producers Module<br/>Producer Management]
     FarmsModule[Farms Module<br/>Farm Management]
-    DashboardModule[Dashboard Module<br/>Analytics]
+    CitiesModule[Cities Module<br/>City Lookup Service]
 
-    SharedValidators[Shared Validators<br/>@agro/shared]
+    CommonModule[Common Module<br/>Decorators, Enums, Interceptors]
+
+    SharedPackage[Shared Package<br/>@agro/shared<br/>Validators, Types, Utils]
 
     AppModule --> ConfigModule
     AppModule --> TypeOrmModule
     AppModule --> LoggerModule
     AppModule --> ThrottlerModule
+    AppModule --> HealthModule
+    AppModule --> CommonModule
     AppModule --> ProducersModule
     AppModule --> FarmsModule
-    AppModule --> DashboardModule
 
     ProducersModule --> TypeOrmModule
     ProducersModule --> LoggerModule
-    ProducersModule --> SharedValidators
+    ProducersModule --> SharedPackage
 
     FarmsModule --> TypeOrmModule
     FarmsModule --> LoggerModule
-    FarmsModule --> SharedValidators
+    FarmsModule --> CitiesModule
     FarmsModule --> ProducersModule
+    FarmsModule --> CommonModule
+    FarmsModule --> SharedPackage
 
-    DashboardModule --> TypeOrmModule
-    DashboardModule --> LoggerModule
+    CitiesModule --> TypeOrmModule
+    CitiesModule --> LoggerModule
+
+    CommonModule --> SharedPackage
 
     style AppModule fill:#e3f2fd,stroke:#1976d2,stroke-width:3px
-    style ConfigModule fill:#fff3e0,stroke:#f57c00
+    style ConfigModule fill:#fff8e1,stroke:#fbc02d
     style TypeOrmModule fill:#f3e5f5,stroke:#7b1fa2
     style LoggerModule fill:#e8f5e9,stroke:#388e3c
+    style CommonModule fill:#fce4ec,stroke:#c2185b
     style ProducersModule fill:#ffe0b2,stroke:#e64a19
     style FarmsModule fill:#ffe0b2,stroke:#e64a19
-    style DashboardModule fill:#ffe0b2,stroke:#e64a19
-    style SharedValidators fill:#fff9c4,stroke:#f9a825
+    style CitiesModule fill:#e1f5fe,stroke:#0288d1
+    style HealthModule fill:#fff3e0,stroke:#f57c00
+    style SharedPackage fill:#fff9c4,stroke:#f9a825
 ```
 
 ### Feature Module Structure Pattern

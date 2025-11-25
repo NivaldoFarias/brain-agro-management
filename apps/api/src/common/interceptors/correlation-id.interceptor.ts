@@ -6,6 +6,7 @@ import { Observable } from "rxjs";
 import { tap } from "rxjs/operators";
 
 import type { CallHandler, ExecutionContext, NestInterceptor } from "@nestjs/common";
+import type { Request, Response } from "express";
 
 /**
  * Storage for correlation ID throughout the request lifecycle.
@@ -44,10 +45,14 @@ export class CorrelationIdInterceptor implements NestInterceptor {
 	 * @returns Observable that completes when request handling finishes
 	 */
 	intercept(context: ExecutionContext, next: CallHandler): Observable<unknown> {
-		const request = context.switchToHttp().getRequest();
-		const response = context.switchToHttp().getResponse();
+		const request = context.switchToHttp().getRequest<Request>();
+		const response = context.switchToHttp().getResponse<Response>();
 
-		const correlationId = request.headers["x-correlation-id"] || randomUUID();
+		const headerValue = request.headers["x-correlation-id"];
+		const correlationId =
+			typeof headerValue === "string" ? headerValue
+			: Array.isArray(headerValue) && headerValue[0] ? headerValue[0]
+			: randomUUID();
 
 		return new Observable((subscriber) => {
 			correlationIdStorage.run(correlationId, () => {

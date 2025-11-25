@@ -10,18 +10,17 @@
  * @module DatabaseSeeds
  */
 
+import { createLogger, LogLevel, RuntimeEnvironment } from "@agro/shared/utils";
 import { faker } from "@faker-js/faker/locale/pt_BR";
 import { DataSource } from "typeorm";
 
-import { createLogger, LogLevel, RuntimeEnvironment } from "@agro/shared/utils";
-
-import { AppDataSource } from "@/database/data-source";
-import { BrazilianState, CropType } from "@/database/entities/enums";
-import { FarmHarvestCrop } from "@/database/entities/farm-harvest-crop.entity";
-import { FarmHarvest } from "@/database/entities/farm-harvest.entity";
-import { Farm } from "@/database/entities/farm.entity";
-import { Harvest } from "@/database/entities/harvest.entity";
-import { Producer } from "@/database/entities/producer.entity";
+import { BrazilianState, CropType } from "@/common/enums/enums";
+import { AppDataSource } from "@/config/database.config";
+import { FarmHarvestCrop } from "@/modules/farms/entities/farm-harvest-crop.entity";
+import { FarmHarvest } from "@/modules/farms/entities/farm-harvest.entity";
+import { Farm } from "@/modules/farms/entities/farm.entity";
+import { Harvest } from "@/modules/farms/entities/harvest.entity";
+import { Producer } from "@/modules/producers/entities/producer.entity";
 
 const logger = createLogger({
 	name: "seed",

@@ -6,7 +6,8 @@
         "paths": {
             "@/*": ["./src/*"],
             "@agro/shared": ["../../packages/shared/src"],
-            "@agro/shared/*": ["../../packages/shared/src/*"]
+            "@agro/shared/*": ["../../packages/shared/src/*"],
+            "@test/*": ["./test/*"]
         },
         "types": ["node", "jest"]
     },
