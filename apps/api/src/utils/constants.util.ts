@@ -61,4 +61,7 @@ export const environmentDefaults = {
 	API_DATABASE_PATH: "data/agro.db",
 	API_BASE_PATH: "/api",
 	API_DATABASE_LOGGING: false,
+	API_CORS_ORIGIN: "*",
+	API_THROTTLE_TTL_MS: 60_000,
+	API_THROTTLE_LIMIT: 10,
 } as const;

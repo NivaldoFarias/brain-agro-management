@@ -104,7 +104,7 @@ export class FarmsService {
 	 * console.log(`Found ${farms.length} farms`);
 	 * ```
 	 */
-	async findAll(): Promise<FarmResponseDto[]> {
+	async findAll(): Promise<Array<FarmResponseDto>> {
 		const farms = await this.farmRepository.find({
 			order: { name: "ASC" },
 		});
@@ -226,7 +226,7 @@ export class FarmsService {
 	 * const farms = await service.findByProducer("550e8400-e29b-41d4-a716-446655440000");
 	 * ```
 	 */
-	async findByProducer(producerId: string): Promise<FarmResponseDto[]> {
+	async findByProducer(producerId: string): Promise<Array<FarmResponseDto>> {
 		const farms = await this.farmRepository.find({
 			where: { producerId },
 			order: { name: "ASC" },
@@ -247,7 +247,7 @@ export class FarmsService {
 	 * const farms = await service.findByState(BrazilianState.SP);
 	 * ```
 	 */
-	async findByState(state: string): Promise<FarmResponseDto[]> {
+	async findByState(state: string): Promise<Array<FarmResponseDto>> {
 		const farms = await this.farmRepository.find({
 			where: { state: state as BrazilianState },
 			order: { name: "ASC" },

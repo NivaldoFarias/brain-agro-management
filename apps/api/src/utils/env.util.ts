@@ -30,6 +30,23 @@ const apiEnvSchema = z.object({
 
 	/** Whether to enable database query logging */
 	API_DATABASE_LOGGING: z.stringbool().default(environmentDefaults.API_DATABASE_LOGGING),
+
+	/** CORS origin for the API */
+	API_CORS_ORIGIN: z.string().nullable().default(environmentDefaults.API_CORS_ORIGIN),
+
+	/** Throttle time-to-live in milliseconds */
+	API_THROTTLE_TTL_MS: z.coerce
+		.number()
+		.int()
+		.positive()
+		.default(environmentDefaults.API_THROTTLE_TTL_MS),
+
+	/** Throttle maximum request limit */
+	API_THROTTLE_LIMIT: z.coerce
+		.number()
+		.int()
+		.positive()
+		.default(environmentDefaults.API_THROTTLE_LIMIT),
 });
 
 /** Type-safe environment variables for the API application */

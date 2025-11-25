@@ -62,7 +62,7 @@ export class Producer {
 	 * ```
 	 */
 	@OneToMany("Farm", "producer", { lazy: true })
-	farms!: Promise<Farm[]>;
+	farms!: Promise<Array<Farm>>;
 
 	/**
 	 * Timestamp of record creation

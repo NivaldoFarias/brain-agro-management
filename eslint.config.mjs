@@ -1,11 +1,15 @@
+import eslintPluginNestJs from "@darraghor/eslint-plugin-nestjs-typed";
 import { defineConfig } from "@eslint/config-helpers";
-import eslint from "@eslint/js";
+import eslintJs from "@eslint/js";
 import eslintConfigPrettier from "eslint-config-prettier";
-import unicornPlugin from "eslint-plugin-unicorn";
+import eslintPluginUnicorn from "eslint-plugin-unicorn";
 import globals from "globals";
 import tseslint from "typescript-eslint";
 
 export default defineConfig(
+	tseslint.configs.strictTypeChecked,
+	tseslint.configs.stylisticTypeChecked,
+	eslintPluginUnicorn.configs.recommended,
 	{
 		ignores: [
 			"**/node_modules/**",
@@ -13,6 +17,7 @@ export default defineConfig(
 			"**/dist/**",
 			"**/build/**",
 			"**/*.tsbuildinfo",
+			"**/migrations/**",
 			".turbo/**",
 			"prettier.config.mjs",
 			"eslint.config.mjs",
@@ -22,7 +27,6 @@ export default defineConfig(
 		files: ["**/*.{js,cjs,mjs,ts,mts,cts}"],
 		plugins: {
 			"@typescript-eslint": tseslint.plugin,
-			"unicorn": unicornPlugin,
 		},
 		languageOptions: {
 			globals: {
@@ -45,7 +49,7 @@ export default defineConfig(
 			},
 		},
 		rules: {
-			...eslint.configs.recommended.rules,
+			...eslintJs.configs.recommended.rules,
 
 			/* ESLint Core */
 			"no-unused-vars": "off",
@@ -62,24 +66,27 @@ export default defineConfig(
 			],
 			"@typescript-eslint/no-explicit-any": "error",
 			"@typescript-eslint/no-floating-promises": "error",
+			"@typescript-eslint/array-type": ["error", { default: "generic" }],
 
-			/* Unicorn Plugin - Selected useful rules */
-			"unicorn/better-regex": "error",
-			"unicorn/catch-error-name": "error",
-			"unicorn/consistent-function-scoping": "error",
-			"unicorn/error-message": "error",
-			"unicorn/no-array-for-each": "error",
-			"unicorn/no-null": "off", // We use null in some cases
-			"unicorn/prefer-module": "error",
-			"unicorn/prefer-node-protocol": "error",
-			"unicorn/prefer-top-level-await": "error",
-			"unicorn/throw-new-error": "error",
+			/* Unicorn */
+			"unicorn/no-null": "off",
+			"unicorn/prevent-abbreviations": "off",
 		},
 	},
+	eslintPluginNestJs.configs.flatRecommended,
 	{
-		files: ["scripts/**/*.{js,ts}", "src/build.ts", "src/scripts/**/*.{js,ts}"],
-		rules: {
-			"no-console": "off",
+		files: ["*.spec.*", "*.test.*", "**/tests/**", "**/test/**"],
+		languageOptions: {
+			globals: {
+				jest: "readonly",
+				describe: "readonly",
+				it: "readonly",
+				expect: "readonly",
+				beforeEach: "readonly",
+				afterEach: "readonly",
+				beforeAll: "readonly",
+				afterAll: "readonly",
+			},
 		},
 	},
 	{

@@ -106,7 +106,7 @@ export class Farm {
 	 * through the FarmHarvest join table.
 	 */
 	@OneToMany("FarmHarvest", "farm", { lazy: true })
-	farmHarvests!: Promise<FarmHarvest[]>;
+	farmHarvests!: Promise<Array<FarmHarvest>>;
 
 	/**
 	 * Timestamp of record creation

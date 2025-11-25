@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post } from "@nestjs/common";
+import { Body, Controller, Delete, Get, HttpStatus, Param, Patch, Post } from "@nestjs/common";
 import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 
 import { CreateProducerDto, ProducerResponseDto, UpdateProducerDto } from "./dto";
@@ -41,12 +41,12 @@ export class ProducersController {
 	@Post()
 	@ApiOperation({ summary: "Create a new producer" })
 	@ApiResponse({
-		status: 201,
+		status: HttpStatus.CREATED,
 		description: "Producer created successfully",
 		type: ProducerResponseDto,
 	})
-	@ApiResponse({ status: 400, description: "Invalid input data" })
-	@ApiResponse({ status: 409, description: "Document already exists" })
+	@ApiResponse({ status: HttpStatus.BAD_REQUEST, description: "Invalid input data" })
+	@ApiResponse({ status: HttpStatus.CONFLICT, description: "Document already exists" })
 	create(@Body() createProducerDto: CreateProducerDto): Promise<ProducerResponseDto> {
 		return this.producersService.create(createProducerDto);
 	}
@@ -61,11 +61,11 @@ export class ProducersController {
 	@Get()
 	@ApiOperation({ summary: "Get all producers" })
 	@ApiResponse({
-		status: 200,
+		status: HttpStatus.OK,
 		description: "List of producers",
 		type: [ProducerResponseDto],
 	})
-	findAll(): Promise<ProducerResponseDto[]> {
+	findAll(): Promise<Array<ProducerResponseDto>> {
 		return this.producersService.findAll();
 	}
 
@@ -83,11 +83,11 @@ export class ProducersController {
 	@Get(":id")
 	@ApiOperation({ summary: "Get producer by ID" })
 	@ApiResponse({
-		status: 200,
+		status: HttpStatus.OK,
 		description: "Producer found",
 		type: ProducerResponseDto,
 	})
-	@ApiResponse({ status: 404, description: "Producer not found" })
+	@ApiResponse({ status: HttpStatus.NOT_FOUND, description: "Producer not found" })
 	findOne(@Param("id") id: string): Promise<ProducerResponseDto> {
 		return this.producersService.findOne(id);
 	}
@@ -111,13 +111,13 @@ export class ProducersController {
 	@Patch(":id")
 	@ApiOperation({ summary: "Update producer" })
 	@ApiResponse({
-		status: 200,
+		status: HttpStatus.OK,
 		description: "Producer updated successfully",
 		type: ProducerResponseDto,
 	})
-	@ApiResponse({ status: 400, description: "Invalid input data" })
-	@ApiResponse({ status: 404, description: "Producer not found" })
-	@ApiResponse({ status: 409, description: "Document already exists" })
+	@ApiResponse({ status: HttpStatus.BAD_REQUEST, description: "Invalid input data" })
+	@ApiResponse({ status: HttpStatus.NOT_FOUND, description: "Producer not found" })
+	@ApiResponse({ status: HttpStatus.CONFLICT, description: "Document already exists" })
 	update(
 		@Param("id") id: string,
 		@Body() updateProducerDto: UpdateProducerDto,
@@ -138,8 +138,8 @@ export class ProducersController {
 	 */
 	@Delete(":id")
 	@ApiOperation({ summary: "Delete producer" })
-	@ApiResponse({ status: 200, description: "Producer deleted successfully" })
-	@ApiResponse({ status: 404, description: "Producer not found" })
+	@ApiResponse({ status: HttpStatus.OK, description: "Producer deleted successfully" })
+	@ApiResponse({ status: HttpStatus.NOT_FOUND, description: "Producer not found" })
 	remove(@Param("id") id: string): Promise<void> {
 		return this.producersService.delete(id);
 	}

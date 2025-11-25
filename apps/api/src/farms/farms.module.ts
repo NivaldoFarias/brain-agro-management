@@ -2,6 +2,7 @@ import { Module } from "@nestjs/common";
 import { TypeOrmModule } from "@nestjs/typeorm";
 
 import { Farm, Producer } from "../database/entities";
+
 import { FarmsController } from "./farms.controller";
 import { FarmsService } from "./farms.service";
 

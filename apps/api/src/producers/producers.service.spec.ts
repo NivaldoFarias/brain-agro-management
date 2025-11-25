@@ -131,7 +131,7 @@ describe("ProducersService", () => {
 
 	describe("findAll", () => {
 		it("should return an array of producers", async () => {
-			const mockProducers: Producer[] = [
+			const mockProducers: Array<Producer> = [
 				{
 					id: "550e8400-e29b-41d4-a716-446655440000",
 					name: "João da Silva",

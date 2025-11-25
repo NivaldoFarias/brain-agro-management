@@ -72,7 +72,28 @@ export function createLogger(config: LoggerConfig): pino.Logger {
 		logFilePath,
 	} = config;
 
-	const defaultLogPath = `${process.cwd()}/logs/${new Date().toISOString().replace(/:/g, "-")}.pino.log`;
+	const defaultLogPath = `${process.cwd()}/logs/${new Date().toISOString().replaceAll(":", "-")}.pino.log`;
+
+	const fileTransport = {
+		target: "pino/file",
+		level: LogLevel.Debug,
+		options: {
+			destination: logFilePath ?? defaultLogPath,
+			mkdir: true,
+		},
+	};
+
+	const consoleTransport = {
+		target: "pino-pretty",
+		options: {
+			colorize: true,
+			translateTime: "HH:MM:ss Z",
+			ignore: "pid,hostname",
+		},
+	};
+
+	const shouldEnableConsoleTransport =
+		logToConsole && environment !== RuntimeEnvironment.Production;
 
 	return pino({
 		name,
@@ -86,37 +107,7 @@ export function createLogger(config: LoggerConfig): pino.Logger {
 			hostname: undefined,
 		},
 		transport: {
-			targets: [
-				/**
-				 * File transport - structured JSON logs
-				 * Creates log files in logs/ directory with filesystem-safe timestamp
-				 * Format: YYYY-MM-DDTHH-mm-ss-sssZ (colons replaced with hyphens for NTFS compatibility)
-				 */
-				{
-					target: "pino/file",
-					level: LogLevel.Debug,
-					options: {
-						destination: logFilePath ?? defaultLogPath,
-						mkdir: true,
-					},
-				},
-				/**
-				 * Console transport - pretty-printed for development
-				 * Only active when logToConsole is enabled and not in production
-				 */
-				...(logToConsole && environment !== RuntimeEnvironment.Production ?
-					[
-						{
-							target: "pino-pretty",
-							options: {
-								colorize: true,
-								translateTime: "HH:MM:ss Z",
-								ignore: "pid,hostname",
-							},
-						},
-					]
-				:	[]),
-			],
+			targets: [fileTransport, ...(shouldEnableConsoleTransport ? [consoleTransport] : [])],
 		},
 	});
 }

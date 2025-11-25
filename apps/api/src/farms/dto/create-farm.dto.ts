@@ -66,6 +66,7 @@ export class CreateFarmDto {
 		description: "Brazilian state (UF)",
 		example: "SP",
 		enum: BrazilianState,
+		enumName: "BrazilianState",
 	})
 	@IsNotEmpty({ message: "State is required" })
 	@IsEnum(BrazilianState, { message: "State must be a valid Brazilian state code" })
@@ -99,7 +100,7 @@ export class CreateFarmDto {
 	 */
 	@ApiProperty({
 		description: "Arable area in hectares",
-		example: 70.0,
+		example: 70,
 		minimum: 0,
 	})
 	@IsNotEmpty({ message: "Arable area is required" })
@@ -117,7 +118,7 @@ export class CreateFarmDto {
 	 */
 	@ApiProperty({
 		description: "Vegetation/preservation area in hectares",
-		example: 25.0,
+		example: 25,
 		minimum: 0,
 	})
 	@IsNotEmpty({ message: "Vegetation area is required" })

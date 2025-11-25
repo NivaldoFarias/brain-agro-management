@@ -19,7 +19,7 @@ import { BrazilianState } from "../../database/entities";
  *
  * // Update area measurements
  * const dto2: UpdateFarmDto = {
- *   totalArea: 120.0,
+ *   totalArea: 120,
  *   arableArea: 80.0,
  *   vegetationArea: 30.0
  * };
@@ -75,11 +75,11 @@ export class UpdateFarmDto {
 	/**
 	 * Updated total area of the farm in hectares.
 	 *
-	 * @example 120.0
+	 * @example 120
 	 */
 	@ApiPropertyOptional({
 		description: "Updated total farm area in hectares",
-		example: 120.0,
+		example: 120,
 		minimum: 0.01,
 	})
 	@IsOptional()
@@ -90,11 +90,11 @@ export class UpdateFarmDto {
 	/**
 	 * Updated arable area (área agricultável) in hectares.
 	 *
-	 * @example 80.0
+	 * @example 80
 	 */
 	@ApiPropertyOptional({
 		description: "Updated arable area in hectares",
-		example: 80.0,
+		example: 80,
 		minimum: 0,
 	})
 	@IsOptional()
@@ -105,11 +105,11 @@ export class UpdateFarmDto {
 	/**
 	 * Updated vegetation/preservation area in hectares.
 	 *
-	 * @example 30.0
+	 * @example 30
 	 */
 	@ApiPropertyOptional({
 		description: "Updated vegetation/preservation area in hectares",
-		example: 30.0,
+		example: 30,
 		minimum: 0,
 	})
 	@IsOptional()

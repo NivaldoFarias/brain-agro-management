@@ -95,7 +95,7 @@ export class ProducersService {
 	 * console.log(`Found ${producers.length} producers`);
 	 * ```
 	 */
-	async findAll(): Promise<ProducerResponseDto[]> {
+	async findAll(): Promise<Array<ProducerResponseDto>> {
 		const producers = await this.producerRepository.find({
 			order: { name: "ASC" },
 		});
@@ -214,7 +214,7 @@ export class ProducersService {
 	 * @private
 	 */
 	private validateAndStripDocument(document: string): string {
-		const digitsOnly = document.replace(/\D/g, "");
+		const digitsOnly = document.replaceAll(/\D/g, "");
 
 		if (digitsOnly.length === 11) {
 			if (!validateCPF(document)) {

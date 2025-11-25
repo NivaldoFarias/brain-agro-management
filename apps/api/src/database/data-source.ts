@@ -1,3 +1,4 @@
+import { RuntimeEnvironment } from "@agro/shared/utils";
 import { DataSource } from "typeorm";
 
 import { env } from "@/utils/env.util";
@@ -22,6 +23,6 @@ export const AppDataSource = new DataSource({
 	entities: [Producer, Farm, Harvest, FarmHarvest, FarmHarvestCrop],
 	migrations: ["./src/database/migrations/**/*.ts"],
 	// TEMPORARY: Auto-create tables in development (will use migrations in production)
-	synchronize: process.env["NODE_ENV"] !== "production",
-	logging: env.API_DATABASE_LOGGING === true,
+	synchronize: env.NODE_ENV !== RuntimeEnvironment.Production,
+	logging: env.API_DATABASE_LOGGING,
 });

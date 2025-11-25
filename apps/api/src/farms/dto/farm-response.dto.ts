@@ -73,6 +73,7 @@ export class FarmResponseDto {
 		description: "Brazilian state (UF)",
 		example: "SP",
 		enum: BrazilianState,
+		enumName: "BrazilianState",
 	})
 	@Expose()
 	state!: BrazilianState;
@@ -92,11 +93,11 @@ export class FarmResponseDto {
 	/**
 	 * Arable area (área agricultável) in hectares.
 	 *
-	 * @example 70.0
+	 * @example 70
 	 */
 	@ApiProperty({
 		description: "Arable area in hectares",
-		example: 70.0,
+		example: 70,
 	})
 	@Expose()
 	arableArea!: number;
@@ -104,11 +105,11 @@ export class FarmResponseDto {
 	/**
 	 * Vegetation/preservation area in hectares.
 	 *
-	 * @example 25.0
+	 * @example 25
 	 */
 	@ApiProperty({
 		description: "Vegetation/preservation area in hectares",
-		example: 25.0,
+		example: 25,
 	})
 	@Expose()
 	vegetationArea!: number;

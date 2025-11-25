@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post } from "@nestjs/common";
+import { Body, Controller, Delete, Get, HttpStatus, Param, Patch, Post } from "@nestjs/common";
 import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from "@nestjs/swagger";
 
 import { CreateFarmDto, FarmResponseDto, UpdateFarmDto } from "./dto";
@@ -41,12 +41,15 @@ export class FarmsController {
 	@Post()
 	@ApiOperation({ summary: "Create a new farm" })
 	@ApiResponse({
-		status: 201,
+		status: HttpStatus.CREATED,
 		description: "Farm created successfully",
 		type: FarmResponseDto,
 	})
-	@ApiResponse({ status: 400, description: "Invalid input data or area constraints violated" })
-	@ApiResponse({ status: 404, description: "Producer not found" })
+	@ApiResponse({
+		status: HttpStatus.BAD_REQUEST,
+		description: "Invalid input data or area constraints violated",
+	})
+	@ApiResponse({ status: HttpStatus.NOT_FOUND, description: "Producer not found" })
 	create(@Body() createFarmDto: CreateFarmDto): Promise<FarmResponseDto> {
 		return this.farmsService.create(createFarmDto);
 	}
@@ -61,11 +64,11 @@ export class FarmsController {
 	@Get()
 	@ApiOperation({ summary: "Get all farms" })
 	@ApiResponse({
-		status: 200,
+		status: HttpStatus.OK,
 		description: "List of farms",
 		type: [FarmResponseDto],
 	})
-	findAll(): Promise<FarmResponseDto[]> {
+	findAll(): Promise<Array<FarmResponseDto>> {
 		return this.farmsService.findAll();
 	}
 
@@ -83,11 +86,11 @@ export class FarmsController {
 	@Get(":id")
 	@ApiOperation({ summary: "Get farm by ID" })
 	@ApiResponse({
-		status: 200,
+		status: HttpStatus.OK,
 		description: "Farm found",
 		type: FarmResponseDto,
 	})
-	@ApiResponse({ status: 404, description: "Farm not found" })
+	@ApiResponse({ status: HttpStatus.NOT_FOUND, description: "Farm not found" })
 	findOne(@Param("id") id: string): Promise<FarmResponseDto> {
 		return this.farmsService.findOne(id);
 	}
@@ -104,11 +107,11 @@ export class FarmsController {
 	@Get("producer/:producerId")
 	@ApiOperation({ summary: "Get farms by producer" })
 	@ApiResponse({
-		status: 200,
+		status: HttpStatus.OK,
 		description: "List of farms for the producer",
 		type: [FarmResponseDto],
 	})
-	findByProducer(@Param("producerId") producerId: string): Promise<FarmResponseDto[]> {
+	findByProducer(@Param("producerId") producerId: string): Promise<Array<FarmResponseDto>> {
 		return this.farmsService.findByProducer(producerId);
 	}
 
@@ -125,11 +128,11 @@ export class FarmsController {
 	@ApiOperation({ summary: "Get farms by state" })
 	@ApiQuery({ name: "state", description: "Brazilian state code (UF)", example: "SP" })
 	@ApiResponse({
-		status: 200,
+		status: HttpStatus.OK,
 		description: "List of farms in the state",
 		type: [FarmResponseDto],
 	})
-	findByState(@Param("state") state: string): Promise<FarmResponseDto[]> {
+	findByState(@Param("state") state: string): Promise<Array<FarmResponseDto>> {
 		return this.farmsService.findByState(state);
 	}
 
@@ -150,12 +153,15 @@ export class FarmsController {
 	@Patch(":id")
 	@ApiOperation({ summary: "Update farm" })
 	@ApiResponse({
-		status: 200,
+		status: HttpStatus.OK,
 		description: "Farm updated successfully",
 		type: FarmResponseDto,
 	})
-	@ApiResponse({ status: 400, description: "Invalid input data or area constraints violated" })
-	@ApiResponse({ status: 404, description: "Farm or producer not found" })
+	@ApiResponse({
+		status: HttpStatus.BAD_REQUEST,
+		description: "Invalid input data or area constraints violated",
+	})
+	@ApiResponse({ status: HttpStatus.NOT_FOUND, description: "Farm or producer not found" })
 	update(@Param("id") id: string, @Body() updateFarmDto: UpdateFarmDto): Promise<FarmResponseDto> {
 		return this.farmsService.update(id, updateFarmDto);
 	}
@@ -173,8 +179,8 @@ export class FarmsController {
 	 */
 	@Delete(":id")
 	@ApiOperation({ summary: "Delete farm" })
-	@ApiResponse({ status: 200, description: "Farm deleted successfully" })
-	@ApiResponse({ status: 404, description: "Farm not found" })
+	@ApiResponse({ status: HttpStatus.OK, description: "Farm deleted successfully" })
+	@ApiResponse({ status: HttpStatus.NOT_FOUND, description: "Farm not found" })
 	remove(@Param("id") id: string): Promise<void> {
 		return this.farmsService.delete(id);
 	}
@@ -189,9 +195,9 @@ export class FarmsController {
 	@Get("stats/total-area")
 	@ApiOperation({ summary: "Get total area of all farms" })
 	@ApiResponse({
-		status: 200,
+		status: HttpStatus.OK,
 		description: "Total farm area in hectares",
-		schema: { type: "number", example: 12345.67 },
+		schema: { type: "number", example: 12_345.67 },
 	})
 	getTotalArea(): Promise<number> {
 		return this.farmsService.getTotalArea();
@@ -207,7 +213,7 @@ export class FarmsController {
 	@Get("stats/by-state")
 	@ApiOperation({ summary: "Get farm count by state" })
 	@ApiResponse({
-		status: 200,
+		status: HttpStatus.OK,
 		description: "Farm count per state",
 		schema: {
 			type: "array",
@@ -232,7 +238,7 @@ export class FarmsController {
 	@Get("stats/land-use")
 	@ApiOperation({ summary: "Get land use statistics" })
 	@ApiResponse({
-		status: 200,
+		status: HttpStatus.OK,
 		description: "Total arable and vegetation areas",
 		schema: {
 			type: "object",

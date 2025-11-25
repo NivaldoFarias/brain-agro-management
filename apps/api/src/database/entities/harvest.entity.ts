@@ -49,7 +49,7 @@ export class Harvest {
 	 * Represents which farms participated in this harvest and what crops were planted.
 	 */
 	@OneToMany("FarmHarvest", "harvest", { lazy: true })
-	farmHarvests!: Promise<FarmHarvest[]>;
+	farmHarvests!: Promise<Array<FarmHarvest>>;
 
 	/**
 	 * Timestamp of record creation

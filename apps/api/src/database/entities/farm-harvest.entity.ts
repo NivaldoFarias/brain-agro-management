@@ -66,7 +66,7 @@ export class FarmHarvest {
 	 * Crops planted in this farm during this harvest
 	 */
 	@OneToMany("FarmHarvestCrop", "farmHarvest", { lazy: true })
-	crops!: Promise<FarmHarvestCrop[]>;
+	crops!: Promise<Array<FarmHarvestCrop>>;
 
 	/**
 	 * Timestamp of record creation

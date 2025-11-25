@@ -30,5 +30,6 @@
         "forceConsistentCasingInFileNames": true,
         "isolatedModules": true
     },
+    "include": ["**/*.ts", "**/*.js", "**/*.json", "*.config.mjs"],
     "exclude": ["node_modules", "dist", "build", ".turbo"]
 }

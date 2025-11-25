@@ -5,3 +5,6 @@
  */
 
 // TODO: Setup React app with Vite
+
+// eslint-disable-next-line unicorn/require-module-specifiers
+export {};

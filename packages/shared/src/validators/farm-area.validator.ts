@@ -120,7 +120,5 @@ export function assertValidFarmArea(
 ): void {
 	const result = validateFarmArea(totalArea, arableArea, vegetationArea);
 
-	if (!result.isValid) {
-		throw new Error(result.error);
-	}
+	if (!result.isValid) throw new Error(result.error);
 }

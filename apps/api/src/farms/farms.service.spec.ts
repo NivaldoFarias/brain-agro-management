@@ -63,8 +63,8 @@ describe("FarmsService", () => {
 			city: "Campinas",
 			state: BrazilianState.SP,
 			totalArea: 100.5,
-			arableArea: 70.0,
-			vegetationArea: 25.0,
+			arableArea: 70,
+			vegetationArea: 25,
 			producerId: "550e8400-e29b-41d4-a716-446655440000",
 		};
 
@@ -74,8 +74,8 @@ describe("FarmsService", () => {
 			city: "Campinas",
 			state: BrazilianState.SP,
 			totalArea: 100.5,
-			arableArea: 70.0,
-			vegetationArea: 25.0,
+			arableArea: 70,
+			vegetationArea: 25,
 			producerId: "550e8400-e29b-41d4-a716-446655440000",
 			producer: Promise.resolve({} as Producer),
 			farmHarvests: Promise.resolve([]),
@@ -118,8 +118,8 @@ describe("FarmsService", () => {
 		it("should throw BadRequestException when area validation fails", async () => {
 			const invalidDto: CreateFarmDto = {
 				...createDto,
-				arableArea: 80.0,
-				vegetationArea: 30.0,
+				arableArea: 80,
+				vegetationArea: 30,
 			};
 
 			mockProducerRepository.exists.mockResolvedValue(true);
@@ -142,15 +142,15 @@ describe("FarmsService", () => {
 
 	describe("findAll", () => {
 		it("should return an array of farms", async () => {
-			const mockFarms: Farm[] = [
+			const mockFarms: Array<Farm> = [
 				{
 					id: "770e9600-g40d-63f6-c938-668877662222",
 					name: "Fazenda Boa Vista",
 					city: "Campinas",
 					state: BrazilianState.SP,
 					totalArea: 100.5,
-					arableArea: 70.0,
-					vegetationArea: 25.0,
+					arableArea: 70,
+					vegetationArea: 25,
 					producerId: "550e8400-e29b-41d4-a716-446655440000",
 					producer: Promise.resolve({} as Producer),
 					farmHarvests: Promise.resolve([]),
@@ -186,8 +186,8 @@ describe("FarmsService", () => {
 			city: "Campinas",
 			state: BrazilianState.SP,
 			totalArea: 100.5,
-			arableArea: 70.0,
-			vegetationArea: 25.0,
+			arableArea: 70,
+			vegetationArea: 25,
 			producerId: "550e8400-e29b-41d4-a716-446655440000",
 			producer: Promise.resolve({} as Producer),
 			farmHarvests: Promise.resolve([]),
@@ -222,8 +222,8 @@ describe("FarmsService", () => {
 			city: "Campinas",
 			state: BrazilianState.SP,
 			totalArea: 100.5,
-			arableArea: 70.0,
-			vegetationArea: 25.0,
+			arableArea: 70,
+			vegetationArea: 25,
 			producerId: "550e8400-e29b-41d4-a716-446655440000",
 			producer: Promise.resolve({} as Producer),
 			farmHarvests: Promise.resolve([]),
@@ -307,15 +307,15 @@ describe("FarmsService", () => {
 	describe("findByProducer", () => {
 		it("should return farms for a specific producer", async () => {
 			const producerId = "550e8400-e29b-41d4-a716-446655440000";
-			const mockFarms: Farm[] = [
+			const mockFarms: Array<Farm> = [
 				{
 					id: "770e9600-g40d-63f6-c938-668877662222",
 					name: "Fazenda Boa Vista",
 					city: "Campinas",
 					state: BrazilianState.SP,
 					totalArea: 100.5,
-					arableArea: 70.0,
-					vegetationArea: 25.0,
+					arableArea: 70,
+					vegetationArea: 25,
 					producerId,
 					producer: Promise.resolve({} as Producer),
 					farmHarvests: Promise.resolve([]),
@@ -339,15 +339,15 @@ describe("FarmsService", () => {
 
 	describe("findByState", () => {
 		it("should return farms for a specific state", async () => {
-			const mockFarms: Farm[] = [
+			const mockFarms: Array<Farm> = [
 				{
 					id: "770e9600-g40d-63f6-c938-668877662222",
 					name: "Fazenda Boa Vista",
 					city: "Campinas",
 					state: BrazilianState.SP,
 					totalArea: 100.5,
-					arableArea: 70.0,
-					vegetationArea: 25.0,
+					arableArea: 70,
+					vegetationArea: 25,
 					producerId: "550e8400-e29b-41d4-a716-446655440000",
 					producer: Promise.resolve({} as Producer),
 					farmHarvests: Promise.resolve([]),
