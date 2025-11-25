@@ -85,7 +85,7 @@ export class LoggingInterceptor implements NestInterceptor {
 	 * @param correlationId Correlation ID for request tracking
 	 */
 	private logRequest(request: Request, correlationId: string | undefined): void {
-		const { method, url, query, headers, body } = request;
+		const { method, url, query, headers } = request;
 
 		this.logger.info({
 			msg: "Incoming request",
@@ -96,7 +96,7 @@ export class LoggingInterceptor implements NestInterceptor {
 				query,
 				userAgent: headers["user-agent"],
 				ip: this.getClientIp(request),
-				body: this.sanitizeBody(body),
+				body: this.sanitizeBody(request.body),
 			},
 		});
 	}

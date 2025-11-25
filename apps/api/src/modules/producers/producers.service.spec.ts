@@ -11,9 +11,8 @@ import { getRepositoryToken } from "@nestjs/typeorm";
 import { fixtures, TestConstants } from "test/fixtures";
 import { Repository } from "typeorm";
 
-import { Producer } from "../database/entities";
-
 import { UpdateProducerDto } from "./dto";
+import { Producer } from "./entities/producer.entity";
 import { ProducersService } from "./producers.service";
 
 describe("ProducersService", () => {

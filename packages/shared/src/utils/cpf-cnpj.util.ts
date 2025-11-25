@@ -1,8 +1,8 @@
 import * as cnpj from "@fnando/cnpj";
 import * as cpf from "@fnando/cpf";
 
-function generateSafeCpf(format?: boolean): string {
-	const generatedCpf = cpf.generate(format);
+function generateSafeCpf(options?: { formatted?: boolean }): string {
+	const generatedCpf = cpf.generate(options?.formatted ?? false);
 
 	if (!generatedCpf || typeof generatedCpf !== "string") {
 		throw new Error("Failed to generate a valid CPF");
@@ -11,8 +11,8 @@ function generateSafeCpf(format?: boolean): string {
 	return generatedCpf;
 }
 
-function generateSafeCnpj(format?: boolean): string {
-	const generatedCnpj = cnpj.generate(format);
+function generateSafeCnpj(options?: { formatted?: boolean }): string {
+	const generatedCnpj = cnpj.generate(options?.formatted ?? false);
 
 	if (!generatedCnpj || typeof generatedCnpj !== "string") {
 		throw new Error("Failed to generate a valid CNPJ");
@@ -25,7 +25,8 @@ export const generateDocument = {
 	/**
 	 * Generate a random CPF.
 	 *
-	 * @param format if `true`, it will format using `.` and `-`
+	 * @param options
+	 * @param options.formatted if `true`, it will format using `.` and `-`
 	 *
 	 * @returns the generated CPF. ex.: `"123.456.789-09"`, if formatted is set to `true`
 	 *
@@ -33,8 +34,8 @@ export const generateDocument = {
 	 * ```typescript
 	 * import { generateDocument } from "@agro/shared/utils";
 	 *
-	 * const formattedCpf = generateDocument.cpf(true);
-	 * const unformattedCpf = generateDocument.cpf(false);
+	 * const formattedCpf = generateDocument.cpf({ formatted: true });
+	 * const unformattedCpf = generateDocument.cpf();
 	 * ```
 	 */
 	cpf: generateSafeCpf,
@@ -42,7 +43,8 @@ export const generateDocument = {
 	/**
 	 * Generate a random CNPJ.
 	 *
-	 * @param format if `true`, it will format using `.` and `-`
+	 * @param options
+	 * @param options.formatted if `true`, it will format using `.` and `-`
 	 *
 	 * @returns the generated CNPJ. ex.: `"12.345.678/0001-95"`, if formatted is set to `true`
 	 *
@@ -50,8 +52,8 @@ export const generateDocument = {
 	 * ```typescript
 	 * import { generateDocument } from "@agro/shared/utils";
 	 *
-	 * const formattedCnpj = generateDocument.cnpj(true);
-	 * const unformattedCnpj = generateDocument.cnpj(false);
+	 * const formattedCnpj = generateDocument.cnpj({ formatted: true });
+	 * const unformattedCnpj = generateDocument.cnpj();
 	 * ```
 	 */
 	cnpj: generateSafeCnpj,

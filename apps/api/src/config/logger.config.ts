@@ -1,7 +1,7 @@
-import { RuntimeEnvironment } from "@agro/shared/utils";
-
 import type { Params } from "nestjs-pino";
 import type { SerializedRequest, SerializedResponse } from "pino";
+
+import { RuntimeEnvironment } from "@agro/shared/utils";
 
 import { correlationIdStorage } from "@/common";
 import { env } from "@/config/env.config";
@@ -22,7 +22,7 @@ export function createPinoConfig(): Params {
 
 	return {
 		pinoHttp: {
-			level: env.LOG_LEVEL,
+			level: env.API__LOG_LEVEL,
 			timestamp: () => `,"time":"${new Date().toISOString()}"`,
 			formatters: {
 				level: (label) => ({ level: label }),

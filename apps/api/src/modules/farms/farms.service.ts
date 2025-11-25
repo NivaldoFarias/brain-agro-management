@@ -1,13 +1,15 @@
-import { assertValidFarmArea } from "@agro/shared/validators";
 import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 
 import type { BrazilianState } from "@/common";
 
+import { assertValidFarmArea } from "@agro/shared/validators";
+
 import { Producer } from "@/modules/producers/entities/producer.entity";
 
 import { CreateFarmDto, FarmResponseDto, UpdateFarmDto } from "./dto";
+import { FarmHarvestCrop } from "./entities/farm-harvest-crop.entity";
 import { Farm } from "./entities/farm.entity";
 
 /**
@@ -40,6 +42,8 @@ export class FarmsService {
 		private readonly farmRepository: Repository<Farm>,
 		@InjectRepository(Producer)
 		private readonly producerRepository: Repository<Producer>,
+		@InjectRepository(FarmHarvestCrop)
+		private readonly farmHarvestCropRepository: Repository<FarmHarvestCrop>,
 	) {}
 
 	/**
@@ -118,7 +122,7 @@ export class FarmsService {
 	/**
 	 * Retrieves a single farm by ID.
 	 *
-	 * @param id - The UUID of the farm to retrieve
+	 * @param id The UUID of the farm to retrieve
 	 *
 	 * @returns The farm with the specified ID
 	 *
@@ -149,8 +153,8 @@ export class FarmsService {
 	 * If area fields are being updated, validates the new area constraints.
 	 * If producerId is being updated, verifies the new producer exists.
 	 *
-	 * @param id - The UUID of the farm to update
-	 * @param updateFarmDto - The fields to update
+	 * @param id The UUID of the farm to update
+	 * @param updateFarmDto The fields to update
 	 *
 	 * @returns The updated farm
 	 *
@@ -218,7 +222,7 @@ export class FarmsService {
 	/**
 	 * Retrieves all farms owned by a specific producer.
 	 *
-	 * @param producerId - The UUID of the producer
+	 * @param producerId The UUID of the producer
 	 *
 	 * @returns Array of farms owned by the producer
 	 *
@@ -239,7 +243,7 @@ export class FarmsService {
 	/**
 	 * Retrieves all farms in a specific Brazilian state.
 	 *
-	 * @param state - The Brazilian state code (e.g., "SP", "MG")
+	 * @param state The Brazilian state code (e.g., "SP", "MG")
 	 *
 	 * @returns Array of farms in the specified state
 	 *
@@ -326,6 +330,46 @@ export class FarmsService {
 			arableArea: Number.parseFloat(result?.arableArea ?? "0") || 0,
 			vegetationArea: Number.parseFloat(result?.vegetationArea ?? "0") || 0,
 		};
+	}
+
+	/**
+	 * Gets crop distribution statistics across all farms.
+	 *
+	 * Counts the number of unique farms growing each crop type by aggregating
+	 * farm-harvest-crop associations. This provides data for the dashboard
+	 * crops distribution pie chart.
+	 *
+	 * ## Implementation Details
+	 * - Uses DISTINCT farm_harvest.farm_id to count unique farms per crop
+	 * - Joins through farm_harvest to access farm relationships
+	 * - Groups by crop_type to aggregate counts
+	 *
+	 * @returns Array of objects with crop type and count of farms growing it
+	 *
+	 * @example
+	 * ```typescript
+	 * const distribution = await service.getCropsDistribution();
+	 * // Returns: [
+	 * //   { cropType: "Soja", count: 15 },
+	 * //   { cropType: "Milho", count: 12 },
+	 * //   { cropType: "Café", count: 8 }
+	 * // ]
+	 * ```
+	 */
+	async getCropsDistribution(): Promise<Array<{ cropType: string; count: number }>> {
+		const results: Array<{ cropType: string; count: string }> = await this.farmHarvestCropRepository
+			.createQueryBuilder("fhc")
+			.innerJoin("fhc.farmHarvest", "fh")
+			.select("fhc.cropType", "cropType")
+			.addSelect("COUNT(DISTINCT fh.farmId)", "count")
+			.groupBy("fhc.cropType")
+			.orderBy("count", "DESC")
+			.getRawMany();
+
+		return results.map((result) => ({
+			cropType: result.cropType,
+			count: Number.parseInt(result.count, 10),
+		}));
 	}
 
 	/**

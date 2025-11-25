@@ -1,5 +1,8 @@
+import { faker } from "@faker-js/faker/locale/pt_BR";
 import { ApiPropertyOptional } from "@nestjs/swagger";
 import { IsOptional, IsString, Length } from "class-validator";
+
+import { generateDocument } from "@agro/shared/utils/cpf-cnpj.util";
 
 /**
  * Data Transfer Object for updating an existing rural producer.
@@ -34,7 +37,7 @@ export class UpdateProducerDto {
 	 */
 	@ApiPropertyOptional({
 		description: "Updated full name of the producer or company",
-		example: "João da Silva Santos",
+		example: faker.person.fullName(),
 		minLength: 3,
 		maxLength: 255,
 	})
@@ -54,7 +57,10 @@ export class UpdateProducerDto {
 	 */
 	@ApiPropertyOptional({
 		description: "Updated CPF (11 digits) or CNPJ (14 digits) document number",
-		example: "222.555.888-46",
+		example: faker.helpers.arrayElement([
+			generateDocument.cpf({ formatted: true }),
+			generateDocument.cnpj({ formatted: true }),
+		]),
 		minLength: 11,
 		maxLength: 18,
 	})

@@ -1,3 +1,4 @@
+import { faker } from "@faker-js/faker/locale/pt_BR";
 import { ApiProperty } from "@nestjs/swagger";
 import { Exclude, Expose } from "class-transformer";
 
@@ -34,7 +35,7 @@ export class FarmResponseDto {
 	 */
 	@ApiProperty({
 		description: "Unique identifier (UUID)",
-		example: "770e9600-g40d-63f6-c938-668877662222",
+		example: faker.string.uuid(),
 		format: "uuid",
 	})
 	@Expose()
@@ -47,7 +48,7 @@ export class FarmResponseDto {
 	 */
 	@ApiProperty({
 		description: "Name of the farm",
-		example: "Fazenda Boa Vista",
+		example: `Fazenda ${faker.location.city()}`,
 	})
 	@Expose()
 	name!: string;
@@ -59,7 +60,7 @@ export class FarmResponseDto {
 	 */
 	@ApiProperty({
 		description: "City where the farm is located",
-		example: "Campinas",
+		example: faker.location.city(),
 	})
 	@Expose()
 	city!: string;
@@ -71,7 +72,7 @@ export class FarmResponseDto {
 	 */
 	@ApiProperty({
 		description: "Brazilian state (UF)",
-		example: "SP",
+		example: faker.helpers.arrayElement(Object.values(BrazilianState)),
 		enum: BrazilianState,
 		enumName: "BrazilianState",
 	})
@@ -85,7 +86,7 @@ export class FarmResponseDto {
 	 */
 	@ApiProperty({
 		description: "Total farm area in hectares",
-		example: 100.5,
+		example: faker.number.float({ min: 50, max: 500, fractionDigits: 2 }),
 	})
 	@Expose()
 	totalArea!: number;
@@ -97,7 +98,7 @@ export class FarmResponseDto {
 	 */
 	@ApiProperty({
 		description: "Arable area in hectares",
-		example: 70,
+		example: faker.number.float({ min: 30, max: 300, fractionDigits: 2 }),
 	})
 	@Expose()
 	arableArea!: number;
@@ -109,7 +110,7 @@ export class FarmResponseDto {
 	 */
 	@ApiProperty({
 		description: "Vegetation/preservation area in hectares",
-		example: 25,
+		example: faker.number.float({ min: 10, max: 150, fractionDigits: 2 }),
 	})
 	@Expose()
 	vegetationArea!: number;
@@ -121,7 +122,7 @@ export class FarmResponseDto {
 	 */
 	@ApiProperty({
 		description: "UUID of the farm owner (producer)",
-		example: "550e8400-e29b-41d4-a716-446655440000",
+		example: faker.string.uuid(),
 		format: "uuid",
 	})
 	@Expose()
@@ -134,7 +135,7 @@ export class FarmResponseDto {
 	 */
 	@ApiProperty({
 		description: "Creation timestamp",
-		example: "2025-11-24T10:00:00.000Z",
+		example: faker.date.recent(),
 		type: Date,
 	})
 	@Expose()
@@ -147,7 +148,7 @@ export class FarmResponseDto {
 	 */
 	@ApiProperty({
 		description: "Last update timestamp",
-		example: "2025-11-24T15:30:00.000Z",
+		example: faker.date.recent(),
 		type: Date,
 	})
 	@Expose()

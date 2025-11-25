@@ -1,5 +1,8 @@
+import { faker } from "@faker-js/faker/locale/pt_BR";
 import { ApiProperty } from "@nestjs/swagger";
 import { Exclude, Expose } from "class-transformer";
+
+import { generateDocument } from "@agro/shared/utils";
 
 /**
  * Data Transfer Object for producer responses.
@@ -27,7 +30,7 @@ export class ProducerResponseDto {
 	 */
 	@ApiProperty({
 		description: "Unique identifier (UUID)",
-		example: "550e8400-e29b-41d4-a716-446655440000",
+		example: faker.string.uuid(),
 		format: "uuid",
 	})
 	@Expose()
@@ -40,7 +43,7 @@ export class ProducerResponseDto {
 	 */
 	@ApiProperty({
 		description: "Full name of the producer or company",
-		example: "João da Silva",
+		example: faker.person.fullName(),
 	})
 	@Expose()
 	name!: string;
@@ -56,7 +59,7 @@ export class ProducerResponseDto {
 	 */
 	@ApiProperty({
 		description: "CPF or CNPJ document number",
-		example: "111.444.777-35",
+		example: generateDocument.cpf({ formatted: true }),
 	})
 	@Expose()
 	document!: string;
@@ -68,7 +71,7 @@ export class ProducerResponseDto {
 	 */
 	@ApiProperty({
 		description: "Creation timestamp",
-		example: "2025-11-24T10:00:00.000Z",
+		example: faker.date.recent(),
 		type: Date,
 	})
 	@Expose()
@@ -81,7 +84,7 @@ export class ProducerResponseDto {
 	 */
 	@ApiProperty({
 		description: "Last update timestamp",
-		example: "2025-11-24T15:30:00.000Z",
+		example: faker.date.recent(),
 		type: Date,
 	})
 	@Expose()

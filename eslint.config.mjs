@@ -73,6 +73,9 @@ export default defineConfig(
 			/* Unicorn */
 			"unicorn/no-null": "off",
 			"unicorn/prevent-abbreviations": "off",
+
+			/* NestJS Typed */
+			"@darraghor/nestjs-typed/injectable-should-be-provided": "off",
 		},
 	},
 	eslintPluginNestJs.configs.flatRecommended,

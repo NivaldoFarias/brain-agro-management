@@ -1,3 +1,4 @@
+import { faker } from "@faker-js/faker/locale/pt_BR";
 import { ApiProperty } from "@nestjs/swagger";
 import { IsEnum, IsNotEmpty, IsNumber, IsString, IsUUID, Length, Min } from "class-validator";
 
@@ -31,7 +32,7 @@ export class CreateFarmDto {
 	 */
 	@ApiProperty({
 		description: "Name of the farm",
-		example: "Fazenda Boa Vista",
+		example: `Fazenda ${faker.location.city()}`,
 		minLength: 3,
 		maxLength: 255,
 	})
@@ -50,7 +51,7 @@ export class CreateFarmDto {
 	 */
 	@ApiProperty({
 		description: "City where the farm is located (must exist in the specified state)",
-		example: "Campinas",
+		example: faker.location.city(),
 		minLength: 2,
 		maxLength: 100,
 	})
@@ -69,7 +70,7 @@ export class CreateFarmDto {
 	 */
 	@ApiProperty({
 		description: "Brazilian state (UF)",
-		example: "SP",
+		example: faker.helpers.arrayElement(Object.values(BrazilianState)),
 		enum: BrazilianState,
 		enumName: "BrazilianState",
 	})
@@ -87,7 +88,7 @@ export class CreateFarmDto {
 	 */
 	@ApiProperty({
 		description: "Total farm area in hectares",
-		example: 100.5,
+		example: faker.number.float({ min: 50, max: 500, fractionDigits: 2 }),
 		minimum: 0.01,
 	})
 	@IsNotEmpty({ message: "Total area is required" })
@@ -105,7 +106,7 @@ export class CreateFarmDto {
 	 */
 	@ApiProperty({
 		description: "Arable area in hectares",
-		example: 70,
+		example: faker.number.float({ min: 30, max: 300, fractionDigits: 2 }),
 		minimum: 0,
 	})
 	@IsNotEmpty({ message: "Arable area is required" })
@@ -123,7 +124,7 @@ export class CreateFarmDto {
 	 */
 	@ApiProperty({
 		description: "Vegetation/preservation area in hectares",
-		example: 25,
+		example: faker.number.float({ min: 10, max: 150, fractionDigits: 2 }),
 		minimum: 0,
 	})
 	@IsNotEmpty({ message: "Vegetation area is required" })
@@ -140,7 +141,7 @@ export class CreateFarmDto {
 	 */
 	@ApiProperty({
 		description: "UUID of the farm owner (producer)",
-		example: "550e8400-e29b-41d4-a716-446655440000",
+		example: faker.string.uuid(),
 		format: "uuid",
 	})
 	@IsNotEmpty({ message: "Producer ID is required" })

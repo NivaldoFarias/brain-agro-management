@@ -10,9 +10,10 @@
  * @module DatabaseSeeds
  */
 
-import { createLogger, LogLevel, RuntimeEnvironment } from "@agro/shared/utils";
 import { faker } from "@faker-js/faker/locale/pt_BR";
 import { DataSource } from "typeorm";
+
+import { createLogger, generateDocument, LogLevel, RuntimeEnvironment } from "@agro/shared/utils";
 
 import { BrazilianState, CropType } from "@/common/enums/enums";
 import { AppDataSource } from "@/config/database.config";
@@ -156,14 +157,11 @@ async function seedDatabase(connection: DataSource): Promise<void> {
 		const isCompany = faker.datatype.boolean({ probability: 0.3 });
 
 		/**
-		 * Generate valid document numbers.
-		 * CPF: 11 digits for individuals
-		 * CNPJ: 14 digits for companies
+		 * Generate valid document numbers using shared utility.
+		 * CPF: 11 digits for individuals (with valid check digits)
+		 * CNPJ: 14 digits for companies (with valid check digits)
 		 */
-		const document =
-			isCompany ?
-				faker.string.numeric({ length: 14, allowLeadingZeros: true })
-			:	faker.string.numeric({ length: 11, allowLeadingZeros: true });
+		const document = isCompany ? generateDocument.cnpj() : generateDocument.cpf();
 
 		const producer = producerRepository.create({
 			name: isCompany ? faker.company.name() : faker.person.fullName(),

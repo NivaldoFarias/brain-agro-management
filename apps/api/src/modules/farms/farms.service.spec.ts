@@ -11,9 +11,12 @@ import { getRepositoryToken } from "@nestjs/typeorm";
 import { fixtures, TestConstants } from "test/fixtures";
 import { Repository } from "typeorm";
 
-import { BrazilianState, Farm, Producer } from "../database/entities";
+import { BrazilianState } from "@/common";
+import { Producer } from "@/modules/producers/entities/producer.entity";
 
 import { CreateFarmDto, UpdateFarmDto } from "./dto";
+import { FarmHarvestCrop } from "./entities/farm-harvest-crop.entity";
+import { Farm } from "./entities/farm.entity";
 import { FarmsService } from "./farms.service";
 
 describe("FarmsService", () => {
@@ -37,6 +40,10 @@ describe("FarmsService", () => {
 		exists: jest.fn(),
 	};
 
+	const mockFarmHarvestCropRepository = {
+		createQueryBuilder: jest.fn(),
+	};
+
 	beforeEach(async () => {
 		const module: TestingModule = await Test.createTestingModule({
 			providers: [
@@ -48,6 +55,10 @@ describe("FarmsService", () => {
 				{
 					provide: getRepositoryToken(Producer),
 					useValue: mockProducerRepository,
+				},
+				{
+					provide: getRepositoryToken(FarmHarvestCrop),
+					useValue: mockFarmHarvestCropRepository,
 				},
 			],
 		}).compile();
@@ -469,6 +480,55 @@ describe("FarmsService", () => {
 				arableArea: 0,
 				vegetationArea: 0,
 			});
+		});
+	});
+
+	describe("getCropsDistribution", () => {
+		it("should return crop distribution statistics", async () => {
+			const mockQueryBuilder = {
+				innerJoin: jest.fn().mockReturnThis(),
+				select: jest.fn().mockReturnThis(),
+				addSelect: jest.fn().mockReturnThis(),
+				groupBy: jest.fn().mockReturnThis(),
+				orderBy: jest.fn().mockReturnThis(),
+				getRawMany: jest.fn().mockResolvedValue([
+					{ cropType: "Soja", count: "15" },
+					{ cropType: "Milho", count: "12" },
+					{ cropType: "Café", count: "8" },
+				]),
+			};
+
+			mockFarmHarvestCropRepository.createQueryBuilder.mockReturnValue(mockQueryBuilder);
+
+			const result = await service.getCropsDistribution();
+
+			expect(result).toEqual([
+				{ cropType: "Soja", count: 15 },
+				{ cropType: "Milho", count: 12 },
+				{ cropType: "Café", count: 8 },
+			]);
+			expect(mockQueryBuilder.innerJoin).toHaveBeenCalledWith("fhc.farmHarvest", "fh");
+			expect(mockQueryBuilder.select).toHaveBeenCalledWith("fhc.cropType", "cropType");
+			expect(mockQueryBuilder.addSelect).toHaveBeenCalledWith("COUNT(DISTINCT fh.farmId)", "count");
+			expect(mockQueryBuilder.groupBy).toHaveBeenCalledWith("fhc.cropType");
+			expect(mockQueryBuilder.orderBy).toHaveBeenCalledWith("count", "DESC");
+		});
+
+		it("should return empty array when no crops exist", async () => {
+			const mockQueryBuilder = {
+				innerJoin: jest.fn().mockReturnThis(),
+				select: jest.fn().mockReturnThis(),
+				addSelect: jest.fn().mockReturnThis(),
+				groupBy: jest.fn().mockReturnThis(),
+				orderBy: jest.fn().mockReturnThis(),
+				getRawMany: jest.fn().mockResolvedValue([]),
+			};
+
+			mockFarmHarvestCropRepository.createQueryBuilder.mockReturnValue(mockQueryBuilder);
+
+			const result = await service.getCropsDistribution();
+
+			expect(result).toEqual([]);
 		});
 	});
 });

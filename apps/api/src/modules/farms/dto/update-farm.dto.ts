@@ -1,3 +1,4 @@
+import { faker } from "@faker-js/faker/locale/pt_BR";
 import { ApiPropertyOptional } from "@nestjs/swagger";
 import { IsEnum, IsNumber, IsOptional, IsString, IsUUID, Length, Min } from "class-validator";
 
@@ -33,7 +34,7 @@ export class UpdateFarmDto {
 	 */
 	@ApiPropertyOptional({
 		description: "Updated name of the farm",
-		example: "Fazenda Boa Vista II",
+		example: `Fazenda ${faker.location.city()}`,
 		minLength: 3,
 		maxLength: 255,
 	})
@@ -49,7 +50,7 @@ export class UpdateFarmDto {
 	 */
 	@ApiPropertyOptional({
 		description: "Updated city where the farm is located",
-		example: "São Paulo",
+		example: faker.location.city(),
 		minLength: 2,
 		maxLength: 100,
 	})
@@ -65,7 +66,7 @@ export class UpdateFarmDto {
 	 */
 	@ApiPropertyOptional({
 		description: "Updated Brazilian state (UF)",
-		example: "RJ",
+		example: faker.helpers.arrayElement(Object.values(BrazilianState)),
 		enum: BrazilianState,
 	})
 	@IsOptional()
@@ -79,7 +80,7 @@ export class UpdateFarmDto {
 	 */
 	@ApiPropertyOptional({
 		description: "Updated total farm area in hectares",
-		example: 120,
+		example: faker.number.float({ min: 50, max: 500, fractionDigits: 2 }),
 		minimum: 0.01,
 	})
 	@IsOptional()
@@ -94,7 +95,7 @@ export class UpdateFarmDto {
 	 */
 	@ApiPropertyOptional({
 		description: "Updated arable area in hectares",
-		example: 80,
+		example: faker.number.float({ min: 30, max: 300, fractionDigits: 2 }),
 		minimum: 0,
 	})
 	@IsOptional()
@@ -109,7 +110,7 @@ export class UpdateFarmDto {
 	 */
 	@ApiPropertyOptional({
 		description: "Updated vegetation/preservation area in hectares",
-		example: 30,
+		example: faker.number.float({ min: 10, max: 150, fractionDigits: 2 }),
 		minimum: 0,
 	})
 	@IsOptional()
@@ -124,7 +125,7 @@ export class UpdateFarmDto {
 	 */
 	@ApiPropertyOptional({
 		description: "Updated UUID of the farm owner (producer)",
-		example: "660e9500-f30c-52e5-b827-557766551111",
+		example: faker.string.uuid(),
 		format: "uuid",
 	})
 	@IsOptional()

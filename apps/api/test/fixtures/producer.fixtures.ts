@@ -1,7 +1,8 @@
-import { generateDocument } from "@agro/shared/utils";
 import { faker } from "@faker-js/faker/locale/pt_BR";
 
 import type { CreateProducerDto } from "@/modules/producers/dto";
+
+import { generateDocument } from "@agro/shared/utils";
 
 /**
  * Producer test data fixtures using Faker.
@@ -27,7 +28,7 @@ export const producerFixtures = {
 	validCPF(): CreateProducerDto {
 		return {
 			name: faker.person.fullName(),
-			document: generateDocument.cpf(true),
+			document: generateDocument.cpf({ formatted: true }),
 		};
 	},
 
@@ -41,7 +42,7 @@ export const producerFixtures = {
 	validCNPJ(): CreateProducerDto {
 		return {
 			name: faker.company.name(),
-			document: generateDocument.cnpj(true),
+			document: generateDocument.cnpj({ formatted: true }),
 		};
 	},
 
@@ -55,7 +56,7 @@ export const producerFixtures = {
 	withName(name: string): CreateProducerDto {
 		return {
 			name,
-			document: generateDocument.cpf(true),
+			document: generateDocument.cpf({ formatted: true }),
 		};
 	},
 

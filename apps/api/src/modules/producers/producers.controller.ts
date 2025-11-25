@@ -1,5 +1,5 @@
 import { Body, Controller, Delete, Get, HttpStatus, Param, Patch, Post } from "@nestjs/common";
-import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
+import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 
 import { CreateProducerDto, ProducerResponseDto, UpdateProducerDto } from "./dto";
 import { ProducersService } from "./producers.service";
@@ -11,6 +11,10 @@ import { ProducersService } from "./producers.service";
  * comprehensive OpenAPI documentation. All endpoints validate inputs
  * using DTOs and return standardized response objects.
  *
+ * ## Authentication
+ * All endpoints will require JWT authentication in production.
+ * Currently documented with @ApiBearerAuth for API specification.
+ *
  * @example
  * ```typescript
  * // Usage in NestJS module
@@ -21,6 +25,7 @@ import { ProducersService } from "./producers.service";
  * ```
  */
 @ApiTags("Producers")
+@ApiBearerAuth("JWT-auth")
 @Controller("producers")
 export class ProducersController {
 	constructor(private readonly producersService: ProducersService) {}

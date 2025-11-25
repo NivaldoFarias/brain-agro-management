@@ -1,10 +1,4 @@
 import {
-	stripCNPJFormatting,
-	stripCPFFormatting,
-	validateCNPJ,
-	validateCPF,
-} from "@agro/shared/validators";
-import {
 	BadRequestException,
 	ConflictException,
 	Injectable,
@@ -12,6 +6,13 @@ import {
 } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
+
+import {
+	stripCNPJFormatting,
+	stripCPFFormatting,
+	validateCNPJ,
+	validateCPF,
+} from "@agro/shared/validators";
 
 import { CreateProducerDto, ProducerResponseDto, UpdateProducerDto } from "./dto";
 import { Producer } from "./entities/producer.entity";
@@ -216,16 +217,14 @@ export class ProducersService {
 		const digitsOnly = document.replaceAll(/\D/g, "");
 
 		if (digitsOnly.length === 11) {
-			if (!validateCPF(document)) {
-				throw new BadRequestException("Invalid CPF format");
-			}
+			if (!validateCPF(document)) throw new BadRequestException("Invalid CPF format");
+
 			return stripCPFFormatting(document);
 		}
 
 		if (digitsOnly.length === 14) {
-			if (!validateCNPJ(document)) {
-				throw new BadRequestException("Invalid CNPJ format");
-			}
+			if (!validateCNPJ(document)) throw new BadRequestException("Invalid CNPJ format");
+
 			return stripCNPJFormatting(document);
 		}
 

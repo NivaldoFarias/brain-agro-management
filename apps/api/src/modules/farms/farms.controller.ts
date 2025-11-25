@@ -1,5 +1,5 @@
 import { Body, Controller, Delete, Get, HttpStatus, Param, Patch, Post } from "@nestjs/common";
-import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from "@nestjs/swagger";
+import { ApiBearerAuth, ApiOperation, ApiQuery, ApiResponse, ApiTags } from "@nestjs/swagger";
 
 import { CreateFarmDto, FarmResponseDto, UpdateFarmDto } from "./dto";
 import { FarmsService } from "./farms.service";
@@ -11,6 +11,10 @@ import { FarmsService } from "./farms.service";
  * query endpoints for filtering and dashboard statistics. All endpoints
  * validate inputs using DTOs and return standardized response objects.
  *
+ * ## Authentication
+ * All endpoints will require JWT authentication in production.
+ * Currently documented with @ApiBearerAuth for API specification.
+ *
  * @example
  * ```typescript
  * // Usage in NestJS module
@@ -21,6 +25,7 @@ import { FarmsService } from "./farms.service";
  * ```
  */
 @ApiTags("Farms")
+@ApiBearerAuth("JWT-auth")
 @Controller("farms")
 export class FarmsController {
 	constructor(private readonly farmsService: FarmsService) {}
@@ -77,7 +82,7 @@ export class FarmsController {
 	 *
 	 * Includes the farm's associated producer information.
 	 *
-	 * @param id - UUID of the farm to retrieve
+	 * @param id UUID of the farm to retrieve
 	 *
 	 * @returns The farm with the specified ID
 	 *
@@ -100,7 +105,7 @@ export class FarmsController {
 	 *
 	 * Returns all farms owned by the specified producer.
 	 *
-	 * @param producerId - UUID of the producer
+	 * @param producerId UUID of the producer
 	 *
 	 * @returns Array of farms belonging to the producer
 	 */
@@ -120,7 +125,7 @@ export class FarmsController {
 	 *
 	 * Filters farms by the two-letter state code (UF).
 	 *
-	 * @param state - Two-letter Brazilian state code (e.g., "SP", "MG")
+	 * @param state Two-letter Brazilian state code (e.g., "SP", "MG")
 	 *
 	 * @returns Array of farms in the specified state
 	 */
@@ -142,8 +147,8 @@ export class FarmsController {
 	 * Allows partial updates - only provided fields will be updated.
 	 * Validates area constraints with the merged data.
 	 *
-	 * @param id - UUID of the farm to update
-	 * @param updateFarmDto - Fields to update
+	 * @param id UUID of the farm to update
+	 * @param updateFarmDto Fields to update
 	 *
 	 * @returns The updated farm
 	 *
@@ -171,7 +176,7 @@ export class FarmsController {
 	 *
 	 * Also deletes all associated farm-harvest records due to CASCADE constraint.
 	 *
-	 * @param id - UUID of the farm to delete
+	 * @param id UUID of the farm to delete
 	 *
 	 * @returns Void on successful deletion
 	 *
@@ -250,5 +255,31 @@ export class FarmsController {
 	})
 	getLandUseStats(): Promise<{ arableArea: number; vegetationArea: number }> {
 		return this.farmsService.getLandUseStats();
+	}
+
+	/**
+	 * Gets crop distribution statistics.
+	 *
+	 * Dashboard endpoint that returns the count of farms growing each crop type.
+	 * Used for the crops distribution pie chart on the dashboard.
+	 *
+	 * @returns Array of objects with crop type and farm count
+	 */
+	@Get("stats/crops-distribution")
+	@ApiOperation({ summary: "Get crop distribution across farms" })
+	@ApiResponse({
+		status: HttpStatus.OK,
+		description: "Number of farms growing each crop type",
+		schema: {
+			type: "array",
+			example: [
+				{ cropType: "Soja", count: 15 },
+				{ cropType: "Milho", count: 12 },
+				{ cropType: "Café", count: 8 },
+			],
+		},
+	})
+	getCropsDistribution(): Promise<Array<{ cropType: string; count: number }>> {
+		return this.farmsService.getCropsDistribution();
 	}
 }

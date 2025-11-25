@@ -1,5 +1,5 @@
 import { ArgumentsHost, Catch, HttpException, HttpStatus } from "@nestjs/common";
-import { PinoLogger } from "nestjs-pino";
+import { Logger } from "nestjs-pino";
 
 import type { ExceptionFilter } from "@nestjs/common";
 import type { Request, Response } from "express";
@@ -46,9 +46,7 @@ interface ErrorResponse {
  */
 @Catch()
 export class HttpExceptionFilter implements ExceptionFilter {
-	constructor(private readonly logger: PinoLogger) {
-		this.logger.setContext(HttpExceptionFilter.name);
-	}
+	constructor(private readonly logger: Logger) {}
 
 	/**
 	 * Catches and processes all exceptions thrown during request handling.
@@ -123,6 +121,11 @@ export class HttpExceptionFilter implements ExceptionFilter {
 	/**
 	 * Logs exception with full context for debugging.
 	 *
+	 * Logging strategy:
+	 * - 404 errors: Debug level (common, not actionable)
+	 * - 4xx errors: Warn level without stack trace (client errors)
+	 * - 5xx errors: Error level with full stack trace (server errors)
+	 *
 	 * @param exception - Exception that was thrown
 	 * @param request - Express request object
 	 * @param correlationId - Correlation ID for request tracking
@@ -132,14 +135,24 @@ export class HttpExceptionFilter implements ExceptionFilter {
 		exception: unknown,
 		request: Request,
 		correlationId: string | undefined,
-		statusCode: number,
+		statusCode: HttpStatus,
 	): void {
-		const { method, url, headers, body, query } = request;
+		const { method, url, headers, query } = request;
 
-		const logLevel = statusCode >= 500 ? "error" : "warn";
+		// Skip verbose logging for common 404 errors (routes not found)
+		if (statusCode === HttpStatus.NOT_FOUND) {
+			this.logger.debug({
+				msg: "Route not found",
+				correlationId,
+				http: { method, url, statusCode },
+			});
+			return;
+		}
+
+		const isServerError = statusCode >= HttpStatus.INTERNAL_SERVER_ERROR;
 
 		const logData = {
-			msg: "Exception caught",
+			msg: isServerError ? "Server error occurred" : "Client error occurred",
 			correlationId,
 			http: {
 				method,
@@ -151,14 +164,13 @@ export class HttpExceptionFilter implements ExceptionFilter {
 			exception: {
 				name: exception instanceof Error ? exception.name : "Unknown",
 				message: exception instanceof Error ? exception.message : String(exception),
-				stack: exception instanceof Error ? exception.stack : undefined,
+				...(isServerError && exception instanceof Error && { stack: exception.stack }),
 			},
-			// Include request body for 4xx errors (client errors)
-			...(statusCode >= HttpStatus.BAD_REQUEST &&
-				statusCode < HttpStatus.INTERNAL_SERVER_ERROR && { requestBody: body }),
+			...(!isServerError &&
+				statusCode >= HttpStatus.BAD_REQUEST && { requestBody: request.body as unknown }),
 		};
 
-		if (logLevel === "error") {
+		if (isServerError) {
 			this.logger.error(logData);
 		} else {
 			this.logger.warn(logData);

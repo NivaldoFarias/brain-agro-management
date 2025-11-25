@@ -1,5 +1,5 @@
 import { Module } from "@nestjs/common";
-import { APP_GUARD, APP_INTERCEPTOR } from "@nestjs/core";
+import { APP_GUARD, APP_INTERCEPTOR, Reflector } from "@nestjs/core";
 import { ThrottlerGuard, ThrottlerModule } from "@nestjs/throttler";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { LoggerModule } from "nestjs-pino";
@@ -7,10 +7,13 @@ import { LoggerModule } from "nestjs-pino";
 import { env } from "@/config/env.config";
 import { createPinoConfig } from "@/config/logger.config";
 
+import { AppController } from "./app.controller";
+import { JwtAuthGuard } from "./common/guards/jwt-auth.guard";
 import { CorrelationIdInterceptor } from "./common/interceptors/correlation-id.interceptor";
 import { LoggingInterceptor } from "./common/interceptors/logging.interceptor";
 import { TransformInterceptor } from "./common/interceptors/transform.interceptor";
 import { AppDataSource } from "./config/database.config";
+import { AuthModule } from "./modules/auth/auth.module";
 import { FarmsModule } from "./modules/farms/farms.module";
 import { HealthModule } from "./modules/health/health.module";
 import { ProducersModule } from "./modules/producers/producers.module";
@@ -35,15 +38,17 @@ import { ProducersModule } from "./modules/producers/producers.module";
 		LoggerModule.forRoot(createPinoConfig()),
 		ThrottlerModule.forRoot([
 			{
-				ttl: env.API_THROTTLE_TTL_MS,
-				limit: env.API_THROTTLE_LIMIT,
+				ttl: env.API__THROTTLE_TTL_MS,
+				limit: env.API__THROTTLE_LIMIT,
 			},
 		]),
 		TypeOrmModule.forRoot(AppDataSource.options),
+		AuthModule,
 		HealthModule,
 		ProducersModule,
 		FarmsModule,
 	],
+	controllers: [AppController],
 	providers: [
 		{
 			provide: APP_INTERCEPTOR,
@@ -60,6 +65,11 @@ import { ProducersModule } from "./modules/producers/producers.module";
 		{
 			provide: APP_GUARD,
 			useClass: ThrottlerGuard,
+		},
+		{
+			provide: APP_GUARD,
+			useFactory: (reflector: Reflector) => new JwtAuthGuard(reflector),
+			inject: [Reflector],
 		},
 	],
 })

@@ -14,10 +14,10 @@ const webEnvSchema = z.object({
 	NODE_ENV: z.enum(RuntimeEnvironment).default(environmentDefaults.NODE_ENV),
 
 	/** Logging level for the application */
-	LOG_LEVEL: z.enum(LogLevel).default(environmentDefaults.LOG_LEVEL),
+	API__LOG_LEVEL: z.enum(LogLevel).default(environmentDefaults.API__LOG_LEVEL),
 
 	/** Whether to enable console logging */
-	LOG_TO_CONSOLE: z.stringbool().default(environmentDefaults.LOG_TO_CONSOLE),
+	API__LOG_TO_CONSOLE: z.stringbool().default(environmentDefaults.API__LOG_TO_CONSOLE),
 
 	/** API base URL for backend requests */
 	VITE_API_BASE_URL: z.url().default(environmentDefaults.VITE_API_BASE_URL),

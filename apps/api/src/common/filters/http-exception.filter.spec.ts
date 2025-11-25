@@ -1,5 +1,5 @@
 import { BadRequestException, HttpException, HttpStatus } from "@nestjs/common";
-import { PinoLogger } from "nestjs-pino";
+import { Logger } from "nestjs-pino";
 
 import type { ArgumentsHost } from "@nestjs/common";
 
@@ -15,7 +15,7 @@ import { HttpExceptionFilter } from "./http-exception.filter";
  */
 describe("HttpExceptionFilter", () => {
 	let filter: HttpExceptionFilter;
-	let logger: jest.Mocked<PinoLogger>;
+	let logger: jest.Mocked<Logger>;
 	let mockResponse: {
 		status: jest.Mock;
 		json: jest.Mock;
@@ -31,10 +31,10 @@ describe("HttpExceptionFilter", () => {
 
 	beforeEach(() => {
 		logger = {
-			setContext: jest.fn(),
 			error: jest.fn(),
 			warn: jest.fn(),
-		} as unknown as jest.Mocked<PinoLogger>;
+			debug: jest.fn(),
+		} as unknown as jest.Mocked<Logger>;
 
 		mockResponse = {
 			status: jest.fn().mockReturnThis(),

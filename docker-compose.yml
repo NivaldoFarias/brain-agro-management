@@ -1,0 +1,56 @@
+services:
+  api:
+    build:
+      context: ../..
+      dockerfile: apps/api/Dockerfile
+    container_name: brain-ag-api
+    ports:
+      - "${API_PORT:-3000}:3000"
+    environment:
+      NODE_ENV: ${NODE_ENV:-development}
+      API_PORT: ${API_PORT:-3000}
+      API_CORS_ORIGIN: ${API_CORS_ORIGIN:-http://localhost:5173}
+      API_DATABASE_PATH: ${API_DATABASE_PATH:-./data/brain-ag.db}
+      DB_SYNCHRONIZE: ${DB_SYNCHRONIZE:-false}
+      DB_MIGRATIONS_RUN: ${DB_MIGRATIONS_RUN:-true}
+      LOG_LEVEL: ${LOG_LEVEL:-info}
+    volumes:
+      - api-data:/app/apps/api/data
+      - api-logs:/app/apps/api/logs
+      # Development: mount source code for hot reload (optional)
+      # - ../../apps/api/src:/app/apps/api/src:ro
+    networks:
+      - brain-ag-network
+    restart: unless-stopped
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:3000/api/health" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+  # Frontend web service (placeholder for future)
+  # web:
+  #   build:
+  #     context: ../..
+  #     dockerfile: apps/web/Dockerfile
+  #   container_name: brain-ag-web
+  #   ports:
+  #     - "5173:80"
+  #   depends_on:
+  #     - api
+  #   networks:
+  #     - brain-ag-network
+  #   restart: unless-stopped
+
+networks:
+  brain-ag-network:
+    driver: bridge
+    name: brain-ag-network
+
+volumes:
+  api-data:
+    name: brain-ag-api-data
+    driver: local
+  api-logs:
+    name: brain-ag-api-logs
+    driver: local

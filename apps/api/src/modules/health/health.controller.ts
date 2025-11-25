@@ -4,6 +4,8 @@ import { HealthCheck, HealthCheckService, TypeOrmHealthIndicator } from "@nestjs
 
 import type { HealthCheckResult } from "@nestjs/terminus";
 
+import { Public } from "@/common/decorators/public.decorator";
+
 /**
  * Health check controller for monitoring application status.
  *
@@ -17,6 +19,7 @@ import type { HealthCheckResult } from "@nestjs/terminus";
  * curl http://localhost:3000/api/health/ready
  * ```
  */
+@Public()
 @ApiTags("Health")
 @Controller("health")
 export class HealthController {
