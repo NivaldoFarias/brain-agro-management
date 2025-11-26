@@ -8,6 +8,29 @@ import { LogLevel, RuntimeEnvironment } from "@agro/shared/utils";
 
 import { description, version } from "../../package.json";
 
+/**
+ * Route constants for Brain Agriculture application.
+ *
+ * Centralized route definitions to avoid magic strings and enable
+ * type-safe navigation throughout the application.
+ */
+export const ROUTES = {
+	home: "/",
+	dashboard: "/dashboard",
+	producers: {
+		list: "/producers",
+		create: "/producers/new",
+		edit: (id: string): string => `/producers/${id}/edit`,
+		view: (id: string): string => `/producers/${id}`,
+	},
+	farms: {
+		list: "/farms",
+		create: "/farms/new",
+		edit: (id: string): string => `/farms/${id}/edit`,
+		view: (id: string): string => `/farms/${id}`,
+	},
+} as const;
+
 /** Application metadata */
 export const APP_INFO = {
 	/** Application name */

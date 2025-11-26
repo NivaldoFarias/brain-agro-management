@@ -2,6 +2,9 @@ import eslintPluginNestJs from "@darraghor/eslint-plugin-nestjs-typed";
 import { defineConfig } from "@eslint/config-helpers";
 import eslintJs from "@eslint/js";
 import eslintConfigPrettier from "eslint-config-prettier";
+import eslintPluginJsxA11y from "eslint-plugin-jsx-a11y";
+import eslintPluginReact from "eslint-plugin-react";
+import eslintPluginReactHooks from "eslint-plugin-react-hooks";
 import eslintPluginUnicorn from "eslint-plugin-unicorn";
 import globals from "globals";
 import tseslint from "typescript-eslint";
@@ -82,9 +85,66 @@ export default defineConfig(
 		plugins: {
 			"@darraghor/nestjs-typed": eslintPluginNestJs.plugin,
 		},
+		languageOptions: {
+			parser: tseslint.parser,
+			parserOptions: {
+				project: ["./apps/api/tsconfig.json"],
+				tsconfigRootDir: import.meta.dirname,
+			},
+		},
 		extends: [eslintPluginNestJs.configs.flatRecommended],
 		rules: {
 			"@darraghor/nestjs-typed/injectable-should-be-provided": "off",
+		},
+	},
+	{
+		files: ["apps/web/**/*.{js,jsx,ts,tsx,mts,cts}"],
+		plugins: {
+			"react": eslintPluginReact,
+			"react-hooks": eslintPluginReactHooks,
+			"jsx-a11y": eslintPluginJsxA11y,
+		},
+		languageOptions: {
+			globals: {
+				...globals.browser,
+			},
+			parser: tseslint.parser,
+			parserOptions: {
+				ecmaFeatures: {
+					jsx: true,
+				},
+				project: ["./apps/web/tsconfig.json"],
+				tsconfigRootDir: import.meta.dirname,
+			},
+		},
+		settings: {
+			react: {
+				version: "detect",
+			},
+		},
+		rules: {
+			...eslintPluginReact.configs.recommended.rules,
+			...eslintPluginReact.configs["jsx-runtime"].rules,
+			...eslintPluginReactHooks.configs.recommended.rules,
+			...eslintPluginJsxA11y.configs.recommended.rules,
+
+			"react/prop-types": "off",
+			"react-hooks/rules-of-hooks": "error",
+			"react-hooks/exhaustive-deps": "warn",
+			"jsx-a11y/anchor-is-valid": "warn",
+
+			"@typescript-eslint/array-type": ["error", { default: "array" }],
+
+			"unicorn/prevent-abbreviations": "off",
+			"unicorn/filename-case": [
+				"error",
+				{
+					cases: {
+						camelCase: true,
+						pascalCase: true,
+					},
+				},
+			],
 		},
 	},
 	{

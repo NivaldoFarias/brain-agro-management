@@ -1,3 +1,5 @@
+import process from "node:process";
+
 import pino from "pino";
 
 import { LogLevel, RuntimeEnvironment } from "./constants.util";
@@ -72,7 +74,7 @@ export function createLogger(config: LoggerConfig): pino.Logger {
 		logFilePath,
 	} = config;
 
-	const defaultLogPath = `${process.cwd()}/logs/${new Date().toISOString().replaceAll(":", "-")}.pino.log`;
+	const defaultLogPath = `${import.meta.dirname}/logs/${new Date().toISOString().replaceAll(":", "-")}.pino.log`;
 
 	const fileTransport = {
 		target: "pino/file",
@@ -95,6 +97,14 @@ export function createLogger(config: LoggerConfig): pino.Logger {
 	const shouldEnableConsoleTransport =
 		logToConsole && environment !== RuntimeEnvironment.Production;
 
+	// Use try-catch to handle Vite externalization in browser context
+	let processId: number;
+	try {
+		processId = process.pid;
+	} catch {
+		processId = Math.floor(Math.random() * 10_000);
+	}
+
 	return pino({
 		name,
 		level,
@@ -103,7 +113,7 @@ export function createLogger(config: LoggerConfig): pino.Logger {
 			err: pino.stdSerializers.err,
 		},
 		base: {
-			pid: process.pid,
+			pid: processId,
 			hostname: undefined,
 		},
 		transport: {

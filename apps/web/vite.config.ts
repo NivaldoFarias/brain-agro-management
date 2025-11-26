@@ -1,9 +1,7 @@
 import path from "node:path";
 
 import react from "@vitejs/plugin-react";
-import { defineConfig } from "vite";
-
-import { env } from "@/utils";
+import { defineConfig, loadEnv } from "vite";
 
 /**
  * Vite configuration for Brain Agriculture frontend application.
@@ -14,6 +12,8 @@ import { env } from "@/utils";
  * @see {@link https://vite.dev/config/|Vite Configuration Reference}
  */
 export default defineConfig(({ mode }) => {
+	const env = loadEnv(mode, import.meta.dirname, "");
+
 	return {
 		plugins: [react()],
 
@@ -25,13 +25,13 @@ export default defineConfig(({ mode }) => {
 		},
 
 		server: {
-			port: env.WEB__PORT,
-			host: env.WEB__HOST,
+			port: Number.parseInt(env["WEB__PORT"] ?? "5173", 10),
+			host: env["WEB__HOST"] ?? "localhost",
 			strictPort: true,
 			open: false,
 			proxy: {
 				"/api": {
-					target: env.WEB__VITE_API_BASE_URL,
+					target: env["WEB__VITE_API_BASE_URL"] ?? "http://localhost:3000",
 					changeOrigin: true,
 					secure: false,
 					rewrite: (path) => path.replace(/^\/api/, "/api"),
@@ -40,8 +40,8 @@ export default defineConfig(({ mode }) => {
 		},
 
 		preview: {
-			port: env.WEB__PREVIEW_PORT,
-			host: env.WEB__HOST,
+			port: Number.parseInt(env["WEB__PREVIEW_PORT"] ?? "4173", 10),
+			host: env["WEB__HOST"] ?? "localhost",
 			strictPort: true,
 		},
 

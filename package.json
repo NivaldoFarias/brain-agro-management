@@ -1,5 +1,6 @@
 {
 	"name": "agro-management",
+	"description": "Full-stack monorepo for rural producer and farm management with TypeScript, Bun, NestJS, and React",
 	"version": "0.0.1",
 	"license": "MIT",
 	"type": "module",
@@ -44,7 +45,10 @@
 		"@typescript-eslint/parser": "^8.20.0",
 		"eslint": "^9.18.0",
 		"eslint-config-prettier": "^10.0.1",
+		"eslint-plugin-jsx-a11y": "^6.10.2",
 		"eslint-plugin-prettier": "^5.2.2",
+		"eslint-plugin-react": "^7.37.5",
+		"eslint-plugin-react-hooks": "^7.0.1",
 		"eslint-plugin-unicorn": "^62.0.0",
 		"globals": "^16.0.0",
 		"pino-pretty": "^13.1.2",

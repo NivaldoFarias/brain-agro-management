@@ -10,6 +10,7 @@ export {
 	STORAGE_KEYS,
 	UI_CONFIG,
 	environmentDefaults,
+	ROUTES,
 } from "./constants.util";
 export { env } from "./env.util";
 export type { WebEnv } from "./env.util";
