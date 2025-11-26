@@ -52,8 +52,8 @@ RUN mkdir -p /app/apps/api/data /app/apps/api/logs && \
 # Switch to non-root user
 USER nodejs
 
-# Expose port
-EXPOSE 3000
+# Expose port (default 3000, can be overridden by API__PORT env var)
+EXPOSE 3000 7860
 
 # Health check - check actual API endpoint
 HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
