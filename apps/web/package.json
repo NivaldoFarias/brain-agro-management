@@ -5,21 +5,37 @@
 	"private": true,
 	"type": "module",
 	"scripts": {
-		"dev": "echo 'Web app dev server - to be configured with Vite'",
-		"build": "echo 'Web app build - to be configured with Vite'",
-		"preview": "echo 'Web app preview - to be configured with Vite'",
+		"dev": "vite",
+		"build": "tsc && vite build",
+		"preview": "vite preview",
 		"type-check": "tsc --build",
-		"test": "bun test",
+		"test": "vitest run",
+		"test:watch": "vitest",
+		"test:coverage": "vitest run --coverage",
 		"clean": "rm -rf dist .turbo node_modules"
 	},
 	"dependencies": {
 		"@agro/shared": "workspace:*",
+		"@reduxjs/toolkit": "^2.5.0",
 		"react": "^18.3.1",
 		"react-dom": "^18.3.1",
+		"react-hook-form": "^7.54.2",
+		"react-redux": "^9.2.0",
+		"react-router-dom": "^7.1.1",
+		"recharts": "^2.15.0",
+		"styled-components": "^6.1.15",
 		"zod": "^4.1.9"
 	},
 	"devDependencies": {
+		"@testing-library/jest-dom": "^6.6.3",
+		"@testing-library/react": "^16.1.0",
+		"@testing-library/user-event": "^14.5.2",
 		"@types/react": "^18.3.12",
-		"@types/react-dom": "^18.3.1"
+		"@types/react-dom": "^18.3.1",
+		"@vitejs/plugin-react": "^4.3.4",
+		"@vitest/coverage-v8": "^2.1.8",
+		"jsdom": "^25.0.1",
+		"vite": "^6.0.5",
+		"vitest": "^2.1.8"
 	}
 }

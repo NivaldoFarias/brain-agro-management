@@ -1,9 +1,8 @@
-import { assertValidFarmArea } from "@agro/shared/validators";
 import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 
-import type { BrazilianState } from "@/common";
+import { assertValidFarmArea } from "@agro/shared/validators";
 
 import { SortBy } from "@/common/enums/enums";
 import { Producer } from "@/modules/producers/entities/producer.entity";
@@ -34,8 +33,8 @@ export class FarmsService {
 	/**
 	 * Creates an instance of FarmsService.
 	 *
-	 * @param farmRepository - TypeORM repository for Farm entity
-	 * @param producerRepository - TypeORM repository for Producer entity
+	 * @param farmRepository TypeORM repository for Farm entity
+	 * @param producerRepository TypeORM repository for Producer entity
 	 */
 	constructor(
 		@InjectRepository(Farm)
@@ -54,7 +53,7 @@ export class FarmsService {
 	 * 2. Validated that the farm area constraints are met (arableArea + vegetationArea ≤ totalArea)
 	 * 3. Creates and saves the farm entity
 	 *
-	 * @param createFarmDto - The farm data to create
+	 * @param createFarmDto The farm data to create
 	 *
 	 * @returns The created farm
 	 *

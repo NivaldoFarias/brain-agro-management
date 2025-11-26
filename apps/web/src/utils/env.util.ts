@@ -14,16 +14,25 @@ const webEnvSchema = z.object({
 	NODE_ENV: z.enum(RuntimeEnvironment).default(environmentDefaults.NODE_ENV),
 
 	/** Logging level for the application */
-	API__LOG_LEVEL: z.enum(LogLevel).default(environmentDefaults.API__LOG_LEVEL),
+	WEB__LOG_LEVEL: z.enum(LogLevel).default(environmentDefaults.WEB__LOG_LEVEL),
 
 	/** Whether to enable console logging */
-	API__LOG_TO_CONSOLE: z.stringbool().default(environmentDefaults.API__LOG_TO_CONSOLE),
+	WEB__LOG_TO_CONSOLE: z.stringbool().default(environmentDefaults.WEB__LOG_TO_CONSOLE),
 
 	/** API base URL for backend requests */
-	VITE_API_BASE_URL: z.url().default(environmentDefaults.VITE_API_BASE_URL),
+	WEB__VITE_API_BASE_URL: z.url().default(environmentDefaults.WEB__VITE_API_BASE_URL),
 
 	/** Enable React DevTools in production (for debugging) */
-	VITE_ENABLE_DEVTOOLS: z.stringbool().default(environmentDefaults.VITE_ENABLE_DEVTOOLS),
+	WEB__VITE_ENABLE_DEVTOOLS: z.stringbool().default(environmentDefaults.WEB__VITE_ENABLE_DEVTOOLS),
+
+	/** Port for the web server */
+	WEB__PORT: z.coerce.number().int().default(environmentDefaults.WEB__PORT),
+
+	/** Host for the web server */
+	WEB__HOST: z.string().default(environmentDefaults.WEB__HOST),
+
+	/** Port for the preview server */
+	WEB__PREVIEW_PORT: z.coerce.number().int().default(environmentDefaults.WEB__PREVIEW_PORT),
 });
 
 /** Type-safe environment variables for the web application */

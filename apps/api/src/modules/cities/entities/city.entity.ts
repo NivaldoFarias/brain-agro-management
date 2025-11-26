@@ -6,8 +6,6 @@ import {
 	UpdateDateColumn,
 } from "typeorm";
 
-import { BrazilianState } from "@/common/enums/enums";
-
 /**
  * City entity representing Brazilian municipalities
  *

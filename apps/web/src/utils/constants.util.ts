@@ -61,8 +61,11 @@ export const STORAGE_KEYS = {
 
 export const environmentDefaults = {
 	NODE_ENV: RuntimeEnvironment.Development,
-	API__LOG_LEVEL: LogLevel.Info,
-	API__LOG_TO_CONSOLE: true,
-	VITE_API_BASE_URL: "http://localhost:3000/api",
-	VITE_ENABLE_DEVTOOLS: false,
+	WEB__LOG_LEVEL: LogLevel.Info,
+	WEB__LOG_TO_CONSOLE: true,
+	WEB__VITE_API_BASE_URL: "http://localhost:3000/api",
+	WEB__VITE_ENABLE_DEVTOOLS: false,
+	WEB__PORT: 5173,
+	WEB__HOST: "localhost",
+	WEB__PREVIEW_PORT: 4173,
 } as const;

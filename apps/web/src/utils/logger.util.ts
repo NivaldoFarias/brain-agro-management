@@ -10,7 +10,7 @@ import { env } from "./env.util";
  */
 export const logger = createLogger({
 	name: "web",
-	level: env.API__LOG_LEVEL,
+	level: env.WEB__LOG_LEVEL,
 	environment: env.NODE_ENV,
-	logToConsole: env.API__LOG_TO_CONSOLE,
+	logToConsole: env.WEB__LOG_TO_CONSOLE,
 });

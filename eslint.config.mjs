@@ -73,12 +73,20 @@ export default defineConfig(
 			/* Unicorn */
 			"unicorn/no-null": "off",
 			"unicorn/prevent-abbreviations": "off",
-
-			/* NestJS Typed */
+			"unicorn/prefer-spread": "off",
+			"unicorn/no-useless-spread": "error",
+		},
+	},
+	{
+		files: ["apps/api/**/*.{js,ts,mts,cts}"],
+		plugins: {
+			"@darraghor/nestjs-typed": eslintPluginNestJs.plugin,
+		},
+		extends: [eslintPluginNestJs.configs.flatRecommended],
+		rules: {
 			"@darraghor/nestjs-typed/injectable-should-be-provided": "off",
 		},
 	},
-	eslintPluginNestJs.configs.flatRecommended,
 	{
 		files: [
 			"**/*.spec.*",

@@ -12,8 +12,6 @@ import {
 import type { Producer } from "../../producers/entities/producer.entity";
 import type { FarmHarvest } from "./farm-harvest.entity";
 
-import { BrazilianState } from "@/common";
-
 /**
  * Farm entity representing agricultural properties in the system
  *
