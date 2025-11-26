@@ -23,8 +23,9 @@ import { Producer } from "@/modules/producers/entities/producer.entity";
  * @see {@link https://typeorm.io/data-source TypeORM DataSource Documentation}
  */
 export const AppDataSource = new DataSource({
-	type: "sqlite",
-	database: env.API__DATABASE_PATH,
+	type: "sqljs",
+	location: env.API__DATABASE_PATH,
+	autoSave: true,
 	entities: [Producer, Farm, Harvest, FarmHarvest, FarmHarvestCrop, City],
 	migrations: ["./src/database/migrations/**/*.ts"],
 	// TEMPORARY: Auto-create tables in development (will use migrations in production)

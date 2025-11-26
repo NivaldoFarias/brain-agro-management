@@ -26,7 +26,7 @@ Full-stack rural producer and farm management system for Brazilian agriculture. 
 | ------------- | ---------------------------- | ------------------------------------ |
 | Runtime       | Bun                          | Node.js ecosystem compatible         |
 | Framework     | NestJS                       | Modular architecture with DI         |
-| Database      | SQLite                       | better-sqlite3 driver                |
+| Database      | SQLite                       | Bun native SQLite (built-in)         |
 | ORM           | TypeORM                      | Data Mapper + Repository patterns    |
 | Validation    | class-validator + Zod        | DTO validation with schemas          |
 | Logging       | nestjs-pino                  | Structured JSON with correlation IDs |
@@ -70,7 +70,7 @@ Full-stack rural producer and farm management system for Brazilian agriculture. 
 | -------------------- | ------ | ------------------------------ |
 | REST API             | ✅      | All endpoints implemented      |
 | TypeScript + Bun     | ✅      | Strict mode enabled            |
-| SQLite database      | ✅      | better-sqlite3 for Bun         |
+| SQLite database      | ✅      | Bun native SQLite (built-in)   |
 | TypeORM patterns     | ✅      | Data Mapper + Repository       |
 | Docker setup         | ✅      | Multi-stage production build   |
 | Build system         | ✅      | Bun bundler with external deps |
@@ -189,7 +189,7 @@ Full-stack rural producer and farm management system for Brazilian agriculture. 
 
 - [x] NestJS app in `apps/api/` workspace
 - [x] Docker Compose with multi-stage builds
-- [x] TypeORM configuration with better-sqlite3
+- [x] TypeORM configuration with Bun native SQLite
 - [x] Migration system (CLI-based, no sync in prod)
 - [x] Environment validation with class-validator
 - [x] nestjs-pino structured logging

@@ -66,7 +66,7 @@ C4Container
         Container(repositories, "Data Repositories", "TypeORM Repositories", "Data access layer")
     }
 
-    ContainerDb(db, "SQLite Database", "better-sqlite3", "Stores all application data")
+    ContainerDb(db, "SQLite Database", "Bun native SQLite", "Stores all application data")
 
     Container(logger, "Logging Service", "Pino", "Structured JSON logging")
 
@@ -508,7 +508,7 @@ graph TD
 
     J --> L[Generate SQL]
     L --> M[Execute Query]
-    M --> N[better-sqlite3 Driver]
+    M --> N[Bun Native SQLite]
     N --> O[SQLite Database]
     O --> P[Return Results]
     P --> Q[Map to Entities]
@@ -928,14 +928,14 @@ graph LR
 
 | Bottleneck                 | Solution                  | Implementation Priority |
 | -------------------------- | ------------------------- | ----------------------- |
-| **Database Queries**       | Indexes on foreign keys   | ✅ Implemented          |
-| **N+1 Queries**            | Query optimization, joins | 🔶 Phase 2              |
-| **API Response Time**      | Redis caching             | 🔶 Phase 2              |
-| **Dashboard Aggregations** | Materialized views        | 🔶 Phase 3              |
-| **File Uploads**           | AWS S3 direct upload      | 🔶 Phase 3              |
-| **Real-time Updates**      | WebSockets (Socket.io)    | 🔶 Phase 4              |
-| **Search Performance**     | Elasticsearch             | 🔶 Phase 4              |
-| **Background Jobs**        | Bull Queue + Redis        | 🔶 Phase 3              |
+| **Database Queries**       | Indexes on foreign keys   | ✅ Implemented           |
+| **N+1 Queries**            | Query optimization, joins | 🔶 Phase 2               |
+| **API Response Time**      | Redis caching             | 🔶 Phase 2               |
+| **Dashboard Aggregations** | Materialized views        | 🔶 Phase 3               |
+| **File Uploads**           | AWS S3 direct upload      | 🔶 Phase 3               |
+| **Real-time Updates**      | WebSockets (Socket.io)    | 🔶 Phase 4               |
+| **Search Performance**     | Elasticsearch             | 🔶 Phase 4               |
+| **Background Jobs**        | Bull Queue + Redis        | 🔶 Phase 3               |
 
 ---
 

@@ -43,7 +43,21 @@ async function buildApp(): Promise<void> {
 		splitting: false,
 		sourcemap: "linked",
 		minify: false,
-		packages: "external",
+		// Bundle workspace dependencies (@agro/shared), keep node_modules external
+		external: [
+			"@nestjs/*",
+			"typeorm",
+			"rxjs",
+			"reflect-metadata",
+			"passport*",
+			"helmet",
+			"pino*",
+			"nestjs-pino",
+			"class-*",
+			"@scalar/*",
+			"@fnando/*",
+			"zod",
+		],
 		naming: {
 			entry: "[name].js",
 			chunk: "[name]-[hash].js",

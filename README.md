@@ -1,100 +1,73 @@
-# Agro Management
+# Brain Agriculture Assessment
 
-> **Full-stack rural producer and farm management system**
+Full-stack system for managing rural producers and farms in Brazil. Built as a technical assessment with Bun, NestJS, React, and TypeScript.
 
-Technical assessment project demonstrating modern full-stack development practices with TypeScript, Bun, React, and PostgreSQL.
+## What This Is
 
-## Overview
+A production-ready monorepo demonstrating clean architecture, type safety, and testing practices. Handles CRUD operations for producers and farms with Brazilian document validation (CPF/CNPJ), area constraints, and analytics dashboards.
 
-Agro Management is a comprehensive platform for managing rural producers, farms, and agricultural data. The system provides CRUD operations, business logic validation, and real-time dashboard analytics for agricultural operations.
+**Core features**: Producer management • Farm operations • Crop tracking • Dashboard with state/crop/land-use metrics • JWT authentication • OpenAPI documentation
 
-### Key Features
-
-- 🌾 **Producer Management**: Complete CRUD for rural producers with CPF/CNPJ validation
-- 🚜 **Farm Operations**: Multi-farm management with area validation and crop tracking
-- 📊 **Dashboard Analytics**: Real-time statistics and visualizations (farms by state, crop distribution, land use)
-- ✅ **Business Rules**: Automated validation for farm areas, document formats, and relationships
-- 🔒 **Type Safety**: End-to-end TypeScript with strict mode and comprehensive types
-
-## Tech Stack
-
-### Backend
-
-- **Runtime**: Bun (Node.js replacement)
-- **Framework**: NestJS
-- **Language**: TypeScript
-- **Database**: SQLite + TypeORM (Data Mapper pattern)
-- **API**: REST with OpenAPI specification (@nestjs/swagger)
-- **Logging**: Pino (structured JSON logs via nestjs-pino)
-- **Testing**: Jest + Supertest (NestJS testing utilities)
-
-### Frontend
-
-- **Framework**: React 18+
-- **Build Tool**: Vite
-- **State Management**: Redux Toolkit + Context API
-- **Styling**: Styled Components (CSS-in-JS)
-- **Forms**: React Hook Form + Zod
-- **Charts**: Recharts
-- **Testing**: Jest + React Testing Library + Cypress
-
-### Infrastructure
-
-- **Containerization**: Docker + Docker Compose
-- **Monorepo**: Bun workspaces + TypeScript project references
-- **CI/CD**: GitLab CI / GitHub Actions
-- **Deployment**: AWS (Lambda, ECS, RDS, S3)
+**Tech**: Bun runtime • NestJS + TypeORM • React 18 + Redux Toolkit • SQLite • Radix UI • Zod validation
 
 ## Project Structure
 
+See [MONOREPO.md](./docs/MONOREPO.md) for detailed workspace organization.
+
 ```
-agro-management/
+brain-ag/
 ├── apps/
-│   ├── api/          # Backend REST API
-│   └── web/          # Frontend React app
+│   ├── api/          # NestJS + TypeORM (see docs/ARCHITECTURE.md)
+│   └── web/          # React + Redux Toolkit
 ├── packages/
-│   └── shared/       # Shared types, utils, validators
-└── docs/             # Documentation
+│   └── shared/       # Types, validators, utils
+└── docs/             # System design and specs
 ```
+
+**Stack**: Bun • NestJS • TypeORM • React 18 • Redux Toolkit • Radix UI • SQLite
 
 ## Quick Start
 
+**Prerequisites**: Bun 1.3+ ([install](https://bun.sh/docs/installation))
+
 ```bash
-# Install dependencies
-bun install
-
-# Run development servers
-bun run dev
-
-# Run API only
-bun run dev:api
-
-# Run frontend only
-bun run dev:web
-
-# Run tests
-bun test
-
-# Type check
-bun run type-check
-
-# Build for production
-bun run build
+bun install         # Install dependencies
+bun run dev         # Start API + frontend
+bun test            # Run tests
 ```
+
+**API runs on**: `localhost:3333/api` • Docs at `/api/docs` • Health at `/health`  
+**Frontend runs on**: `localhost:5173`
+
+Common commands: `dev:api`, `dev:web`, `build`, `lint`, `type-check` — see `package.json`
+
+## Status
+
+Backend and frontend core features complete. Dashboard charts in progress.
+
+**Done**: Producer/farm CRUD • CPF/CNPJ validation • Area validation • JWT auth • API docs  
+**Pending**: Dashboard UI (Recharts) • E2E tests • Frontend test coverage • Cloud deployment
+
+See [ROADMAP.md](./docs/ROADMAP.md) for detailed checklist.
 
 ## Documentation
 
-- [Architecture](./docs/ARCHITECTURE.md) - System design, patterns, and component structure with diagrams
-- [Database Schema](./docs/DATABASE_SCHEMA.md) - Entity-relationship diagram and data model
-- [Environment Variables](./docs/ENVIRONMENT.md) - Configuration and environment setup
-- [Monorepo Structure](./docs/MONOREPO.md) - Workspace configuration and development workflow
+**Architecture & Design**:
+- [ARCHITECTURE.md](./docs/ARCHITECTURE.md) — C4 diagrams, patterns, data flow
+- [DATABASE_SCHEMA.md](./docs/DATABASE_SCHEMA.md) — ERD and entity specs
+- [MONOREPO.md](./docs/MONOREPO.md) — Workspace structure
 
-## Requirements
+**Configuration**:
+- [ENVIRONMENT.md](./docs/ENVIRONMENT.md) — Environment variables
+- [Swagger UI](http://localhost:3333/api/docs) — Interactive API docs (requires running server)
+- [Scalar Reference](http://localhost:3333/reference) — Modern API reference
 
-- **Bun**: v1.0.0+ (as Node.js/npm replacement)
-- **Docker**: v20.0.0+ (optional, for production database)
-- **SQLite**: Included via better-sqlite3 (no external installation needed)
+**Development**: See `.github/instructions/` for coding standards (backend, frontend, database, testing, TypeScript)
 
-## License
+## Design Notes
 
-MIT
+- **Bun**: Native TypeScript support, faster installs, built-in bundler. Chose over `sqlite` for compatibility.
+- **SQLite**: Zero-config for dev/assessment. Would migrate to PostgreSQL in production (TypeORM abstracts this).
+- **Redux Toolkit + RTK Query**: Reduces boilerplate ~60%. Built-in caching, loading states, optimistic updates.
+- **Radix UI**: Accessible primitives (WAI-ARIA) with full styling control. WCAG 2.1 AA baseline.
+- **Monorepo**: Shared types ensure API contract consistency. Single install, unified tooling.

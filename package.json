@@ -24,7 +24,21 @@
 		"test": "bun test",
 		"test:api": "bun run --filter='@agro/api' test",
 		"test:web": "bun run --filter='@agro/web' test",
-		"clean": "bun run --filter='@agro/*' clean"
+		"clean": "bun run --filter='@agro/*' clean",
+		"docker:build": "docker compose build",
+		"docker:build:clean": "docker compose build --no-cache",
+		"docker:up": "docker compose up -d",
+		"docker:down": "docker compose down",
+		"docker:restart": "docker compose restart",
+		"docker:logs": "docker compose logs -f",
+		"docker:status": "docker compose ps",
+		"docker:shell": "docker compose exec api sh",
+		"docker:health": "curl -f http://localhost:3000/api/health",
+		"docker:clean": "docker compose down -v && docker system prune -f",
+		"docker:backup": "docker compose exec -T api cat /app/apps/api/data/agro.db > backup-$(date +%Y%m%d-%H%M%S).db",
+		"docker:migrate": "docker compose exec api bun run migration:run",
+		"docker:seed": "docker compose exec api bun run db:seed",
+		"docker:stats": "docker stats --no-stream brain-ag-api"
 	},
 	"dependencies": {
 		"@hookform/resolvers": "^5.2.2",

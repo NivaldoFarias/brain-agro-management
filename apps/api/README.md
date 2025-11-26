@@ -316,14 +316,14 @@ docker run -p 3000:3000 \
 
 ### TypeORM Configuration
 
-The API uses **TypeORM with Data Mapper pattern** and **better-sqlite3** driver for Bun compatibility.
+The API uses **TypeORM with Data Mapper pattern** and **Bun's native SQLite** for optimal performance.
 
 **Configuration**: `src/config/database.config.ts`
 
 ```typescript
 // Configured for production with migrations
 {
-  type: 'better-sqlite3',
+  type: 'sqlite',  // Bun uses native SQLite implementation
   database: env.API__DATABASE_PATH,
   entities: ['src/modules/**/entities/*.entity.ts'],
   migrations: ['src/database/migrations/*.ts'],
