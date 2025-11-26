@@ -123,6 +123,14 @@ const apiEnvSchema = z.object({
 	 * @see {@link environmentDefaults.API__JWT_EXPIRATION}
 	 */
 	API__JWT_EXPIRATION: z.string().default(environmentDefaults.API__JWT_EXPIRATION),
+
+	/**
+	 * Whether to seed database with sample data on startup
+	 *
+	 * @default false (true in development)
+	 * @see {@link environmentDefaults.API__SEED_DATABASE}
+	 */
+	API__SEED_DATABASE: z.stringbool().default(environmentDefaults.API__SEED_DATABASE),
 });
 
 /** Type-safe environment variables for the API application */

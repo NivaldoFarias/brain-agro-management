@@ -45,11 +45,12 @@ const paddingMap = {
 
 const StyledCard = styled.div<{ $padding: CardProps["padding"]; $interactive: boolean }>`
 	padding: ${(props) => paddingMap[props.$padding ?? "md"]};
-	background-color: ${(props) => props.theme.colors.background};
+	background-color: ${(props) => props.theme.colors.surface};
 	border: 1px solid ${(props) => props.theme.colors.border};
-	border-radius: ${(props) => props.theme.borderRadius.lg};
-	box-shadow: ${(props) => props.theme.shadows.sm};
-	transition: all ${(props) => props.theme.transitions.fast};
+	border-radius: ${(props) => props.theme.borderRadius.xl};
+	box-shadow: ${(props) => props.theme.shadows.base};
+	transition: all ${(props) => props.theme.transitions.base};
+	backdrop-filter: blur(10px);
 
 	${(props) =>
 		props.$interactive &&
@@ -57,13 +58,14 @@ const StyledCard = styled.div<{ $padding: CardProps["padding"]; $interactive: bo
 		cursor: pointer;
 		
 		&:hover {
-			box-shadow: ${props.theme.shadows.md};
-			border-color: ${props.theme.colors.grey[400]};
+			box-shadow: ${props.theme.shadows.lg};
+			border-color: ${props.theme.colors.primary};
 			transform: translateY(-2px);
 		}
 		
 		&:active {
 			transform: translateY(0);
+			box-shadow: ${props.theme.shadows.md};
 		}
 	`}
 `;

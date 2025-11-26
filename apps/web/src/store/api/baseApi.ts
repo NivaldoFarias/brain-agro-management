@@ -1,5 +1,6 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
+import { getAuthToken } from "@/contexts/AuthContext";
 import { env } from "@/utils";
 
 /**
@@ -9,6 +10,8 @@ import { env } from "@/utils";
  * loading states, and request deduplication. Uses tagged cache
  * invalidation for optimistic updates.
  *
+ * Automatically injects authentication token into request headers.
+ *
  * @see {@link https://redux-toolkit.js.org/rtk-query/overview|RTK Query Documentation}
  */
 export const api = createApi({
@@ -17,6 +20,13 @@ export const api = createApi({
 		baseUrl: env.WEB__VITE_API_BASE_URL,
 		prepareHeaders: (headers) => {
 			headers.set("Content-Type", "application/json");
+
+			// Inject authentication token if available
+			const token = getAuthToken();
+			if (token) {
+				headers.set("Authorization", `Bearer ${token}`);
+			}
+
 			return headers;
 		},
 	}),

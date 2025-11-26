@@ -17,6 +17,9 @@ import { description, version } from "../../package.json";
 export const ROUTES = {
 	home: "/",
 	dashboard: "/dashboard",
+	auth: {
+		login: "/login",
+	},
 	producers: {
 		list: "/producers",
 		create: "/producers/new",

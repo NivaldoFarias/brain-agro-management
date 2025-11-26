@@ -11,6 +11,17 @@ import { HttpMethod } from "@agro/shared/utils/constants.util";
 import { api } from "./baseApi";
 
 /**
+ * Backend API response wrapper interface.
+ */
+interface ApiResponse<T> {
+	data: T;
+	meta: {
+		timestamp: string;
+		correlationId?: string;
+	};
+}
+
+/**
  * Producers API endpoints using RTK Query.
  *
  * Provides auto-generated hooks for CRUD operations on producers
@@ -31,6 +42,7 @@ export const producersApi = api.injectEndpoints({
 				url: "/producers",
 				params: { page, limit },
 			}),
+			transformResponse: (response: ApiResponse<ProducersListResponse>) => response.data,
 			providesTags: (result) =>
 				result ?
 					[
@@ -50,6 +62,7 @@ export const producersApi = api.injectEndpoints({
 		 */
 		getProducer: builder.query<Producer, string>({
 			query: (id) => `/producers/${id}`,
+			transformResponse: (response: ApiResponse<Producer>) => response.data,
 			providesTags: (result, error, id) => [{ type: "Producer", id }],
 		}),
 
@@ -68,6 +81,7 @@ export const producersApi = api.injectEndpoints({
 				method: HttpMethod.POST,
 				body,
 			}),
+			transformResponse: (response: ApiResponse<Producer>) => response.data,
 			invalidatesTags: [{ type: "Producer", id: "LIST" }],
 		}),
 
@@ -86,6 +100,7 @@ export const producersApi = api.injectEndpoints({
 				method: "PATCH",
 				body,
 			}),
+			transformResponse: (response: ApiResponse<Producer>) => response.data,
 			invalidatesTags: (result, error, { id }) => [
 				{ type: "Producer", id },
 				{ type: "Producer", id: "LIST" },
@@ -106,6 +121,7 @@ export const producersApi = api.injectEndpoints({
 				url: `/producers/${id}`,
 				method: "DELETE",
 			}),
+			transformResponse: (response: ApiResponse<unknown>) => response.data,
 			invalidatesTags: (result, error, id) => [
 				{ type: "Producer", id },
 				{ type: "Producer", id: "LIST" },

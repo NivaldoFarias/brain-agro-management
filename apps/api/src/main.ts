@@ -39,6 +39,11 @@ async function bootstrap(): Promise<void> {
 	const document = setupOpenApiDocumentation(app);
 	setupScalarApiReference(app, document);
 
+	// Seed database if enabled
+	const { SeedService } = await import("./database/seeds/seed.service");
+	const seedService = app.get(SeedService);
+	await seedService.seed();
+
 	await startServer(app, logger);
 }
 

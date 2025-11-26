@@ -7,7 +7,7 @@
 	"scripts": {
 		"dev": "bun --watch src/main.ts",
 		"build": "bun build src/main.ts --outdir=dist --target=bun",
-		"start": "NODE_ENV=production bun dist/main.js",
+		"start": "bun dist/main.js",
 		"start:dev": "bun run dev",
 		"start:prod": "bun run start",
 		"type-check": "tsc --build",

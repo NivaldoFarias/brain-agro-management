@@ -8,6 +8,17 @@ import type {
 import { api } from "./baseApi";
 
 /**
+ * Backend API response wrapper interface.
+ */
+interface ApiResponse<T> {
+	data: T;
+	meta: {
+		timestamp: string;
+		correlationId?: string;
+	};
+}
+
+/**
  * Farms API endpoints using RTK Query.
  *
  * Provides auto-generated hooks for CRUD operations on farms
@@ -28,6 +39,7 @@ export const farmsApi = api.injectEndpoints({
 				url: "/farms",
 				params: { page, limit },
 			}),
+			transformResponse: (response: ApiResponse<FarmsListResponse>) => response.data,
 			providesTags: (result) =>
 				result ?
 					[
@@ -47,6 +59,7 @@ export const farmsApi = api.injectEndpoints({
 		 */
 		getFarm: builder.query<Farm, string>({
 			query: (id) => `/farms/${id}`,
+			transformResponse: (response: ApiResponse<Farm>) => response.data,
 			providesTags: (result, error, id) => [{ type: "Farm", id }],
 		}),
 
@@ -65,6 +78,7 @@ export const farmsApi = api.injectEndpoints({
 				method: "POST",
 				body,
 			}),
+			transformResponse: (response: ApiResponse<Farm>) => response.data,
 			invalidatesTags: [{ type: "Farm", id: "LIST" }, { type: "DashboardStats" }],
 		}),
 
@@ -83,6 +97,7 @@ export const farmsApi = api.injectEndpoints({
 				method: "PATCH",
 				body,
 			}),
+			transformResponse: (response: ApiResponse<Farm>) => response.data,
 			invalidatesTags: (result, error, { id }) => [
 				{ type: "Farm", id },
 				{ type: "Farm", id: "LIST" },
@@ -104,6 +119,7 @@ export const farmsApi = api.injectEndpoints({
 				url: `/farms/${id}`,
 				method: "DELETE",
 			}),
+			transformResponse: (response: ApiResponse<unknown>) => response.data,
 			invalidatesTags: (result, error, id) => [
 				{ type: "Farm", id },
 				{ type: "Farm", id: "LIST" },

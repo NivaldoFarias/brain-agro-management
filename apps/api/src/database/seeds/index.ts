@@ -141,7 +141,7 @@ function getRandomCropCombination(): Array<CropType> {
  * @param {DataSource} connection - TypeORM data source connection
  * @returns {Promise<void>}
  */
-async function seedDatabase(connection: DataSource): Promise<void> {
+export async function seedDatabase(connection: DataSource): Promise<void> {
 	logger.info("🌱 Starting database seeding...");
 
 	const producerRepository = connection.getRepository(Producer);

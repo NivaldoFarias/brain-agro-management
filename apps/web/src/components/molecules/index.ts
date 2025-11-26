@@ -9,3 +9,6 @@ export type { FormFieldProps } from "./FormField";
 
 export { LoadingState } from "./LoadingState";
 export type { LoadingStateProps } from "./LoadingState";
+
+export { ProtectedRoute } from "./ProtectedRoute";
+export type { ProtectedRouteProps } from "./ProtectedRoute";

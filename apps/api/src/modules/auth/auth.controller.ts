@@ -1,4 +1,11 @@
-import { Body, Controller, HttpCode, HttpStatus, Post } from "@nestjs/common";
+import {
+	Body,
+	Controller,
+	HttpCode,
+	HttpStatus,
+	Post,
+	UnauthorizedException,
+} from "@nestjs/common";
 import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 
 import type { AuthResponseDto } from "./dto/auth-response.dto";
@@ -51,7 +58,13 @@ export class AuthController {
 	login(@Body() loginDto: LoginDto): AuthResponseDto {
 		// For this technical assessment, we use a simplified auth flow
 		// In production, you would validate credentials against a user database
-		const { email } = loginDto;
+		const { email, password } = loginDto;
+
+		// Simple credential validation for demo purposes
+		// Accept any email with password "admin123"
+		if (password !== "admin123") {
+			throw new UnauthorizedException("Invalid credentials");
+		}
 
 		// Generate a token with mock user ID
 		const token = this.authService.generateToken("demo-user-id", email);

@@ -6,7 +6,7 @@ import type { ButtonHTMLAttributes, ReactNode } from "react";
 export type ButtonVariant = "primary" | "secondary" | "tertiary" | "danger";
 
 /** Button size options for different contexts */
-export type ButtonSize = "sm" | "md" | "lg";
+export type ButtonSize = "small" | "sm" | "md" | "lg";
 
 /** Props for the Button component */
 export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
@@ -18,6 +18,9 @@ export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 
 	/** Whether button is in loading state */
 	isLoading?: boolean;
+
+	/** Whether button should take full width */
+	fullWidth?: boolean;
 
 	/** Button content */
 	children: ReactNode;
@@ -44,18 +47,26 @@ export function Button({
 	variant = "primary",
 	size = "md",
 	isLoading = false,
+	fullWidth = false,
 	disabled,
 	children,
 	...props
 }: ButtonProps) {
 	return (
-		<StyledButton variant={variant} size={size} disabled={disabled ?? isLoading} aria-busy={isLoading} {...props}>
+		<StyledButton
+			variant={variant}
+			size={size}
+			$fullWidth={fullWidth}
+			disabled={disabled ?? isLoading}
+			aria-busy={isLoading}
+			{...props}
+		>
 			{isLoading ? "Loading..." : children}
 		</StyledButton>
 	);
 }
 
-const StyledButton = styled.button<{ variant: ButtonVariant; size: ButtonSize }>`
+const StyledButton = styled.button<{ variant: ButtonVariant; size: ButtonSize; $fullWidth: boolean }>`
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
@@ -66,6 +77,7 @@ const StyledButton = styled.button<{ variant: ButtonVariant; size: ButtonSize }>
 	cursor: pointer;
 	transition: all 200ms ease;
 	white-space: nowrap;
+	width: ${(props) => (props.$fullWidth ? "100%" : "auto")};
 
 	/* Size variants */
 	${(props) => {
@@ -78,6 +90,7 @@ const StyledButton = styled.button<{ variant: ButtonVariant; size: ButtonSize }>
           min-height: 40px;
         `;
 			}
+			case "small":
 			case "sm": {
 				return `
 					padding: ${props.theme.spacing.sm} ${props.theme.spacing.md};
@@ -100,11 +113,20 @@ const StyledButton = styled.button<{ variant: ButtonVariant; size: ButtonSize }>
 		switch (props.variant) {
 			case "primary": {
 				return `
-					background-color: ${props.theme.colors.primary};
-					color: ${props.theme.colors.background};
+					background: linear-gradient(135deg, ${props.theme.colors.primary}, ${props.theme.colors.primaryDark});
+					color: white;
+					box-shadow: ${props.theme.shadows.sm};
+					border: 1px solid transparent;
 
 					&:hover:not(:disabled) {
-						background-color: ${props.theme.colors.primaryDark};
+						background: linear-gradient(135deg, ${props.theme.colors.primaryDark}, ${props.theme.colors.primary});
+						box-shadow: ${props.theme.shadows.md};
+						transform: translateY(-1px);
+					}
+
+					&:active:not(:disabled) {
+						transform: translateY(0);
+						box-shadow: ${props.theme.shadows.sm};
 					}
 
 					&:focus-visible {
@@ -115,11 +137,18 @@ const StyledButton = styled.button<{ variant: ButtonVariant; size: ButtonSize }>
 			}
 			case "secondary": {
 				return `
-					background-color: ${props.theme.colors.secondary};
-					color: ${props.theme.colors.background};
+					background: ${props.theme.colors.secondary};
+					color: white;
+					box-shadow: ${props.theme.shadows.sm};
 
 					&:hover:not(:disabled) {
-						background-color: ${props.theme.colors.secondaryDark};
+						background: ${props.theme.colors.secondaryDark};
+						box-shadow: ${props.theme.shadows.md};
+						transform: translateY(-1px);
+					}
+
+					&:active:not(:disabled) {
+						transform: translateY(0);
 					}
 
 					&:focus-visible {
@@ -132,10 +161,11 @@ const StyledButton = styled.button<{ variant: ButtonVariant; size: ButtonSize }>
 				return `
 					background-color: transparent;
 					color: ${props.theme.colors.primary};
-					border: 1px solid ${props.theme.colors.border};
+					border: 1.5px solid ${props.theme.colors.border};
 
 					&:hover:not(:disabled) {
 						background-color: ${props.theme.colors.backgroundAlt};
+						border-color: ${props.theme.colors.primary};
 					}
 
 					&:focus-visible {
@@ -146,11 +176,18 @@ const StyledButton = styled.button<{ variant: ButtonVariant; size: ButtonSize }>
 			}
 			case "danger": {
 				return `
-					background-color: ${props.theme.colors.error};
-					color: ${props.theme.colors.background};
+					background: ${props.theme.colors.error};
+					color: white;
+					box-shadow: ${props.theme.shadows.sm};
 
 					&:hover:not(:disabled) {
-						background-color: #c62828;
+						background: #DC2626;
+						box-shadow: ${props.theme.shadows.md};
+						transform: translateY(-1px);
+					}
+
+					&:active:not(:disabled) {
+						transform: translateY(0);
 					}
 
 					&:focus-visible {
@@ -165,9 +202,6 @@ const StyledButton = styled.button<{ variant: ButtonVariant; size: ButtonSize }>
 	&:disabled {
 		opacity: 0.5;
 		cursor: not-allowed;
-	}
-
-	&:active:not(:disabled) {
-		transform: scale(0.98);
+		transform: none !important;
 	}
 `;

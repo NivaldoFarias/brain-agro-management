@@ -6,50 +6,67 @@
  */
 export const theme = {
 	colors: {
-		primary: "#2E7D32",
-		primaryLight: "#4CAF50",
-		primaryDark: "#1B5E20",
-		secondary: "#FF6F00",
-		secondaryLight: "#FF9800",
-		secondaryDark: "#E65100",
+		// Modern agricultural green palette with vibrant accents
+		primary: "#10B981", // Emerald green - fresh, modern
+		primaryLight: "#34D399",
+		primaryDark: "#059669",
+		primaryHover: "#0D9668",
 
-		success: "#4CAF50",
-		error: "#F44336",
-		warning: "#FF9800",
-		info: "#2196F3",
+		// Warm accent colors for agricultural feel
+		secondary: "#F59E0B", // Amber - wheat/harvest
+		secondaryLight: "#FBBF24",
+		secondaryDark: "#D97706",
 
-		background: "#FFFFFF",
-		backgroundAlt: "#F5F5F5",
+		// Additional accent colors
+		accent: "#8B5CF6", // Purple for charts/graphs
+		accentLight: "#A78BFA",
+		accentDark: "#7C3AED",
+
+		// Semantic colors
+		success: "#10B981",
+		error: "#EF4444",
+		warning: "#F59E0B",
+		info: "#3B82F6",
+
+		// Backgrounds with modern off-white
+		background: "#FAFAF9", // Warm off-white
+		backgroundAlt: "#F5F5F4",
 		surface: "#FFFFFF",
-		surfaceAlt: "#FAFAFA",
+		surfaceAlt: "#FAFAF9",
+		surfaceHover: "#F5F5F4",
 
-		text: "#212121",
-		textSecondary: "#757575",
-		textDisabled: "#BDBDBD",
+		// Text colors with better contrast
+		text: "#1C1917", // Warm black
+		textSecondary: "#78716C",
+		textDisabled: "#D6D3D1",
+		textInverse: "#FAFAF9",
 
-		border: "#E0E0E0",
-		borderLight: "#F5F5F5",
-		divider: "#E0E0E0",
+		// Borders with subtle warmth
+		border: "#E7E5E4",
+		borderLight: "#F5F5F4",
+		borderFocus: "#10B981",
+		divider: "#E7E5E4",
 
+		// Extended grey palette (warm stone tones)
 		grey: {
-			50: "#FAFAFA",
-			100: "#F5F5F5",
-			200: "#EEEEEE",
-			300: "#E0E0E0",
-			400: "#BDBDBD",
-			500: "#9E9E9E",
-			600: "#757575",
-			700: "#616161",
-			800: "#424242",
-			900: "#212121",
+			50: "#FAFAF9",
+			100: "#F5F5F4",
+			200: "#E7E5E4",
+			300: "#D6D3D1",
+			400: "#A8A29E",
+			500: "#78716C",
+			600: "#57534E",
+			700: "#44403C",
+			800: "#292524",
+			900: "#1C1917",
 		},
 	},
 
 	typography: {
 		fontFamily: {
-			base: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif",
-			heading: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-			mono: "'Fira Code', 'Courier New', monospace",
+			base: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+			heading: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+			mono: "'JetBrains Mono', 'Fira Code', 'Courier New', monospace",
 		},
 		fontSize: {
 			"xs": "0.75rem",

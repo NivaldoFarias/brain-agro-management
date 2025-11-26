@@ -13,6 +13,7 @@ import { CorrelationIdInterceptor } from "./common/interceptors/correlation-id.i
 import { LoggingInterceptor } from "./common/interceptors/logging.interceptor";
 import { TransformInterceptor } from "./common/interceptors/transform.interceptor";
 import { AppDataSource } from "./config/database.config";
+import { SeedModule } from "./database/seeds/seed.module";
 import { AuthModule } from "./modules/auth/auth.module";
 import { FarmsModule } from "./modules/farms/farms.module";
 import { HealthModule } from "./modules/health/health.module";
@@ -43,6 +44,7 @@ import { ProducersModule } from "./modules/producers/producers.module";
 			},
 		]),
 		TypeOrmModule.forRoot(AppDataSource.options),
+		SeedModule,
 		AuthModule,
 		HealthModule,
 		ProducersModule,

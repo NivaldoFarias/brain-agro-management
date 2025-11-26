@@ -8,6 +8,17 @@ import type {
 import { api } from "./baseApi";
 
 /**
+ * Backend API response wrapper interface.
+ */
+interface ApiResponse<T> {
+	data: T;
+	meta: {
+		timestamp: string;
+		correlationId?: string;
+	};
+}
+
+/**
  * Dashboard statistics API endpoints using RTK Query.
  *
  * Provides hooks for fetching aggregated farm statistics
@@ -26,6 +37,7 @@ export const dashboardApi = api.injectEndpoints({
 		 */
 		getTotalAreaStats: builder.query<TotalAreaStats, unknown>({
 			query: () => "/farms/stats/total-area",
+			transformResponse: (response: ApiResponse<TotalAreaStats>) => response.data,
 			providesTags: [{ type: "DashboardStats", id: "TOTAL_AREA" }],
 		}),
 
@@ -40,6 +52,7 @@ export const dashboardApi = api.injectEndpoints({
 		 */
 		getStateDistribution: builder.query<StateDistribution[], unknown>({
 			query: () => "/farms/stats/by-state",
+			transformResponse: (response: ApiResponse<StateDistribution[]>) => response.data,
 			providesTags: [{ type: "DashboardStats", id: "STATE_DISTRIBUTION" }],
 		}),
 
@@ -56,6 +69,7 @@ export const dashboardApi = api.injectEndpoints({
 		 */
 		getCropDistribution: builder.query<CropDistribution[], unknown>({
 			query: () => "/farms/stats/crops-distribution",
+			transformResponse: (response: ApiResponse<CropDistribution[]>) => response.data,
 			providesTags: [{ type: "DashboardStats", id: "CROP_DISTRIBUTION" }],
 		}),
 
@@ -70,6 +84,7 @@ export const dashboardApi = api.injectEndpoints({
 		 */
 		getLandUseStats: builder.query<LandUseStats, unknown>({
 			query: () => "/farms/stats/land-use",
+			transformResponse: (response: ApiResponse<LandUseStats>) => response.data,
 			providesTags: [{ type: "DashboardStats", id: "LAND_USE" }],
 		}),
 	}),
