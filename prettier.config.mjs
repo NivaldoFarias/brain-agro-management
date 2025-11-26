@@ -1,4 +1,4 @@
-/** @type {import("prettier").Config & import("@ianvs/prettier-plugin-sort-imports").PluginConfig } */
+/** @type {import("prettier").Config & import("@ianvs/prettier-plugin-sort-imports").PluginConfig} */
 export default {
 	semi: true,
 	tabWidth: 2,
@@ -24,6 +24,12 @@ export default {
 				useTabs: false,
 			},
 		},
+		{
+			files: ["*.tsx", "*.jsx"],
+			options: {
+				printWidth: 120,
+			},
+		},
 	],
 	plugins: ["@ianvs/prettier-plugin-sort-imports"],
 	importOrder: [
@@ -32,6 +38,8 @@ export default {
 		"<THIRD_PARTY_MODULES>",
 		"",
 		"<TYPES>",
+		"",
+		"<TYPES>^@agro/",
 		"",
 		"<TYPES>^@/",
 		"",
