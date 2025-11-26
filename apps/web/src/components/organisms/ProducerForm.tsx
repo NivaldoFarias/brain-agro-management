@@ -58,6 +58,7 @@ export function ProducerForm({
 	} = useForm<CreateProducerFormData>({
 		resolver: zodResolver(createProducerSchema),
 		defaultValues,
+		mode: "onSubmit",
 	});
 
 	return (

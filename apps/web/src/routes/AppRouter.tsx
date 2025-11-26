@@ -87,6 +87,26 @@ export function AppRouter(): ReactElement {
 							</ProtectedRoute>
 						}
 					/>
+					<Route
+						path="/producers/:id/edit"
+						element={
+							<ProtectedRoute>
+								<MainLayout>
+									<NotFoundPage />
+								</MainLayout>
+							</ProtectedRoute>
+						}
+					/>
+					<Route
+						path="/farms/:id/edit"
+						element={
+							<ProtectedRoute>
+								<MainLayout>
+									<NotFoundPage />
+								</MainLayout>
+							</ProtectedRoute>
+						}
+					/>
 					<Route path="*" element={<NotFoundPage />} />
 				</Routes>
 			</Suspense>

@@ -129,6 +129,19 @@ export class FarmResponseDto {
 	producerId!: string;
 
 	/**
+	 * Array of crop types cultivated on this farm.
+	 *
+	 * @example ["Soja", "Milho"]
+	 */
+	@ApiProperty({
+		description: "Crops cultivated on this farm",
+		example: ["Soja", "Milho"],
+		type: [String],
+	})
+	@Expose()
+	crops!: Array<string>;
+
+	/**
 	 * Timestamp when the farm was created.
 	 *
 	 * @example "2025-11-24T10:00:00.000Z"

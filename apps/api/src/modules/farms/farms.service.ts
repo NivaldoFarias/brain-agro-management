@@ -112,6 +112,7 @@ export class FarmsService {
 	 */
 	async findAll(): Promise<Array<FarmResponseDto>> {
 		const farms = await this.farmRepository.find({
+			relations: ["farmHarvests", "farmHarvests.crops"],
 			order: { name: SortBy.Ascending },
 		});
 
@@ -397,7 +398,23 @@ export class FarmsService {
 	 *
 	 * @private
 	 */
-	private mapToResponseDto(farm: Farm): FarmResponseDto {
+	private mapToResponseDto(
+		farm: Farm & { farmHarvests?: Array<{ crops?: Array<{ cropType: string }> }> },
+	): FarmResponseDto {
+		// Extract unique crop types from all farm harvests
+		const crops: Array<string> = [];
+		if (farm.farmHarvests && Array.isArray(farm.farmHarvests)) {
+			for (const farmHarvest of farm.farmHarvests) {
+				if (farmHarvest.crops && Array.isArray(farmHarvest.crops)) {
+					for (const crop of farmHarvest.crops) {
+						if (crop.cropType && !crops.includes(crop.cropType)) {
+							crops.push(crop.cropType);
+						}
+					}
+				}
+			}
+		}
+
 		return {
 			id: farm.id,
 			name: farm.name,
@@ -407,6 +424,7 @@ export class FarmsService {
 			arableArea: farm.arableArea,
 			vegetationArea: farm.vegetationArea,
 			producerId: farm.producerId,
+			crops,
 			createdAt: farm.createdAt,
 			updatedAt: farm.updatedAt,
 		};

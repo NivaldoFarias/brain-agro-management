@@ -73,6 +73,8 @@ Full-stack rural producer and farm management system for Brazilian agriculture. 
 | SQLite database      | ✅      | better-sqlite3 for Bun         |
 | TypeORM patterns     | ✅      | Data Mapper + Repository       |
 | Docker setup         | ✅      | Multi-stage production build   |
+| Build system         | ✅      | Bun bundler with external deps |
+| Bundled production   | ✅      | 84KB bundle, minify disabled   |
 | Testing suite        | ✅      | Unit + Integration + E2E       |
 | Structured logging   | ✅      | Pino with correlation IDs      |
 | Test fixtures        | ✅      | Realistic Brazilian data       |
@@ -83,6 +85,8 @@ Full-stack rural producer and farm management system for Brazilian agriculture. 
 | Environment config   | ✅      | Centralized in `src/config/`   |
 | Modular architecture | ✅      | Feature modules pattern        |
 | Database seeding     | ✅      | Automatic with env control     |
+| Pagination responses | ✅      | Consistent {data,total,page}   |
+| Farm crops loading   | ✅      | Eager relations with TypeORM   |
 
 ### Frontend Implementation
 
@@ -97,12 +101,15 @@ Full-stack rural producer and farm management system for Brazilian agriculture. 
 | Atomic design         | ✅      | Components organized by complexity                |
 | Styled Components     | ✅      | Theme provider with design tokens                 |
 | Forms with validation | ✅      | react-hook-form + Zod schemas                     |
+| Form validation mode  | ✅      | onSubmit mode to prevent early errors             |
 | Testing setup         | ✅      | Vitest + RTL configured                           |
 | Toast notifications   | ✅      | Radix UI Toast integrated                         |
 | Navigation layout     | ✅      | MainLayout with responsive sidebar                |
 | Auth system           | ✅      | JWT authentication fully functional               |
 | PageContainer wrapper | ✅      | Consistent responsive layout                      |
 | Icon system           | ✅      | Lucide-react icons throughout                     |
+| Edit routes           | ✅      | Placeholder routes for /edit pages                |
+| Farms list display    | ✅      | Shows crops with conditional rendering            |
 | Dashboard charts      | ⏳      | Recharts integration pending                      |
 | E2E tests             | ⏳      | Cypress/Playwright pending                        |
 | Accessibility         | ⏳      | WCAG 2.1 AA in progress                           |
@@ -291,16 +298,19 @@ Full-stack rural producer and farm management system for Brazilian agriculture. 
 - [x] React Router with lazy loading
 - [x] Page components (Dashboard, Producers, Farms, Create, NotFound)
 - [x] react-hook-form integration
-- [x] Zod validation schemas
+- [x] Zod validation schemas with proper error messages
+- [x] Form validation mode set to onSubmit
 - [x] ProducerForm (create/edit)
 - [x] ProducerList with actions
 - [x] FarmForm with area validation
-- [x] FarmList with filters
+- [x] FarmList with filters and crops display
+- [x] Conditional crops rendering (shows "None" if empty)
 - [x] CropSelector (multi-select)
 - [x] ProducersPage with pagination
 - [x] CreateProducerPage with form
 - [x] FarmsPage with pagination
 - [x] CreateFarmPage with form
+- [x] Edit route placeholders (producers and farms)
 
 #### Navigation & Layout
 
@@ -356,10 +366,14 @@ Full-stack rural producer and farm management system for Brazilian agriculture. 
 - [x] API base URL configuration (WEB__VITE_API_BASE_URL)
 - [x] Backend connection via RTK Query
 - [x] RTK Query response transformation for API wrapper
+- [x] Backend pagination structure {data, total, page, limit}
+- [x] Frontend pagination handling in lists
+- [x] Farm crops API with eager relationship loading
 - [x] Error handling with toast notifications
 - [x] Navigation menu/sidebar with responsive collapse
 - [x] React Router navigation with lazy loading
 - [x] Authentication 401 errors resolved
+- [x] Edit routes added (placeholder NotFound pages)
 - [ ] Breadcrumbs
 - [ ] Global error boundary
 

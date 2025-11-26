@@ -4,14 +4,10 @@ import { keyframes, styled } from "styled-components";
 
 import type { ReactElement, ReactNode } from "react";
 
-/**
- * Toast variant types for different message types.
- */
+/** Toast variant types for different message types */
 export type ToastVariant = "success" | "error" | "warning" | "info";
 
-/**
- * Toast message interface.
- */
+/** Toast message interface */
 interface ToastMessage {
 	id: string;
 	title: string;
@@ -20,9 +16,7 @@ interface ToastMessage {
 	duration?: number;
 }
 
-/**
- * Toast context value interface.
- */
+/** Toast context value interface */
 interface ToastContextValue {
 	showToast: (message: Omit<ToastMessage, "id">) => void;
 	success: (title: string, description?: string) => void;
@@ -33,9 +27,7 @@ interface ToastContextValue {
 
 const ToastContext = createContext<ToastContextValue | undefined>(undefined);
 
-/**
- * Props for ToastProvider component.
- */
+/** Props for ToastProvider component */
 interface ToastProviderProps {
 	children: ReactNode;
 }
@@ -207,14 +199,18 @@ const ToastContainer = styled.div<{ variant: ToastVariant }>`
 	border-left: 3px solid;
 	border-left-color: ${(props) => {
 		switch (props.variant) {
-			case "success":
+			case "success": {
 				return props.theme.colors.success;
-			case "error":
+			}
+			case "error": {
 				return props.theme.colors.error;
-			case "warning":
+			}
+			case "warning": {
 				return props.theme.colors.warning;
-			case "info":
+			}
+			case "info": {
 				return props.theme.colors.info;
+			}
 		}
 	}};
 

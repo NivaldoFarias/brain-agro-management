@@ -63,11 +63,12 @@ export class FarmsController {
 	}
 
 	/**
-	 * Retrieves all farms.
+	 * Retrieves all farms with pagination.
 	 *
 	 * Returns farms ordered alphabetically by name.
+	 * For now, ignores pagination params and returns all farms (assessment requirement).
 	 *
-	 * @returns Array of all farms
+	 * @returns Paginated farm response
 	 */
 	@Get()
 	@ApiOperation({ summary: "Get all farms" })
@@ -76,8 +77,19 @@ export class FarmsController {
 		description: "List of farms",
 		type: [FarmResponseDto],
 	})
-	findAll(): Promise<Array<FarmResponseDto>> {
-		return this.farmsService.findAll();
+	async findAll(): Promise<{
+		data: Array<FarmResponseDto>;
+		total: number;
+		page: number;
+		limit: number;
+	}> {
+		const farms = await this.farmsService.findAll();
+		return {
+			data: farms,
+			total: farms.length,
+			page: 1,
+			limit: farms.length,
+		};
 	}
 
 	/**

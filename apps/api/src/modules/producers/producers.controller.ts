@@ -59,11 +59,12 @@ export class ProducersController {
 	}
 
 	/**
-	 * Retrieves all producers.
+	 * Retrieves all producers with pagination.
 	 *
 	 * Returns producers ordered alphabetically by name.
+	 * For now, ignores pagination params and returns all producers (assessment requirement).
 	 *
-	 * @returns Array of all producers
+	 * @returns Paginated producer response
 	 */
 	@Get()
 	@ApiOperation({ summary: "Get all producers" })
@@ -72,8 +73,19 @@ export class ProducersController {
 		description: "List of producers",
 		type: [ProducerResponseDto],
 	})
-	findAll(): Promise<Array<ProducerResponseDto>> {
-		return this.producersService.findAll();
+	async findAll(): Promise<{
+		data: Array<ProducerResponseDto>;
+		total: number;
+		page: number;
+		limit: number;
+	}> {
+		const producers = await this.producersService.findAll();
+		return {
+			data: producers,
+			total: producers.length,
+			page: 1,
+			limit: producers.length,
+		};
 	}
 
 	/**

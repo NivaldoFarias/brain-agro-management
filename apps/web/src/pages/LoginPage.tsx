@@ -53,16 +53,14 @@ export function LoginPage(): ReactElement {
 			setAuthToken(response.accessToken, email);
 			console.log("[LoginPage] setAuthToken completed");
 
-			// Show success toast
 			toast.success("Login successful", "Welcome back!");
 
-			// Small delay to ensure state updates
 			await new Promise((resolve) => setTimeout(resolve, 100));
 
 			console.log("[LoginPage] Navigating to dashboard...");
-			navigate(ROUTES.dashboard, { replace: true });
-		} catch (err) {
-			console.error("[LoginPage] Login failed:", err);
+			void navigate(ROUTES.dashboard, { replace: true });
+		} catch (error) {
+			console.error("[LoginPage] Login failed:", error);
 			const errorMsg = "Invalid credentials. Please try again.";
 			setError(errorMsg);
 			toast.error("Login failed", errorMsg);
@@ -77,19 +75,22 @@ export function LoginPage(): ReactElement {
 					<Subtitle>Rural Producer Management System</Subtitle>
 				</Header>
 
-				<form onSubmit={handleSubmit}>
+				<form
+					onSubmit={() => {
+						void handleSubmit;
+					}}
+				>
 					<FormField id="email" label="Email" required>
 						<Input
 							id="email"
 							type="email"
 							placeholder="admin@example.com"
 							value={email}
-							onChange={(e) => {
-								setEmail(e.target.value);
+							onChange={(event) => {
+								setEmail(event.target.value);
 								setError(undefined);
 							}}
 							disabled={isLoading}
-							autoFocus
 						/>
 					</FormField>
 
@@ -99,8 +100,8 @@ export function LoginPage(): ReactElement {
 							type="password"
 							placeholder="Enter your password"
 							value={password}
-							onChange={(e) => {
-								setPassword(e.target.value);
+							onChange={(event) => {
+								setPassword(event.target.value);
 								setError(undefined);
 							}}
 							disabled={isLoading}

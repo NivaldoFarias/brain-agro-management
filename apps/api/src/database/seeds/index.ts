@@ -150,12 +150,20 @@ export async function seedDatabase(connection: DataSource): Promise<void> {
 	const farmHarvestRepository = connection.getRepository(FarmHarvest);
 	const farmHarvestCropRepository = connection.getRepository(FarmHarvestCrop);
 
+	logger.info("🧹 Clearing existing data...");
+	await farmHarvestCropRepository.clear();
+	await farmHarvestRepository.clear();
+	await farmRepository.clear();
+	await harvestRepository.clear();
+	await producerRepository.clear();
+	logger.info("✅ Existing data cleared");
+
 	const producers: Array<Producer> = [];
 	const farms: Array<Farm> = [];
 	const harvests: Array<Harvest> = [];
 
 	logger.info("👨‍🌾 Creating producers...");
-	for (let index = 0; index < 15; index++) {
+	for (let index = 0; index < 500; index++) {
 		const isCompany = faker.datatype.boolean({ probability: 0.3 });
 
 		/**
@@ -163,7 +171,10 @@ export async function seedDatabase(connection: DataSource): Promise<void> {
 		 * CPF: 11 digits for individuals (with valid check digits)
 		 * CNPJ: 14 digits for companies (with valid check digits)
 		 */
-		const document = isCompany ? generateDocument.cnpj() : generateDocument.cpf();
+		const document =
+			isCompany ?
+				generateDocument.cnpj({ formatted: true })
+			:	generateDocument.cpf({ formatted: true });
 
 		const producer = producerRepository.create({
 			name: isCompany ? faker.company.name() : faker.person.fullName(),
@@ -181,7 +192,7 @@ export async function seedDatabase(connection: DataSource): Promise<void> {
 	logger.info({ producerCount: producers.length, cpfCount, cnpjCount }, "✅ Created producers");
 
 	logger.info("🏞️  Creating farms...");
-	for (let index = 0; index < 40; index++) {
+	for (let index = 0; index < 200; index++) {
 		const producer = faker.helpers.arrayElement(producers);
 		const areas = generateFarmAreas();
 		const state = getWeightedRandomState();
