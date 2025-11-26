@@ -271,7 +271,7 @@ Full-stack rural producer and farm management system for Brazilian agriculture. 
 - [x] ErrorMessage component
 - [x] EmptyState component
 - [x] LoadingState component
-- [ ] Icon system
+- [x] Icon system (lucide-react)
 - [ ] Table components
 - [ ] SearchBar
 
@@ -280,13 +280,13 @@ Full-stack rural producer and farm management system for Brazilian agriculture. 
 - [x] RTK Query API slices (baseApi, producersApi, farmsApi, dashboardApi)
 - [x] React Router with lazy loading
 - [x] Page components (Dashboard, Producers, Farms, Create, NotFound)
-- [ ] react-hook-form integration
-- [ ] Zod validation schemas
-- [ ] ProducerForm (create/edit)
-- [ ] ProducerList with actions
-- [ ] FarmForm with area validation
-- [ ] FarmList with filters
-- [ ] CropSelector (multi-select)
+- [x] react-hook-form integration
+- [x] Zod validation schemas
+- [x] ProducerForm (create/edit)
+- [x] ProducerList with actions
+- [x] FarmForm with area validation
+- [x] FarmList with filters
+- [x] CropSelector (multi-select)
 
 #### Frontend Testing
 

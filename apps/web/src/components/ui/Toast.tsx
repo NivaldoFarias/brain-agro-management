@@ -94,11 +94,11 @@ const StyledToast = styled(ToastPrimitive.Toast)<{ variant: ToastVariant }>`
 	animation: slideIn 200ms ease-out;
 
 	${(props) => {
-    switch (props.variant) {
-      case "info":
-      default: {
-        return `border-color: ${props.theme.colors.info};`;
-      }
+		switch (props.variant) {
+			case "info":
+			default: {
+				return `border-color: ${props.theme.colors.info};`;
+			}
 			case "success": {
 				return `border-color: ${props.theme.colors.success};`;
 			}

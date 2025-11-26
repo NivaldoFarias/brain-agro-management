@@ -3,7 +3,7 @@ import styled from "styled-components";
 import type { ReactElement } from "react";
 
 import { Typography } from "@/components/atoms";
-import { Button } from "@/components/ui";
+import { Button } from "@/components/ui/Button";
 
 /**
  * 404 Not Found page component.

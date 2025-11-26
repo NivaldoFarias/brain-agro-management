@@ -49,13 +49,7 @@ export function Button({
 	...props
 }: ButtonProps) {
 	return (
-		<StyledButton
-			variant={variant}
-			size={size}
-			disabled={disabled ?? isLoading}
-			aria-busy={isLoading}
-			{...props}
-		>
+		<StyledButton variant={variant} size={size} disabled={disabled ?? isLoading} aria-busy={isLoading} {...props}>
 			{isLoading ? "Loading..." : children}
 		</StyledButton>
 	);

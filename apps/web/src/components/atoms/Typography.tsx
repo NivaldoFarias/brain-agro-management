@@ -4,17 +4,7 @@ import type { HTMLAttributes, ReactNode } from "react";
 import type React from "react";
 
 /** Typography variant types following design system hierarchy */
-export type TypographyVariant =
-	| "h1"
-	| "h2"
-	| "h3"
-	| "h4"
-	| "h5"
-	| "h6"
-	| "body"
-	| "bodySmall"
-	| "caption"
-	| "label";
+export type TypographyVariant = "h1" | "h2" | "h3" | "h4" | "h5" | "h6" | "body" | "bodySmall" | "caption" | "label";
 
 /**
  * Props for the Typography component.
@@ -51,14 +41,7 @@ export interface TypographyProps extends HTMLAttributes<HTMLElement> {
  * </Typography>
  * ```
  */
-export function Typography({
-	variant = "body",
-	children,
-	as,
-	align = "left",
-	color,
-	...props
-}: TypographyProps) {
+export function Typography({ variant = "body", children, as, align = "left", color, ...props }: TypographyProps) {
 	const defaultElement = getDefaultElement(variant);
 	const Component = as ?? defaultElement;
 
@@ -106,14 +89,10 @@ function getDefaultElement(variant: TypographyVariant): keyof React.JSX.Intrinsi
 
 const StyledText = styled.p<{ variant: TypographyVariant; align: string; color?: string }>`
 	font-family: ${(props) =>
-		props.variant.startsWith("h") ?
-			props.theme.typography.fontFamily.heading
-		:	props.theme.typography.fontFamily.base};
+		props.variant.startsWith("h") ? props.theme.typography.fontFamily.heading : props.theme.typography.fontFamily.base};
 	text-align: ${(props) => props.align};
 	color: ${(props) =>
-		props.color ?
-			props.theme.colors[props.color as keyof typeof props.theme.colors]
-		:	props.theme.colors.text};
+		props.color ? props.theme.colors[props.color as keyof typeof props.theme.colors] : props.theme.colors.text};
 	margin: 0;
 
 	${(props) => {

@@ -27,12 +27,7 @@ export interface SpinnerProps {
  */
 export function Spinner({ size = "md", ...props }: SpinnerProps) {
 	return (
-		<StyledSpinner
-			size={size}
-			role="status"
-			aria-label={props["aria-label"] ?? "Loading"}
-			aria-live="polite"
-		>
+		<StyledSpinner size={size} role="status" aria-label={props["aria-label"] ?? "Loading"} aria-live="polite">
 			<VisuallyHidden>{props["aria-label"] ?? "Loading"}</VisuallyHidden>
 		</StyledSpinner>
 	);
