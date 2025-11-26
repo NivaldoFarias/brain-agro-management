@@ -63,16 +63,16 @@ export const theme = {
 			"5xl": "3rem",
 		},
 		fontWeight: {
-			light: 300,
-			normal: 400,
-			medium: 500,
-			semibold: 600,
-			bold: 700,
+			light: "300",
+			normal: "400",
+			medium: "500",
+			semibold: "600",
+			bold: "700",
 		},
 		lineHeight: {
-			tight: 1.25,
-			normal: 1.5,
-			relaxed: 1.75,
+			tight: "1.25",
+			normal: "1.5",
+			relaxed: "1.75",
 		},
 	},
 
@@ -123,13 +123,14 @@ export const theme = {
 	},
 
 	zIndex: {
-		dropdown: 1000,
-		sticky: 1020,
-		fixed: 1030,
-		backdrop: 1040,
-		modal: 1050,
-		popover: 1060,
-		tooltip: 1070,
+		dropdown: "1000",
+		sticky: "1020",
+		fixed: "1030",
+		backdrop: "1040",
+		modal: "1050",
+		popover: "1060",
+		tooltip: "1070",
+		toast: "1080",
 	},
 } as const;
 

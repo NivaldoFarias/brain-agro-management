@@ -66,7 +66,8 @@ export const farmFixtures = {
 			vegetationArea: data.vegetationArea,
 		});
 
-		const state = data.state ?? faker.helpers.arrayElement(Object.values(BrazilianState));
+		const state = (data.state ??
+			faker.helpers.arrayElement(Object.values(BrazilianState))) as BrazilianState;
 		let city = data.city;
 
 		if (!city && citiesService) {

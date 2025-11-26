@@ -2,7 +2,7 @@ import { BadRequestException, Injectable, NotFoundException } from "@nestjs/comm
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 
-import { assertValidFarmArea } from "@agro/shared/validators";
+import { assertValidFarmArea } from "@agro/shared/validators/farm-area.validator";
 
 import { SortBy } from "@/common/enums/enums";
 import { Producer } from "@/modules/producers/entities/producer.entity";

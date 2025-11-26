@@ -1,10 +1,4 @@
 import {
-	stripCNPJFormatting,
-	stripCPFFormatting,
-	validateCNPJ,
-	validateCPF,
-} from "@agro/shared/validators";
-import {
 	BadRequestException,
 	ConflictException,
 	Injectable,
@@ -12,6 +6,9 @@ import {
 } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
+
+import { stripCNPJFormatting, validateCNPJ } from "@agro/shared/validators/cnpj.validator";
+import { stripCPFFormatting, validateCPF } from "@agro/shared/validators/cpf.validator";
 
 import { SortBy } from "@/common/enums/enums";
 

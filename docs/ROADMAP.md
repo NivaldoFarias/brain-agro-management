@@ -258,18 +258,28 @@ Full-stack rural producer and farm management system for Brazilian agriculture. 
 
 #### Component Foundation
 
-- [ ] Button (Radix + styled variants)
-- [ ] Input (text, number, select)
-- [ ] Label and form components
+- [x] Button (Radix + styled variants)
+- [x] Input (text, number, select)
+- [x] Label and form components
+- [x] Typography (Heading, Text)
+- [x] FormField molecule
+- [x] Card component
+- [x] Dialog (modal component)
+- [x] Select (dropdown component)
+- [x] Toast (notification component)
+- [x] Spinner (loading indicator)
+- [x] ErrorMessage component
+- [x] EmptyState component
+- [x] LoadingState component
 - [ ] Icon system
-- [ ] Typography (Heading, Text)
-- [ ] FormField molecule
-- [ ] Card component
 - [ ] Table components
 - [ ] SearchBar
 
 #### Forms & CRUD UI
 
+- [x] RTK Query API slices (baseApi, producersApi, farmsApi, dashboardApi)
+- [x] React Router with lazy loading
+- [x] Page components (Dashboard, Producers, Farms, Create, NotFound)
 - [ ] react-hook-form integration
 - [ ] Zod validation schemas
 - [ ] ProducerForm (create/edit)
@@ -277,8 +287,6 @@ Full-stack rural producer and farm management system for Brazilian agriculture. 
 - [ ] FarmForm with area validation
 - [ ] FarmList with filters
 - [ ] CropSelector (multi-select)
-- [ ] RTK Query API slices
-- [ ] Redux actions and selectors
 
 #### Frontend Testing
 

@@ -41,12 +41,15 @@ export default defineConfig(
 		languageOptions: {
 			globals: {
 				...globals.node,
-				Bun: "readonly",
 				NodeJS: "readonly",
 			},
 			parser: tseslint.parser,
 			parserOptions: {
-				project: ["./apps/*/tsconfig.json", "./packages/*/tsconfig.json"],
+				project: [
+					"./apps/web/tsconfig.json",
+					"./apps/api/tsconfig.json",
+					"./packages/shared/tsconfig.json",
+				],
 				tsconfigRootDir: import.meta.dirname,
 				ecmaVersion: "latest",
 				sourceType: "module",
@@ -72,6 +75,11 @@ export default defineConfig(
 			"@typescript-eslint/no-floating-promises": "error",
 			"@typescript-eslint/array-type": ["error", { default: "generic" }],
 			"@typescript-eslint/no-extraneous-class": ["error", { allowWithDecorator: true }],
+			// "@typescript-eslint/no-unsafe-assignment": "off",
+			// "@typescript-eslint/no-unsafe-member-access": "off",
+			// "@typescript-eslint/no-unsafe-argument": "off",
+			// "@typescript-eslint/no-unsafe-return": "off",
+			// "@typescript-eslint/no-unsafe-call": "off",
 
 			/* Unicorn */
 			"unicorn/no-null": "off",
@@ -128,14 +136,18 @@ export default defineConfig(
 			...eslintPluginReactHooks.configs.recommended.rules,
 			...eslintPluginJsxA11y.configs.recommended.rules,
 
+			/* React */
 			"react/prop-types": "off",
 			"react-hooks/rules-of-hooks": "error",
 			"react-hooks/exhaustive-deps": "warn",
 			"jsx-a11y/anchor-is-valid": "warn",
 
+			/* TypeScript */
 			"@typescript-eslint/array-type": ["error", { default: "array" }],
 
+			/* Unicorn */
 			"unicorn/prevent-abbreviations": "off",
+			"unicorn/prefer-global-this": "off",
 			"unicorn/filename-case": [
 				"error",
 				{
@@ -169,7 +181,7 @@ export default defineConfig(
 			},
 		},
 		rules: {
-			// Disable strict type checking for test files where mocks and expect matchers are common
+			/* Disable strict type linting for test files where mocks and expect matchers are common */
 			"@typescript-eslint/no-unsafe-assignment": "off",
 			"@typescript-eslint/no-unsafe-member-access": "off",
 			"@typescript-eslint/no-unsafe-argument": "off",

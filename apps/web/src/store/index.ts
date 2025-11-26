@@ -2,18 +2,18 @@ import { configureStore } from "@reduxjs/toolkit";
 
 import type { Action, ThunkAction } from "@reduxjs/toolkit";
 
-import { RuntimeEnvironment } from "@agro/shared";
+import { RuntimeEnvironment } from "@agro/shared/utils/constants.util";
 
 import { env } from "@/utils";
 
-import { farmsApi } from "./api/farms";
-import { producersApi } from "./api/producers";
+import { api } from "./api";
 
 /**
  * Redux store configuration for Brain Agriculture application.
  *
- * Configures Redux Toolkit store with RTK Query API slices, middleware,
- * and DevTools integration for development.
+ * Configures Redux Toolkit store with RTK Query API slice, middleware,
+ * and DevTools integration for development. The API slice is injected
+ * with endpoints from producersApi, farmsApi, and dashboardApi.
  *
  * @see {@link https://redux-toolkit.js.org/api/configureStore|Redux Toolkit configureStore}
  * @see {@link https://redux-toolkit.js.org/rtk-query/overview|RTK Query Overview}
@@ -21,15 +21,12 @@ import { producersApi } from "./api/producers";
 export const store = configureStore({
 	devTools: env.NODE_ENV !== RuntimeEnvironment.Production,
 	reducer: {
-		[producersApi.reducerPath]: producersApi.reducer,
-		[farmsApi.reducerPath]: farmsApi.reducer,
+		[api.reducerPath]: api.reducer,
 	},
 	middleware: (getDefaultMiddleware) => {
 		return getDefaultMiddleware({
 			serializableCheck: { ignoredActions: ["persist/PERSIST", "persist/REHYDRATE"] },
-		})
-			.concat(producersApi.middleware)
-			.concat(farmsApi.middleware);
+		}).concat(api.middleware);
 	},
 });
 

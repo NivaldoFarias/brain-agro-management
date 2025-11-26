@@ -2,7 +2,7 @@ import { faker } from "@faker-js/faker/locale/pt_BR";
 import { ApiProperty } from "@nestjs/swagger";
 import { Exclude, Expose } from "class-transformer";
 
-import { generateDocument } from "@agro/shared/utils";
+import { generateDocument } from "@agro/shared/utils/cpf-cnpj.util";
 
 /**
  * Data Transfer Object for producer responses.

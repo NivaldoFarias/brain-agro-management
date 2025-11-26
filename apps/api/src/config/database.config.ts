@@ -1,6 +1,6 @@
 import { DataSource } from "typeorm";
 
-import { RuntimeEnvironment } from "@agro/shared/utils";
+import { RuntimeEnvironment } from "@agro/shared/utils/constants.util";
 
 import { env } from "@/config/env.config";
 import { City } from "@/modules/cities/entities/city.entity";

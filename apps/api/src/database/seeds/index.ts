@@ -10,9 +10,12 @@
  * @module DatabaseSeeds
  */
 
-import { createLogger, generateDocument, LogLevel, RuntimeEnvironment } from "@agro/shared/utils";
 import { faker } from "@faker-js/faker/locale/pt_BR";
 import { DataSource } from "typeorm";
+
+import { LogLevel, RuntimeEnvironment } from "@agro/shared/utils/constants.util";
+import { generateDocument } from "@agro/shared/utils/cpf-cnpj.util";
+import { createLogger } from "@agro/shared/utils/logger.util";
 
 import { BrazilianState, CropType } from "@/common/enums/enums";
 import { AppDataSource } from "@/config/database.config";
