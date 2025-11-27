@@ -28,17 +28,17 @@ if (import.meta.main) {
  * isolated in its own function for maintainability.
  */
 async function bootstrap(): Promise<void> {
-	// Diagnostic logging for environment variable
-	console.log("[Bootstrap] API__RUN_DB_MIGRATIONS (raw):", process.env["API__RUN_DB_MIGRATIONS"]);
-	console.log("[Bootstrap] API__RUN_DB_MIGRATIONS (parsed):", env.API__RUN_DB_MIGRATIONS);
-	console.log("[Bootstrap] Type:", typeof env.API__RUN_DB_MIGRATIONS);
+	// Diagnostic logging for environment variable (explicit stdout)
+	process.stdout.write(`[Bootstrap] API__RUN_DB_MIGRATIONS (raw): ${process.env["API__RUN_DB_MIGRATIONS"]}\n`);
+	process.stdout.write(`[Bootstrap] API__RUN_DB_MIGRATIONS (parsed): ${env.API__RUN_DB_MIGRATIONS}\n`);
+	process.stdout.write(`[Bootstrap] Type: ${typeof env.API__RUN_DB_MIGRATIONS}\n`);
 
 	// Run migrations if enabled (before creating the app)
 	if (env.API__RUN_DB_MIGRATIONS) {
-		console.log("[Bootstrap] Running migrations...");
+		process.stdout.write("[Bootstrap] Running migrations...\n");
 		await runMigrations();
 	} else {
-		console.log("[Bootstrap] Migrations disabled, skipping...");
+		process.stdout.write("[Bootstrap] Migrations disabled, skipping...\n");
 	}
 
 	const app = await NestFactory.create(AppModule, { bufferLogs: true });
@@ -73,7 +73,7 @@ async function bootstrap(): Promise<void> {
  * @throws {Error} If migrations fail to run
  */
 async function runMigrations(): Promise<void> {
-	console.log("[Migration] Initializing DataSource for migrations...");
+	process.stdout.write("[Migration] Initializing DataSource for migrations...\n");
 
 	try {
 		// eslint-disable-next-line unicorn/import-style
@@ -84,7 +84,7 @@ async function runMigrations(): Promise<void> {
 		const dbDir = path.dirname(dbPath);
 
 		await fs.mkdir(dbDir, { recursive: true });
-		console.log(`[Migration] Ensured database directory exists: ${dbDir}`);
+		process.stdout.write(`[Migration] Ensured database directory exists: ${dbDir}\n`);
 
 		// Create a migration-specific DataSource with synchronize disabled
 		// to prevent schema conflicts when running migrations
@@ -95,26 +95,26 @@ async function runMigrations(): Promise<void> {
 		});
 
 		const dataSource = await migrationDataSource.initialize();
-		console.log("[Migration] DataSource initialized successfully");
+		process.stdout.write("[Migration] DataSource initialized successfully\n");
 
 		const pendingMigrations = await dataSource.showMigrations();
-		console.log(`[Migration] Pending migrations: ${pendingMigrations}`);
+		process.stdout.write(`[Migration] Pending migrations: ${pendingMigrations}\n`);
 
 		if (pendingMigrations) {
-			console.log("[Migration] Running pending migrations...");
+			process.stdout.write("[Migration] Running pending migrations...\n");
 			const migrations = await dataSource.runMigrations({ transaction: "all" });
-			console.log(`[Migration] Successfully ran ${migrations.length} migration(s):`);
+			process.stdout.write(`[Migration] Successfully ran ${migrations.length} migration(s):\n`);
 			for (const migration of migrations) {
-				console.log(`  - ${migration.name}`);
+				process.stdout.write(`  - ${migration.name}\n`);
 			}
 		} else {
-			console.log("[Migration] Database schema is up-to-date");
+			process.stdout.write("[Migration] Database schema is up-to-date\n");
 		}
 
 		await dataSource.destroy();
-		console.log("[Migration] DataSource closed");
+		process.stdout.write("[Migration] DataSource closed\n");
 	} catch (error) {
-		console.error("[Migration] Failed to run migrations:", error);
+		process.stderr.write(`[Migration] Failed to run migrations: ${error}\n`);
 		throw error;
 	}
 }
