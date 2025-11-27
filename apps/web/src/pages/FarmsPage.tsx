@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 
@@ -17,6 +18,7 @@ import { ROUTES } from "@/utils/";
  * search, filtering, and pagination capabilities.
  */
 export function FarmsPage(): ReactElement {
+	const { t } = useTranslation();
 	const navigate = useNavigate();
 	const [page, setPage] = useState(1);
 	const [deletingId, setDeletingId] = useState<string | undefined>();
@@ -29,7 +31,7 @@ export function FarmsPage(): ReactElement {
 	};
 
 	const handleDelete = async (id: string) => {
-		if (!confirm("Are you sure you want to delete this farm?")) {
+		if (!confirm(t("farms.deleteConfirm"))) {
 			return;
 		}
 
@@ -38,7 +40,7 @@ export function FarmsPage(): ReactElement {
 			await deleteFarm(id).unwrap();
 		} catch (error) {
 			console.error("Failed to delete farm:", error);
-			alert("Failed to delete farm. Please try again.");
+			alert(t("farms.deleteError"));
 		} finally {
 			setDeletingId(undefined);
 		}
@@ -48,18 +50,18 @@ export function FarmsPage(): ReactElement {
 		<Container>
 			<Header>
 				<div>
-					<Typography variant="h1">Farms</Typography>
-					<Typography variant="body">Manage agricultural farms</Typography>
+					<Typography variant="h1">{t("farms.title")}</Typography>
+					<Typography variant="body">{t("farms.subtitle")}</Typography>
 				</div>
 				<Button variant="primary" onClick={handleCreate}>
-					Create Farm
+					{t("farms.createFarm")}
 				</Button>
 			</Header>
 
 			<FarmList
 				farms={data?.data ?? []}
 				isLoading={isLoading}
-				error={error ? "Failed to load farms" : undefined}
+				error={error ? t("farms.loadError") : undefined}
 				onRetry={() => {
 					void refetch();
 				}}
@@ -78,7 +80,7 @@ export function FarmsPage(): ReactElement {
 						}}
 						disabled={page === 1}
 					>
-						Previous
+						{t("common.previous")}
 					</Button>
 					<Typography variant="body">
 						Page {page} of {Math.ceil(data.total / 10)}
@@ -90,7 +92,7 @@ export function FarmsPage(): ReactElement {
 						}}
 						disabled={page >= Math.ceil(data.total / 10)}
 					>
-						Next
+						{t("common.next")}
 					</Button>
 				</PaginationContainer>
 			)}

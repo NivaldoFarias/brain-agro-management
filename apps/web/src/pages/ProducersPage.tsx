@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 
@@ -19,6 +20,7 @@ import { ROUTES } from "@/utils/";
  * Provides actions for creating, editing, and deleting producers.
  */
 export function ProducersPage(): ReactElement {
+	const { t } = useTranslation();
 	const navigate = useNavigate();
 	const toast = useToast();
 	const [page, setPage] = useState(1);
@@ -32,17 +34,17 @@ export function ProducersPage(): ReactElement {
 	};
 
 	const handleDelete = async (id: string) => {
-		if (!confirm("Are you sure you want to delete this producer?")) {
+		if (!confirm(t("producers.deleteConfirm"))) {
 			return;
 		}
 
 		try {
 			setDeletingId(id);
 			await deleteProducer(id).unwrap();
-			toast.success("Producer deleted successfully");
+			toast.success(t("producers.deleteSuccess"));
 		} catch (error) {
 			console.error("Failed to delete producer:", error);
-			toast.error("Failed to delete producer", "Please try again");
+			toast.error(t("producers.deleteError"), t("common.retry"));
 		} finally {
 			setDeletingId(undefined);
 		}
@@ -53,24 +55,22 @@ export function ProducersPage(): ReactElement {
 			<Container>
 				<Header>
 					<div>
-						<Typography variant="h1">Producers</Typography>
-						<Typography variant="body">Manage rural producers</Typography>
+						<Typography variant="h1">{t("producers.title")}</Typography>
+						<Typography variant="body">{t("producers.subtitle")}</Typography>
 					</div>
 					<Button variant="primary" onClick={handleCreate}>
-						Create Producer
+						{t("producers.createProducer")}
 					</Button>
-				</Header>
-
+				</Header>{" "}
 				<ProducerList
 					producers={data?.data ?? []}
 					isLoading={isLoading}
-					error={error ? "Failed to load producers" : undefined}
+					error={error ? t("producers.loadError") : undefined}
 					onDelete={(id) => {
 						void handleDelete(id);
 					}}
 					isDeletingId={deletingId}
 				/>
-
 				{data && data.total > 10 && (
 					<PaginationContainer>
 						<Button
@@ -80,7 +80,7 @@ export function ProducersPage(): ReactElement {
 							}}
 							disabled={page === 1}
 						>
-							Previous
+							{t("common.previous")}
 						</Button>
 						<Typography variant="body">
 							Page {page} of {Math.ceil(data.total / 10)}
@@ -92,7 +92,7 @@ export function ProducersPage(): ReactElement {
 							}}
 							disabled={page >= Math.ceil(data.total / 10)}
 						>
-							Next
+							{t("common.next")}
 						</Button>
 					</PaginationContainer>
 				)}

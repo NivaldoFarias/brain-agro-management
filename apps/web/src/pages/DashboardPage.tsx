@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import styled from "styled-components";
 
 import type { ReactElement } from "react";
@@ -12,18 +13,20 @@ import { ChartIcon } from "@/components/ui/Icon";
  * and land use statistics for all registered farms.
  */
 export function DashboardPage(): ReactElement {
+	const { t } = useTranslation();
+
 	return (
 		<PageContainer>
 			<Container>
 				<PageHeader>
-					<Title>Dashboard</Title>
-					<Subtitle>Agricultural analytics and statistics</Subtitle>
+					<Title>{t("dashboard.title")}</Title>
+					<Subtitle>{t("dashboard.subtitle")}</Subtitle>
 				</PageHeader>
 
 				<PlaceholderContent>
 					<ChartIcon size={48} strokeWidth={1.5} />
-					<PlaceholderText>Dashboard content coming soon</PlaceholderText>
-					<PlaceholderDescription>Charts, statistics, and analytics will be displayed here.</PlaceholderDescription>
+					<PlaceholderText>{t("common.loading")}</PlaceholderText>
+					<PlaceholderDescription>{t("dashboard.noStats")}</PlaceholderDescription>
 				</PlaceholderContent>
 			</Container>
 		</PageContainer>

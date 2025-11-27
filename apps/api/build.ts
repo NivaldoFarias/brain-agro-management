@@ -9,11 +9,13 @@
  * @see https://bun.sh/docs/bundler for Bun bundler documentation
  */
 import { rm } from "node:fs/promises";
-import { join } from "node:path";
+import path from "node:path";
+
+import Bun from "Bun";
 
 const ROOT_DIR = import.meta.dir;
-const DIST_DIR = join(ROOT_DIR, "dist");
-const ENTRY_POINT = join(ROOT_DIR, "src", "main.ts");
+const DIST_DIR = path.join(ROOT_DIR, "dist");
+const ENTRY_POINT = path.join(ROOT_DIR, "src", "main.ts");
 
 /**
  * Clean the dist directory before building.

@@ -23,8 +23,18 @@ export const api = createApi({
 
 			// Inject authentication token if available
 			const token = getAuthToken();
+			console.log(
+				"[baseApi] prepareHeaders - token from localStorage:",
+				token ? `${token.slice(0, 20)}...` : "NULL",
+			);
+			console.log("[baseApi] prepareHeaders - localStorage keys:", Object.keys(localStorage));
+			console.log("[baseApi] prepareHeaders - API base URL:", env.WEB__VITE_API_BASE_URL);
+
 			if (token) {
 				headers.set("Authorization", `Bearer ${token}`);
+				console.log("[baseApi] prepareHeaders - Authorization header set");
+			} else {
+				console.warn("[baseApi] prepareHeaders - No token available, request will be unauthorized");
 			}
 
 			return headers;

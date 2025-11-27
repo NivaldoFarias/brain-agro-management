@@ -1,13 +1,15 @@
 /**
  * @fileoverview Main entry point for Brain Agriculture React application.
  *
- * Initializes React application with strict mode, renders root component,
+ * Initializes React application with strict mode, i18n, renders root component,
  * and mounts to DOM.
  */
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 
 import { App } from "./App";
+
+import "./i18n"; // Initialize i18n before rendering
 
 const rootElement = document.querySelector("#root");
 

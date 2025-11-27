@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 
@@ -21,6 +22,7 @@ import { ROUTES } from "@/utils/";
  * Redirects to dashboard on successful login.
  */
 export function LoginPage(): ReactElement {
+	const { t } = useTranslation();
 	const navigate = useNavigate();
 	const { login: setAuthToken } = useAuth();
 	const toast = useToast();
@@ -38,9 +40,9 @@ export function LoginPage(): ReactElement {
 		console.log("[LoginPage] Email:", email);
 
 		if (!email || !password) {
-			const errorMsg = "Please enter both email and password";
+			const errorMsg = t("auth.required");
 			setError(errorMsg);
-			toast.error("Missing credentials", errorMsg);
+			toast.error(errorMsg, errorMsg);
 			return;
 		}
 
@@ -53,7 +55,7 @@ export function LoginPage(): ReactElement {
 			setAuthToken(response.accessToken, email);
 			console.log("[LoginPage] setAuthToken completed");
 
-			toast.success("Login successful", "Welcome back!");
+			toast.success(t("auth.loginSuccess"), t("auth.welcomeBack"));
 
 			await new Promise((resolve) => setTimeout(resolve, 100));
 
@@ -61,9 +63,9 @@ export function LoginPage(): ReactElement {
 			void navigate(ROUTES.dashboard, { replace: true });
 		} catch (error) {
 			console.error("[LoginPage] Login failed:", error);
-			const errorMsg = "Invalid credentials. Please try again.";
+			const errorMsg = t("auth.loginError");
 			setError(errorMsg);
-			toast.error("Login failed", errorMsg);
+			toast.error(errorMsg, errorMsg);
 		}
 	};
 
@@ -71,12 +73,11 @@ export function LoginPage(): ReactElement {
 		<PageContainer>
 			<LoginCard>
 				<Header>
-					<Title>Brain Agriculture</Title>
-					<Subtitle>Rural Producer Management System</Subtitle>
-				</Header>
-
+					<Title>{t("app.title")}</Title>
+					<Subtitle>{t("app.subtitle")}</Subtitle>
+				</Header>{" "}
 				<form onSubmit={handleSubmit}>
-					<FormField id="email" label="Email" required>
+					<FormField id="email" label={t("auth.email")} required>
 						<Input
 							id="email"
 							type="email"
@@ -90,7 +91,7 @@ export function LoginPage(): ReactElement {
 						/>
 					</FormField>
 
-					<FormField id="password" label="Password" required>
+					<FormField id="password" label={t("auth.password")} required>
 						<Input
 							id="password"
 							type="password"
@@ -107,14 +108,13 @@ export function LoginPage(): ReactElement {
 					{error && <ErrorMessage message={error} />}
 
 					<Button variant="primary" type="submit" disabled={isLoading} isLoading={isLoading} fullWidth>
-						{isLoading ? "Signing in..." : "Sign In"}
+						{isLoading ? `${t("auth.login")}...` : t("auth.login")}
 					</Button>
 				</form>
-
 				<DemoCredentials>
 					<DemoTitle>Demo Credentials</DemoTitle>
-					<DemoText>Email: admin@example.com</DemoText>
-					<DemoText>Password: admin123</DemoText>
+					<DemoText>{t("auth.email")}: admin@example.com</DemoText>
+					<DemoText>{t("auth.password")}: admin123</DemoText>
 				</DemoCredentials>
 			</LoginCard>
 		</PageContainer>

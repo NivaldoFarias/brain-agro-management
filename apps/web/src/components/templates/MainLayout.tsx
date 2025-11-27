@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { NavLink, useNavigate } from "react-router-dom";
 import styled from "styled-components";
 
@@ -24,6 +25,7 @@ interface MainLayoutProps {
  * Includes header with user info and logout, sidebar with main navigation links.
  */
 export function MainLayout({ children }: MainLayoutProps): ReactElement {
+	const { t } = useTranslation();
 	const { user, logout } = useAuth();
 	const navigate = useNavigate();
 	const toast = useToast();
@@ -31,7 +33,7 @@ export function MainLayout({ children }: MainLayoutProps): ReactElement {
 
 	const handleLogout = (): void => {
 		logout();
-		toast.info("Logged out", "You have been logged out successfully");
+		toast.info(t("auth.logoutSuccess"), t("auth.logoutSuccess"));
 		navigate(ROUTES.auth.login, { replace: true });
 	};
 
@@ -50,7 +52,7 @@ export function MainLayout({ children }: MainLayoutProps): ReactElement {
 							<CloseIcon size={20} />
 						:	<MenuIcon size={20} />}
 					</MenuButton>
-					<Logo>Brain Agriculture</Logo>
+					<Logo>{t("app.title")}</Logo>
 				</HeaderLeft>
 				<HeaderRight>
 					<UserInfo>
@@ -58,7 +60,7 @@ export function MainLayout({ children }: MainLayoutProps): ReactElement {
 					</UserInfo>
 					<LogoutButton variant="tertiary" onClick={handleLogout} size="small">
 						<LogOutIcon size={16} />
-						Logout
+						{t("auth.logout")}
 					</LogoutButton>
 				</HeaderRight>
 			</Header>
@@ -68,15 +70,15 @@ export function MainLayout({ children }: MainLayoutProps): ReactElement {
 					<SidebarNav>
 						<NavItem to={ROUTES.dashboard}>
 							<ChartIcon size={20} />
-							<NavText>Dashboard</NavText>
+							<NavText>{t("nav.dashboard")}</NavText>
 						</NavItem>
 						<NavItem to={ROUTES.producers.list}>
 							<UsersIcon size={20} />
-							<NavText>Producers</NavText>
+							<NavText>{t("nav.producers")}</NavText>
 						</NavItem>
 						<NavItem to={ROUTES.farms.list}>
 							<FarmIcon size={20} />
-							<NavText>Farms</NavText>
+							<NavText>{t("nav.farms")}</NavText>
 						</NavItem>
 					</SidebarNav>
 				</Sidebar>
