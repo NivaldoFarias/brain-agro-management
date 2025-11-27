@@ -60,13 +60,33 @@ async function bootstrap(): Promise<void> {
  * NestJS application starts. This ensures the database schema is up-to-date
  * before any queries are executed.
  *
+ * Creates the database directory if it doesn't exist to prevent initialization failures.
+ *
  * @throws {Error} If migrations fail to run
  */
 async function runMigrations(): Promise<void> {
 	console.log("[Migration] Initializing DataSource for migrations...");
 
 	try {
-		const dataSource = await AppDataSource.initialize();
+		// eslint-disable-next-line unicorn/import-style
+		const path = await import("node:path");
+		const fs = await import("node:fs/promises");
+
+		const dbPath = env.API__DATABASE_PATH;
+		const dbDir = path.dirname(dbPath);
+
+		await fs.mkdir(dbDir, { recursive: true });
+		console.log(`[Migration] Ensured database directory exists: ${dbDir}`);
+
+		// Create a migration-specific DataSource with synchronize disabled
+		// to prevent schema conflicts when running migrations
+		const { DataSource } = await import("typeorm");
+		const migrationDataSource = new DataSource({
+			...AppDataSource.options,
+			synchronize: false,
+		});
+
+		const dataSource = await migrationDataSource.initialize();
 		console.log("[Migration] DataSource initialized successfully");
 
 		const pendingMigrations = await dataSource.showMigrations();
