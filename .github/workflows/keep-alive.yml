@@ -1,0 +1,24 @@
+# GitHub Actions workflow to prevent Hugging Face Space from sleeping
+# Pings the health endpoint every 30 minutes during business hours
+name: Keep HF Space Alive
+
+on:
+  schedule:
+    # Run every 30 minutes between 6 AM and 11 PM UTC (adjust for your timezone)
+    - cron: "*/30 6-23 * * *"
+  workflow_dispatch: # Allow manual trigger
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping Health Endpoint
+        run: |
+          curl -f https://badivia-brain-ag-api.hf.space/api/health || exit 1
+          echo "✅ Server is alive at $(date)"
+
+      - name: Notify on Failure
+        if: failure()
+        run: |
+          echo "⚠️ Health check failed at $(date)"
+          # Add notification integration here (Slack, Discord, email, etc.)

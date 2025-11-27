@@ -28,17 +28,9 @@ if (import.meta.main) {
  * isolated in its own function for maintainability.
  */
 async function bootstrap(): Promise<void> {
-	// Diagnostic logging for environment variable (explicit stdout)
-	process.stdout.write(`[Bootstrap] API__RUN_DB_MIGRATIONS (raw): ${process.env["API__RUN_DB_MIGRATIONS"]}\n`);
-	process.stdout.write(`[Bootstrap] API__RUN_DB_MIGRATIONS (parsed): ${env.API__RUN_DB_MIGRATIONS}\n`);
-	process.stdout.write(`[Bootstrap] Type: ${typeof env.API__RUN_DB_MIGRATIONS}\n`);
-
 	// Run migrations if enabled (before creating the app)
 	if (env.API__RUN_DB_MIGRATIONS) {
-		process.stdout.write("[Bootstrap] Running migrations...\n");
 		await runMigrations();
-	} else {
-		process.stdout.write("[Bootstrap] Migrations disabled, skipping...\n");
 	}
 
 	const app = await NestFactory.create(AppModule, { bufferLogs: true });
