@@ -1,7 +1,6 @@
-import type { ApiResponse } from "@agro/shared/types/api/response.types";
-import type { AuthResponseDto } from "@agro/shared/types/auth.types";
+import type { ApiResponse, AuthResponseDto } from "@agro/shared/types";
 
-import { HttpMethod } from "@agro/shared/utils/constants.util";
+import { HttpMethod } from "@agro/shared/utils";
 
 import { api } from "./baseApi";
 

@@ -2,7 +2,7 @@ import { configureStore } from "@reduxjs/toolkit";
 
 import type { Action, ThunkAction } from "@reduxjs/toolkit";
 
-import { RuntimeEnvironment } from "@agro/shared/utils/constants.util";
+import { RuntimeEnvironment } from "@agro/shared/utils";
 
 import { env } from "@/utils";
 

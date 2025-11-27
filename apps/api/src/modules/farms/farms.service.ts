@@ -5,10 +5,10 @@ import { Repository } from "typeorm";
 
 import type { PinoLogger } from "nestjs-pino";
 
-import type { CropType } from "@agro/shared/utils/constants.util";
+import type { CropType } from "@agro/shared/utils";
 
-import { OrderBy } from "@agro/shared/utils/constants.util";
-import { assertValidFarmArea } from "@agro/shared/validators/farm-area.validator";
+import { OrderBy } from "@agro/shared/utils";
+import { assertValidFarmArea } from "@agro/shared/validators";
 
 import { Producer } from "@/modules/producers/entities/producer.entity";
 

@@ -4,7 +4,7 @@
  * Contains configuration values unique to the frontend application.
  */
 
-import { LogLevel, RuntimeEnvironment } from "@agro/shared/utils/constants.util";
+import { LogLevel, RuntimeEnvironment } from "@agro/shared/utils";
 
 import { description, version } from "../../package.json";
 

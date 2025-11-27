@@ -7,9 +7,13 @@ import {
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 
-import { OrderBy } from "@agro/shared/utils/constants.util";
-import { stripCNPJFormatting, validateCNPJ } from "@agro/shared/validators/cnpj.validator";
-import { stripCPFFormatting, validateCPF } from "@agro/shared/validators/cpf.validator";
+import { OrderBy } from "@agro/shared/utils";
+import {
+	stripCNPJFormatting,
+	stripCPFFormatting,
+	validateCNPJ,
+	validateCPF,
+} from "@agro/shared/validators";
 
 import { CreateProducerDto, ProducerResponseDto, UpdateProducerDto } from "./dto";
 import { Producer } from "./entities/producer.entity";

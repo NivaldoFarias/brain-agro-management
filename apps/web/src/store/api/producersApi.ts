@@ -1,14 +1,13 @@
-import type { ApiResponse } from "node_modules/@agro/shared/src/types/api/response.types";
-
 import type {
+	ApiResponse,
 	CreateProducerRequest,
 	Producer,
 	ProducersListQuery,
 	ProducersListResponse,
 	UpdateProducerRequest,
-} from "@agro/shared/types/producer.types";
+} from "@agro/shared/types";
 
-import { HttpMethod } from "@agro/shared/utils/constants.util";
+import { HttpMethod } from "@agro/shared/utils";
 
 import { api } from "./baseApi";
 

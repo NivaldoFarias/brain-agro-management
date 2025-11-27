@@ -13,8 +13,7 @@ import path from "node:path";
 
 import Bun from "bun";
 
-import { LogLevel, RuntimeEnvironment } from "@agro/shared/utils/constants.util";
-import { createLogger } from "@agro/shared/utils/logger.util";
+import { createLogger, LogLevel, RuntimeEnvironment } from "@agro/shared/utils";
 
 const ROOT_DIR = import.meta.dir;
 const DIST_DIR = path.join(ROOT_DIR, "dist");
@@ -46,7 +45,10 @@ async function cleanDist(): Promise<void> {
 }
 
 /**
- * Bundle the NestJS application using Bun's bundler.
+ * Bundles the NestJS application using Bun's bundler.
+ *
+ * Includes bundling workspace dependencies (`@agro/shared`),
+ * whilst keeping `node_modules` external
  */
 async function buildApp(): Promise<void> {
 	logger.info("Building API bundle...");
@@ -59,7 +61,6 @@ async function buildApp(): Promise<void> {
 		splitting: false,
 		sourcemap: "linked",
 		minify: false,
-		// Bundle workspace dependencies (@agro/shared), keep node_modules external
 		external: [
 			"@nestjs/*",
 			"typeorm",

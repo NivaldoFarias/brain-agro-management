@@ -2,7 +2,7 @@ import { faker } from "@faker-js/faker/locale/pt_BR";
 import { ApiProperty } from "@nestjs/swagger";
 import { IsEnum, IsNotEmpty, IsNumber, IsString, IsUUID, Length, Min } from "class-validator";
 
-import { BrazilianState } from "@agro/shared/utils/constants.util";
+import { BrazilianState } from "@agro/shared/utils";
 
 import { IsCityInState } from "@/common/decorators/city-in-state.decorator";
 

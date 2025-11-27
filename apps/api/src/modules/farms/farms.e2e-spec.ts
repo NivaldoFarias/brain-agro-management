@@ -18,7 +18,7 @@ import type { DataSource } from "typeorm";
 
 import type { CreateFarmDto } from "@/modules/farms/dto";
 
-import { BrazilianState } from "@agro/shared/utils/constants.util";
+import { BrazilianState } from "@agro/shared/utils";
 
 describe("Farms E2E", () => {
 	let app: INestApplication<Server>;

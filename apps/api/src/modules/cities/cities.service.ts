@@ -4,7 +4,7 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { PinoLogger } from "nestjs-pino";
 import { Repository } from "typeorm";
 
-import { OrderBy } from "@agro/shared/utils/constants.util";
+import { OrderBy } from "@agro/shared/utils";
 
 import { BrazilianState } from "@/common";
 

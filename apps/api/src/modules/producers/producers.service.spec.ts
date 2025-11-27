@@ -11,7 +11,7 @@ import { getRepositoryToken } from "@nestjs/typeorm";
 import { fixtures, TestConstants } from "test/fixtures";
 import { Repository } from "typeorm";
 
-import { OrderBy } from "@agro/shared/utils/constants.util";
+import { OrderBy } from "@agro/shared/utils";
 
 import { UpdateProducerDto } from "./dto";
 import { Producer } from "./entities/producer.entity";

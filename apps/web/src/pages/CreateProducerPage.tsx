@@ -3,7 +3,7 @@ import styled from "styled-components";
 
 import type { ReactElement } from "react";
 
-import type { CreateProducerRequest } from "@agro/shared/types/producer.types";
+import type { CreateProducerRequest } from "@agro/shared/types";
 
 import { Typography } from "@/components/atoms";
 import { Card } from "@/components/ui/";

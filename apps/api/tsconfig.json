@@ -5,8 +5,8 @@
         "baseUrl": ".",
         "paths": {
             "@/*": ["./src/*"],
-            "@agro/shared": ["../../packages/shared/src"],
-            "@agro/shared/*": ["../../packages/shared/src/*"],
+            "@agro/shared": ["../../packages/shared"],
+            "@agro/shared/*": ["../../packages/shared/*"],
             "@test/*": ["./test/*"]
         },
         "types": ["node", "jest", "bun"]

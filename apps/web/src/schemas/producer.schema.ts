@@ -1,7 +1,6 @@
 import { z } from "zod";
 
-import { validateCNPJ } from "@agro/shared/validators/cnpj.validator";
-import { validateCPF } from "@agro/shared/validators/cpf.validator";
+import { validateCNPJ, validateCPF } from "@agro/shared/validators";
 
 /**
  * Zod schema for producer creation form validation.

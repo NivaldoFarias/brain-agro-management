@@ -2,7 +2,7 @@ import { faker } from "@faker-js/faker/locale/pt_BR";
 
 import type { CreateProducerDto } from "@/modules/producers/dto";
 
-import { generateDocument } from "@agro/shared/utils/cpf-cnpj.util";
+import { generateDocument } from "@agro/shared/utils";
 
 /**
  * Producer test data fixtures using Faker.

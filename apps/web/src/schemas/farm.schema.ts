@@ -1,7 +1,7 @@
 import { z } from "zod";
 
-import { BrazilianState, CropType } from "@agro/shared/utils/constants.util";
-import { validateFarmArea } from "@agro/shared/validators/farm-area.validator";
+import { BrazilianState, CropType } from "@agro/shared/utils";
+import { validateFarmArea } from "@agro/shared/validators";
 
 /**
  * Zod schema for farm creation form validation.

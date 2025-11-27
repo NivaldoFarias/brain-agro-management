@@ -7,7 +7,7 @@ import type { ReactElement } from "react";
 
 import type { CreateFarmFormData } from "@/schemas";
 
-import { BrazilianState, CropType } from "@agro/shared/utils/constants.util";
+import { BrazilianState, CropType } from "@agro/shared/utils";
 
 import { createFarmSchema } from "@/schemas";
 

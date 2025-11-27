@@ -5,7 +5,7 @@ import type { SetRequired } from "type-fest";
 import type { CitiesService } from "@/modules/cities/cities.service";
 import type { CreateFarmDto } from "@/modules/farms/dto";
 
-import { BrazilianState } from "@agro/shared/utils/constants.util";
+import { BrazilianState } from "@agro/shared/utils";
 
 enum FarmSize {
 	SMALL = "small",

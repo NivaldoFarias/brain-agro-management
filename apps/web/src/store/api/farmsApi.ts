@@ -1,11 +1,10 @@
-import type { ApiResponse } from "node_modules/@agro/shared/src/types/api/response.types";
-
 import type {
+	ApiResponse,
 	CreateFarmRequest,
 	Farm,
 	FarmsListResponse,
 	UpdateFarmRequest,
-} from "@agro/shared/types/farm.types";
+} from "@agro/shared/types";
 
 import { api } from "./baseApi";
 

@@ -15,12 +15,12 @@ import { DataSource } from "typeorm";
 
 import {
 	BrazilianState,
+	createLogger,
 	CropType,
+	generateDocument,
 	LogLevel,
 	RuntimeEnvironment,
-} from "@agro/shared/utils/constants.util";
-import { generateDocument } from "@agro/shared/utils/cpf-cnpj.util";
-import { createLogger } from "@agro/shared/utils/logger.util";
+} from "@agro/shared/utils";
 
 import { AppDataSource } from "@/config/database.config";
 import { FarmHarvestCrop } from "@/modules/farms/entities/farm-harvest-crop.entity";

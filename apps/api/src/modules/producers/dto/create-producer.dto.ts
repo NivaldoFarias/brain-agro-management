@@ -2,7 +2,7 @@ import { faker } from "@faker-js/faker/locale/pt_BR";
 import { ApiProperty } from "@nestjs/swagger";
 import { IsNotEmpty, IsString, Length } from "class-validator";
 
-import { generateDocument } from "@agro/shared/utils/cpf-cnpj.util";
+import { generateDocument } from "@agro/shared/utils";
 
 /**
  * Data Transfer Object for creating a new rural producer.

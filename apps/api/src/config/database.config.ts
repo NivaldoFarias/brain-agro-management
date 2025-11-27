@@ -1,6 +1,6 @@
 import { DataSource } from "typeorm";
 
-import { RuntimeEnvironment } from "@agro/shared/utils/constants.util";
+import { RuntimeEnvironment } from "@agro/shared/utils";
 
 import { env } from "@/config/env.config";
 // Import migrations directly for runtime execution

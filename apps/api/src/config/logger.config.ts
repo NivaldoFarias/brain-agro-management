@@ -1,7 +1,7 @@
 import type { Params } from "nestjs-pino";
 import type { SerializedRequest, SerializedResponse } from "pino";
 
-import { RuntimeEnvironment } from "@agro/shared/utils/constants.util";
+import { RuntimeEnvironment } from "@agro/shared/utils";
 
 import { correlationIdStorage } from "@/common";
 import { env } from "@/config/env.config";

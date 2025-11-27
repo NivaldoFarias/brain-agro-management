@@ -1,4 +1,4 @@
-import { createLogger } from "@agro/shared/utils/logger.util";
+import { createLogger } from "@agro/shared/utils";
 
 import { env } from "./env.util";
 

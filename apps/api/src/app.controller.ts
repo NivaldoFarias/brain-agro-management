@@ -1,7 +1,7 @@
 import { Controller, Get } from "@nestjs/common";
 import { ApiExcludeController } from "@nestjs/swagger";
 
-import type { ApiAppMetadata } from "@agro/shared/types/api/app-metadata.types";
+import type { ApiAppMetadata } from "@agro/shared/types";
 
 import {
 	API_ROUTES_AUTH,
@@ -9,7 +9,7 @@ import {
 	API_ROUTES_FARMS,
 	API_ROUTES_HEALTH,
 	API_ROUTES_PRODUCERS,
-} from "@agro/shared/constants/routes";
+} from "@agro/shared/constants";
 
 import { Public } from "@/common/decorators/public.decorator";
 

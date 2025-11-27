@@ -8,8 +8,8 @@
         "resolveJsonModule": true,
         "paths": {
             "@/*": ["./src/*"],
-            "@agro/shared": ["../../packages/shared/dist"],
-            "@agro/shared/*": ["../../packages/shared/dist/*"]
+            "@agro/shared": ["../../packages/shared"],
+            "@agro/shared/*": ["../../packages/shared/*"]
         }
     },
     "include": ["src/**/*", "vite.config.ts", "package.json", "src/locales/*.json"],

@@ -3,7 +3,7 @@ import styled from "styled-components";
 
 import type { ReactElement } from "react";
 
-import type { Farm } from "@agro/shared/types/farm.types";
+import type { Farm } from "@agro/shared/types";
 
 import { Button } from "../ui/Button";
 import { Card } from "../ui/Card";
