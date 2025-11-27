@@ -8,6 +8,7 @@ import { Logger } from "nestjs-pino";
 import type { INestApplication } from "@nestjs/common";
 import type { OpenAPIObject } from "@nestjs/swagger";
 
+import { AppDataSource } from "@/config/database.config";
 import { env } from "@/config/env.config";
 
 import { version } from "../package.json";
@@ -27,6 +28,11 @@ if (import.meta.main) {
  * isolated in its own function for maintainability.
  */
 async function bootstrap(): Promise<void> {
+	// Run migrations if enabled (before creating the app)
+	if (env.API__RUN_DB_MIGRATIONS) {
+		await runMigrations();
+	}
+
 	const app = await NestFactory.create(AppModule, { bufferLogs: true });
 
 	const logger = setupLogger(app);
@@ -45,6 +51,44 @@ async function bootstrap(): Promise<void> {
 	await seedService.seed();
 
 	await startServer(app, logger);
+}
+
+/**
+ * Runs pending database migrations.
+ *
+ * Initializes a separate DataSource connection to run migrations before the
+ * NestJS application starts. This ensures the database schema is up-to-date
+ * before any queries are executed.
+ *
+ * @throws {Error} If migrations fail to run
+ */
+async function runMigrations(): Promise<void> {
+	console.log("[Migration] Initializing DataSource for migrations...");
+
+	try {
+		const dataSource = await AppDataSource.initialize();
+		console.log("[Migration] DataSource initialized successfully");
+
+		const pendingMigrations = await dataSource.showMigrations();
+		console.log(`[Migration] Pending migrations: ${pendingMigrations}`);
+
+		if (pendingMigrations) {
+			console.log("[Migration] Running pending migrations...");
+			const migrations = await dataSource.runMigrations({ transaction: "all" });
+			console.log(`[Migration] Successfully ran ${migrations.length} migration(s):`);
+			for (const migration of migrations) {
+				console.log(`  - ${migration.name}`);
+			}
+		} else {
+			console.log("[Migration] Database schema is up-to-date");
+		}
+
+		await dataSource.destroy();
+		console.log("[Migration] DataSource closed");
+	} catch (error) {
+		console.error("[Migration] Failed to run migrations:", error);
+		throw error;
+	}
 }
 
 /**

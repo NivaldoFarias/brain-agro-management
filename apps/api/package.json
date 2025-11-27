@@ -6,7 +6,7 @@
 	"type": "module",
 	"scripts": {
 		"dev": "bun --watch src/main.ts",
-		"build": "bun run src/build.ts",
+		"build": "bun run build.ts",
 		"start": "bun dist/main.js",
 		"start:dev": "bun run dev",
 		"start:prod": "bun run start",

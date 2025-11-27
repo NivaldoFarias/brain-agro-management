@@ -64,7 +64,7 @@ export const environmentDefaults = {
 	API__CORS_ORIGIN: "*",
 	API__THROTTLE_TTL_MS: 60_000,
 	API__THROTTLE_LIMIT: 10,
-	API__RUN_DB_MIGRATIONS: false,
+	API__RUN_DB_MIGRATIONS: true,
 	API__JWT_SECRET: "change-me-in-production-use-minimum-32-characters-secret-key",
 	API__JWT_EXPIRATION: "1h",
 	API__SEED_DATABASE: false,

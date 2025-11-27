@@ -1,8 +1,14 @@
+import path from "node:path";
+
 import { DataSource } from "typeorm";
 
 import { RuntimeEnvironment } from "@agro/shared/utils/constants.util";
 
 import { env } from "@/config/env.config";
+// Import migrations directly for runtime execution
+import { InitialSchema1732406400000 } from "@/database/migrations/1732406400000-InitialSchema";
+import { SeedCities1732406500000 } from "@/database/migrations/1732406500000-SeedCities";
+import { AddPerformanceIndexes1732500000000 } from "@/database/migrations/1732500000000-AddPerformanceIndexes";
 import { City } from "@/modules/cities/entities/city.entity";
 import { FarmHarvestCrop } from "@/modules/farms/entities/farm-harvest-crop.entity";
 import { FarmHarvest } from "@/modules/farms/entities/farm-harvest.entity";
@@ -27,7 +33,11 @@ export const AppDataSource = new DataSource({
 	location: env.API__DATABASE_PATH,
 	autoSave: true,
 	entities: [Producer, Farm, Harvest, FarmHarvest, FarmHarvestCrop, City],
-	migrations: ["./src/database/migrations/**/*.ts"],
+	migrations: [
+		InitialSchema1732406400000,
+		SeedCities1732406500000,
+		AddPerformanceIndexes1732500000000,
+	],
 	// TEMPORARY: Auto-create tables in development (will use migrations in production)
 	synchronize: env.NODE_ENV !== RuntimeEnvironment.Production,
 	logging: env.API__DATABASE_LOGGING,
