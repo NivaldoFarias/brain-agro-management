@@ -1,4 +1,4 @@
-# Agro Management - Monorepo Structure
+# Monorepo Structure
 
 This project uses a monorepo structure with Bun workspaces and TypeScript project references.
 

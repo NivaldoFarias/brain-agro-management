@@ -1,10 +1,8 @@
-# Brain Agriculture - System Architecture
+# System Architecture
 
 > **Version**: 0.0.1  
-> **Last Updated**: November 24, 2025  
 > **Stack**: Bun + NestJS + TypeORM + React + Redux Toolkit  
 > **Pattern**: Monorepo with workspace separation  
-> **Assessment**: Full-stack rural producer and farm management system
 
 ## Table of Contents
 
