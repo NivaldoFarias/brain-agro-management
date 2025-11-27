@@ -1,6 +1,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
+import { useTranslation } from "react-i18next";
 import styled from "styled-components";
 
 import type { ReactElement } from "react";
@@ -27,9 +28,6 @@ export interface FarmFormProps {
 	/** Initial form values for editing */
 	defaultValues?: Partial<CreateFarmFormData>;
 
-	/** Submit button text */
-	submitLabel?: string;
-
 	/** Producer ID to associate the farm with */
 	producerId: string;
 }
@@ -53,13 +51,8 @@ export interface FarmFormProps {
  * />
  * ```
  */
-export function FarmForm({
-	onSubmit,
-	isLoading = false,
-	defaultValues,
-	submitLabel = "Save Farm",
-	producerId,
-}: FarmFormProps): ReactElement {
+export function FarmForm({ onSubmit, isLoading = false, defaultValues, producerId }: FarmFormProps): ReactElement {
+	const { t } = useTranslation();
 	const [selectedState, setSelectedState] = useState<string>(defaultValues?.state ?? "");
 
 	const {
@@ -96,13 +89,7 @@ export function FarmForm({
 			}}
 			noValidate
 		>
-			<FormField
-				id="name"
-				label="Farm Name"
-				required
-				error={errors.name?.message}
-				hint="Name of the agricultural property"
-			>
+			<FormField id="name" label={t("farms.name")} required error={errors.name?.message} hint={t("farms.nameHint")}>
 				<Input
 					{...register("name")}
 					id="name"
@@ -114,7 +101,7 @@ export function FarmForm({
 				/>
 			</FormField>
 
-			<FormField id="city" label="City" required error={errors.city?.message} hint="Brazilian municipality">
+			<FormField id="city" label={t("farms.city")} required error={errors.city?.message} hint={t("farms.cityHint")}>
 				<Input
 					{...register("city")}
 					id="city"
@@ -133,9 +120,9 @@ export function FarmForm({
 						setSelectedState(value);
 						setValue("state", value as BrazilianState, { shouldValidate: true });
 					}}
-					placeholder="Select a state"
+					placeholder={t("farms.selectState")}
 					disabled={isLoading}
-					aria-label="Farm state"
+					aria-label={t("farms.state")}
 					options={Object.values(BrazilianState).map((state) => ({
 						value: state,
 						label: state,
@@ -146,10 +133,10 @@ export function FarmForm({
 			<AreaFieldsGroup>
 				<FormField
 					id="totalArea"
-					label="Total Area (ha)"
+					label={t("farms.totalArea")}
 					required
 					error={errors.totalArea?.message}
-					hint="Total farm area in hectares"
+					hint={t("farms.totalAreaHint")}
 				>
 					<Input
 						{...register("totalArea", { valueAsNumber: true })}
@@ -166,10 +153,10 @@ export function FarmForm({
 
 				<FormField
 					id="arableArea"
-					label="Arable Area (ha)"
+					label={t("farms.arableArea")}
 					required
 					error={errors.arableArea?.message}
-					hint="Agricultural area"
+					hint={t("farms.arableAreaHint")}
 				>
 					<Input
 						{...register("arableArea", { valueAsNumber: true })}
@@ -186,10 +173,10 @@ export function FarmForm({
 
 				<FormField
 					id="vegetationArea"
-					label="Vegetation Area (ha)"
+					label={t("farms.vegetationArea")}
 					required
 					error={errors.vegetationArea?.message}
-					hint="Preservation area"
+					hint={t("farms.vegetationAreaHint")}
 				>
 					<Input
 						{...register("vegetationArea", { valueAsNumber: true })}
@@ -205,13 +192,7 @@ export function FarmForm({
 				</FormField>
 			</AreaFieldsGroup>
 
-			<FormField
-				id="crops"
-				label="Crops"
-				required
-				error={errors.crops?.message}
-				hint="Select one or more crops cultivated on this farm"
-			>
+			<FormField id="crops" label={t("farms.crops")} required error={errors.crops?.message} hint={t("farms.cropsHint")}>
 				<CropSelector>
 					{Object.values(CropType).map((crop) => (
 						<CropCheckbox key={crop}>
@@ -232,7 +213,7 @@ export function FarmForm({
 
 			<ButtonGroup>
 				<Button type="submit" variant="primary" disabled={isLoading} isLoading={isLoading}>
-					{submitLabel}
+					{t("farms.submitLabel")}
 				</Button>
 			</ButtonGroup>
 		</Form>

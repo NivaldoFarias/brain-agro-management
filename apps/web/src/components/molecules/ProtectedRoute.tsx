@@ -41,7 +41,7 @@ export function ProtectedRoute({ children }: ProtectedRouteProps): ReactElement 
 
 	if (!isAuthenticated) {
 		console.log("[ProtectedRoute] Not authenticated - redirecting to login");
-		// Redirect to login, saving the attempted location
+
 		return <Navigate to={ROUTES.auth.login} state={{ from: location }} replace />;
 	}
 

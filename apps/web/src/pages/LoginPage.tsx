@@ -75,7 +75,7 @@ export function LoginPage(): ReactElement {
 				<Header>
 					<Title>{t("app.title")}</Title>
 					<Subtitle>{t("app.subtitle")}</Subtitle>
-				</Header>{" "}
+				</Header>
 				<form
 					onSubmit={(e) => {
 						void handleSubmit(e);
@@ -99,7 +99,7 @@ export function LoginPage(): ReactElement {
 						<Input
 							id="password"
 							type="password"
-							placeholder="Enter your password"
+							placeholder={t("auth.passwordPlaceholder")}
 							value={password}
 							onChange={(event) => {
 								setPassword(event.target.value);
@@ -116,7 +116,7 @@ export function LoginPage(): ReactElement {
 					</Button>
 				</form>
 				<DemoCredentials>
-					<DemoTitle>Demo Credentials</DemoTitle>
+					<DemoTitle>{t("auth.demoCredentials")}</DemoTitle>
 					<DemoText>{t("auth.email")}: admin@example.com</DemoText>
 					<DemoText>{t("auth.password")}: admin123</DemoText>
 				</DemoCredentials>

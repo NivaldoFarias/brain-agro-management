@@ -16,13 +16,18 @@
         "next": "Next",
         "previous": "Previous",
         "noData": "No data available",
-        "actions": "Actions"
+        "actions": "Actions",
+        "none": "None",
+        "submit": "Submit",
+        "page": "Page",
+        "of": "of"
     },
     "auth": {
         "login": "Login",
         "logout": "Logout",
         "email": "Email",
         "password": "Password",
+        "passwordPlaceholder": "Enter your password",
         "forgotPassword": "Forgot password?",
         "rememberMe": "Remember me",
         "loginSuccess": "Login successful",
@@ -31,7 +36,8 @@
         "required": "This field is required",
         "invalidEmail": "Invalid email address",
         "welcomeBack": "Welcome back!",
-        "sessionExpired": "Your session has expired. Please login again."
+        "sessionExpired": "Your session has expired. Please login again.",
+        "demoCredentials": "Demo credentials"
     },
     "nav": {
         "dashboard": "Dashboard",
@@ -44,11 +50,14 @@
         "title": "Producers",
         "subtitle": "Manage rural producers",
         "createProducer": "Create Producer",
+        "addNewProducer": "Add a new rural producer",
         "editProducer": "Edit Producer",
         "deleteProducer": "Delete Producer",
         "producerDetails": "Producer Details",
-        "name": "Name",
+        "name": "Producer Name",
+        "nameHint": "Full name of the rural producer or company",
         "document": "CPF/CNPJ",
+        "documentHint": "Brazilian document number (CPF or CNPJ)",
         "farmCount": "Farms",
         "createdAt": "Created at",
         "updatedAt": "Updated at",
@@ -56,12 +65,16 @@
         "deleteSuccess": "Producer deleted successfully",
         "deleteError": "Failed to delete producer",
         "createSuccess": "Producer created successfully",
+        "producerAdded": "Producer has been added successfully",
         "createError": "Failed to create producer",
         "updateSuccess": "Producer updated successfully",
         "updateError": "Failed to update producer",
         "loadError": "Failed to load producers",
-        "noProducers": "No producers found",
-        "searchPlaceholder": "Search producers..."
+        "noProducers": "No producers yet",
+        "searchPlaceholder": "Search producers...",
+        "submitLabel": "Save Producer",
+        "loadingProducers": "Loading producers...",
+        "registerNewProducer": "Register a new rural producer to start managing agricultural properties"
     },
     "farms": {
         "title": "Farms",
@@ -71,12 +84,19 @@
         "deleteFarm": "Delete Farm",
         "farmDetails": "Farm Details",
         "name": "Farm Name",
+        "nameHint": "Name of the agricultural property",
         "city": "City",
+        "cityHint": "Brazilian municipality",
         "state": "State",
-        "totalArea": "Total Area (hectares)",
-        "arableArea": "Arable Area (hectares)",
-        "vegetationArea": "Vegetation Area (hectares)",
+        "selectState": "Select a state",
+        "totalArea": "Total Area (ha)",
+        "totalAreaHint": "Total farm area (ha)",
+        "arableArea": "Arable Area (ha)",
+        "arableAreaHint": "Arable area of the farm (ha)",
+        "vegetationArea": "Vegetation Area (ha)",
+        "vegetationAreaHint": "Preservation area of the farm (ha)",
         "crops": "Crops",
+        "cropsHint": "Select one or more crops cultivated on this farm",
         "producer": "Producer",
         "selectProducer": "Select a producer",
         "selectCrops": "Select crops",
@@ -88,8 +108,14 @@
         "updateSuccess": "Farm updated successfully",
         "updateError": "Failed to update farm",
         "loadError": "Failed to load farms",
-        "noFarms": "No farms found",
-        "areaValidation": "The sum of arable and vegetation areas cannot exceed total area"
+        "noFarms": "No farms yet",
+        "areaValidation": "The sum of arable and vegetation areas cannot exceed total area",
+        "loadingFarms": "Loading farms...",
+        "createFirstFarm": "Create your first farm to start tracking agricultural properties",
+        "searchPlaceholder": "Search by name, city or producer...",
+        "submitLabel": "Save Farm",
+        "registerNewProperty": "Register a new agricultural property",
+        "farmAdded": "The farm has been added successfully"
     },
     "dashboard": {
         "title": "Dashboard",
@@ -104,6 +130,7 @@
         "arable": "Arable",
         "vegetation": "Vegetation",
         "farms": "farms",
+        "crops": "Crops",
         "hectares": "hectares",
         "loadError": "Failed to load dashboard data",
         "noStats": "No statistics available"
@@ -161,5 +188,14 @@
     "app": {
         "title": "Brain Agriculture",
         "subtitle": "Rural Producer Management System"
+    },
+    "notFoundPage": {
+        "title": "Page Not Found",
+        "description": "The page you're looking for doesn't exist or has been moved.",
+        "goToDashboard": "Go to Dashboard"
+    },
+    "form": {
+        "createdAt": "Created at",
+        "updatedAt": "Updated at"
     }
 }

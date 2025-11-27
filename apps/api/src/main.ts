@@ -8,6 +8,8 @@ import { Logger } from "nestjs-pino";
 import type { INestApplication } from "@nestjs/common";
 import type { OpenAPIObject } from "@nestjs/swagger";
 
+import { createLogger } from "@agro/shared/utils";
+
 import { AppDataSource } from "@/config/database.config";
 import { env } from "@/config/env.config";
 
@@ -28,7 +30,6 @@ if (import.meta.main) {
  * isolated in its own function for maintainability.
  */
 async function bootstrap(): Promise<void> {
-	// Run migrations if enabled (before creating the app)
 	if (env.API__RUN_DB_MIGRATIONS) {
 		await runMigrations();
 	}
@@ -45,7 +46,6 @@ async function bootstrap(): Promise<void> {
 	const document = setupOpenApiDocumentation(app);
 	setupScalarApiReference(app, document);
 
-	// Seed database if enabled
 	const { SeedService } = await import("./database/seeds/seed.service");
 	const seedService = app.get(SeedService);
 	await seedService.seed();
@@ -65,7 +65,9 @@ async function bootstrap(): Promise<void> {
  * @throws {Error} If migrations fail to run
  */
 async function runMigrations(): Promise<void> {
-	process.stdout.write("[Migration] Initializing DataSource for migrations...\n");
+	const migrationLogger = createLogger({ name: "Migration" });
+
+	migrationLogger.info("Initializing DataSource for migrations...");
 
 	try {
 		const path = await import("node:path");
@@ -75,7 +77,7 @@ async function runMigrations(): Promise<void> {
 		const dbDir = path.dirname(dbPath);
 
 		await fs.mkdir(dbDir, { recursive: true });
-		process.stdout.write(`[Migration] Ensured database directory exists: ${dbDir}\n`);
+		migrationLogger.info(`Ensured database directory exists: ${dbDir}`);
 
 		const { DataSource } = await import("typeorm");
 		const migrationDataSource = new DataSource({
@@ -84,29 +86,27 @@ async function runMigrations(): Promise<void> {
 		});
 
 		const dataSource = await migrationDataSource.initialize();
-		process.stdout.write("[Migration] DataSource initialized successfully\n");
+		migrationLogger.info("DataSource initialized successfully");
 
 		const pendingMigrations = await dataSource.showMigrations();
-		process.stdout.write(`[Migration] Pending migrations: ${String(pendingMigrations)}\n`);
+		migrationLogger.info(`Pending migrations: ${String(pendingMigrations)}`);
 
 		if (pendingMigrations) {
-			process.stdout.write("[Migration] Running pending migrations...\n");
+			migrationLogger.info("Running pending migrations...");
 			const migrations = await dataSource.runMigrations({ transaction: "all" });
-			process.stdout.write(
-				`[Migration] Successfully ran ${String(migrations.length)} migration(s):\n`,
-			);
+			migrationLogger.info(`Successfully ran ${String(migrations.length)} migration(s):`);
 			for (const migration of migrations) {
-				process.stdout.write(`  - ${migration.name}\n`);
+				migrationLogger.info(`  - ${migration.name}`);
 			}
 		} else {
-			process.stdout.write("[Migration] Database schema is up-to-date\n");
+			migrationLogger.info("Database schema is up-to-date");
 		}
 
 		await dataSource.destroy();
 
-		process.stdout.write("[Migration] DataSource closed\n");
+		migrationLogger.info("DataSource closed");
 	} catch (error) {
-		process.stderr.write(`[Migration] Failed to run migrations: ${String(error)}\n`);
+		migrationLogger.error(`Failed to run migrations: ${String(error)}`);
 
 		throw error;
 	}

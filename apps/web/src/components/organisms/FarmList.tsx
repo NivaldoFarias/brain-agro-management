@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 
@@ -60,10 +61,11 @@ export function FarmList({
 	onDelete,
 	isDeletingId,
 }: FarmListProps): ReactElement {
+	const { t } = useTranslation();
 	const navigate = useNavigate();
 
 	if (isLoading) {
-		return <LoadingState message="Loading farms..." />;
+		return <LoadingState message={t("farms.loadingFarms")} />;
 	}
 
 	if (error) {
@@ -73,8 +75,8 @@ export function FarmList({
 	if (farms.length === 0) {
 		return (
 			<EmptyState
-				title="No farms yet"
-				description="Create your first farm to start tracking agricultural properties"
+				title={t("farms.noFarms")}
+				description={t("farms.createFirstFarm")}
 				icon="🌾"
 				action={
 					<Button
@@ -83,7 +85,7 @@ export function FarmList({
 							void navigate("/farms/create");
 						}}
 					>
-						Create Farm
+						{t("farms.createFarm")}
 					</Button>
 				}
 			/>
@@ -105,14 +107,15 @@ export function FarmList({
 									<strong>Total:</strong> {farm.totalArea.toFixed(2)} ha
 								</AreaBadge>
 								<AreaBadge>
-									<strong>Arable:</strong> {farm.arableArea.toFixed(2)} ha
+									<strong>{t("dashboard.arable")}:</strong> {farm.arableArea.toFixed(2)} ha
 								</AreaBadge>
 								<AreaBadge>
-									<strong>Vegetation:</strong> {farm.vegetationArea.toFixed(2)} ha
+									<strong>{t("dashboard.vegetation")}:</strong> {farm.vegetationArea.toFixed(2)} ha
 								</AreaBadge>
 							</FarmAreas>
 							<CropsList>
-								<strong>Crops:</strong> {farm.crops.length > 0 ? farm.crops.join(", ") : "None"}
+								<strong>{t("dashboard.crops")}:</strong>{" "}
+								{farm.crops.length > 0 ? farm.crops.join(", ") : t("common.none")}
 							</CropsList>
 						</FarmInfo>
 						<ActionButtons>
@@ -123,7 +126,7 @@ export function FarmList({
 									void navigate(`/farms/${farm.id}/edit`);
 								}}
 							>
-								Edit
+								{t("common.edit")}
 							</Button>
 							<Button
 								variant="danger"
@@ -132,7 +135,7 @@ export function FarmList({
 								disabled={isDeletingId === farm.id}
 								isLoading={isDeletingId === farm.id}
 							>
-								Delete
+								{t("common.delete")}
 							</Button>
 						</ActionButtons>
 					</CardContent>

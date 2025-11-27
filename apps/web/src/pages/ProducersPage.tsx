@@ -83,7 +83,7 @@ export function ProducersPage(): ReactElement {
 							{t("common.previous")}
 						</Button>
 						<Typography variant="body">
-							Page {page} of {Math.ceil(data.total / 10)}
+							{t("common.page")} {page} {t("common.of")} {Math.ceil(data.total / 10)}
 						</Typography>
 						<Button
 							variant="secondary"

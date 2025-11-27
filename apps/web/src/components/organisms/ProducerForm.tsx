@@ -1,5 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
+import { useTranslation } from "react-i18next";
 import styled from "styled-components";
 
 import type { ReactElement } from "react";
@@ -22,9 +23,6 @@ export interface ProducerFormProps {
 
 	/** Initial form values for editing */
 	defaultValues?: Partial<CreateProducerFormData>;
-
-	/** Submit button text */
-	submitLabel?: string;
 }
 
 /**
@@ -45,12 +43,8 @@ export interface ProducerFormProps {
  * />
  * ```
  */
-export function ProducerForm({
-	onSubmit,
-	isLoading = false,
-	defaultValues,
-	submitLabel = "Save Producer",
-}: ProducerFormProps): ReactElement {
+export function ProducerForm({ onSubmit, isLoading = false, defaultValues }: ProducerFormProps): ReactElement {
+	const { t } = useTranslation();
 	const {
 		register,
 		handleSubmit,
@@ -70,10 +64,10 @@ export function ProducerForm({
 		>
 			<FormField
 				id="name"
-				label="Producer Name"
+				label={t("producers.name")}
 				required
 				error={errors.name?.message}
-				hint="Full name of the rural producer or company"
+				hint={t("producers.nameHint")}
 			>
 				<Input
 					{...register("name")}
@@ -88,10 +82,10 @@ export function ProducerForm({
 
 			<FormField
 				id="document"
-				label="CPF/CNPJ"
+				label={t("producers.document")}
 				required
 				error={errors.document?.message}
-				hint="Brazilian document number (CPF or CNPJ)"
+				hint={t("producers.documentHint")}
 			>
 				<Input
 					{...register("document")}
@@ -106,7 +100,7 @@ export function ProducerForm({
 
 			<ButtonGroup>
 				<Button type="submit" variant="primary" disabled={isLoading} isLoading={isLoading}>
-					{submitLabel}
+					{t("producers.submitLabel")}
 				</Button>
 			</ButtonGroup>
 		</Form>

@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 
@@ -7,6 +8,7 @@ import type { CreateFarmFormData } from "@/schemas";
 
 import { Typography } from "@/components/atoms";
 import { Card, EmptyState, LoadingState } from "@/components/ui/";
+import { useToast } from "@/contexts";
 import { FarmForm } from "@/features";
 import { useCreateFarmMutation, useGetProducersQuery } from "@/store/api";
 import { ROUTES } from "@/utils/";
@@ -18,7 +20,9 @@ import { ROUTES } from "@/utils/";
  * with area validation and crop selection.
  */
 export function CreateFarmPage(): ReactElement {
+	const { t } = useTranslation();
 	const navigate = useNavigate();
+	const toast = useToast();
 
 	const { data: producersData, isLoading: isLoadingProducers } = useGetProducersQuery({
 		page: 1,
@@ -29,19 +33,20 @@ export function CreateFarmPage(): ReactElement {
 	const handleSubmit = async (data: CreateFarmFormData) => {
 		try {
 			await createFarm(data).unwrap();
-			// TODO: Show success toast when Toast component is ready
+
+			toast.success(t("farms.createSuccess"), t("farms.farmAdded"));
+
 			await navigate(ROUTES.farms.list);
 		} catch (error) {
-			console.error("Failed to create farm:", error);
-			// TODO: Show error toast when Toast component is ready
-			alert("Failed to create farm. Please try again.");
+			console.error(t("farms.createError"), error);
+			toast.error(t("farms.createError"), t("common.retry"));
 		}
 	};
 
 	if (isLoadingProducers) {
 		return (
 			<Container>
-				<LoadingState message="Loading producers..." />
+				<LoadingState message={t("farms.loadingProducers")} />
 			</Container>
 		);
 	}
@@ -50,8 +55,8 @@ export function CreateFarmPage(): ReactElement {
 		return (
 			<Container>
 				<EmptyState
-					title="No producers available"
-					description="You need to create at least one producer before creating a farm"
+					title={t("farms.noProducers")}
+					description={t("farms.registerNewProducer")}
 					action={
 						<button
 							onClick={() => {
@@ -59,7 +64,7 @@ export function CreateFarmPage(): ReactElement {
 							}}
 							style={{ cursor: "pointer" }}
 						>
-							Create Producer
+							{t("producers.createProducer")}
 						</button>
 					}
 				/>
@@ -70,17 +75,12 @@ export function CreateFarmPage(): ReactElement {
 	return (
 		<Container>
 			<Header>
-				<Typography variant="h1">Create Farm</Typography>
-				<Typography variant="body">Register a new agricultural property</Typography>
+				<Typography variant="h1">{t("farms.createFarm")}</Typography>
+				<Typography variant="body">{t("farms.registerNewProperty")}</Typography>
 			</Header>
 
 			<FormCard>
-				<FarmForm
-					producerId={producersData.data[0]?.id ?? ""}
-					onSubmit={handleSubmit}
-					isLoading={isCreating}
-					submitLabel="Create Farm"
-				/>
+				<FarmForm producerId={producersData.data[0]?.id ?? ""} onSubmit={handleSubmit} isLoading={isCreating} />
 			</FormCard>
 		</Container>
 	);

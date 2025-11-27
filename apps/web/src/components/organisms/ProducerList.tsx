@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 
@@ -60,10 +61,11 @@ export function ProducerList({
 	onDelete,
 	isDeletingId,
 }: ProducerListProps): ReactElement {
+	const { t } = useTranslation();
 	const navigate = useNavigate();
 
 	if (isLoading) {
-		return <LoadingState message="Loading producers..." />;
+		return <LoadingState message={t("producers.loadingProducers")} />;
 	}
 
 	if (error) {
@@ -73,8 +75,8 @@ export function ProducerList({
 	if (producers.length === 0) {
 		return (
 			<EmptyState
-				title="No producers yet"
-				description="Create your first producer to get started managing your farms"
+				title={t("producers.noProducers")}
+				description={t("producers.registerNewProducer")}
 				icon="👤"
 				action={
 					<Button
@@ -83,7 +85,7 @@ export function ProducerList({
 							void navigate("/producers/create");
 						}}
 					>
-						Create Producer
+						{t("producers.createProducer")}
 					</Button>
 				}
 			/>
@@ -98,7 +100,9 @@ export function ProducerList({
 						<ProducerInfo>
 							<ProducerName>{producer.name}</ProducerName>
 							<ProducerDocument>{producer.document}</ProducerDocument>
-							<ProducerMeta>Created: {new Date(producer.createdAt).toLocaleDateString()}</ProducerMeta>
+							<ProducerMeta>
+								{t("form.createdAt")}: {new Date(producer.createdAt).toLocaleDateString()}
+							</ProducerMeta>
 						</ProducerInfo>
 						<ActionButtons>
 							<Button
@@ -108,7 +112,7 @@ export function ProducerList({
 									void navigate(`/producers/${producer.id}/edit`);
 								}}
 							>
-								Edit
+								{t("common.edit")}
 							</Button>
 							<Button
 								variant="danger"
@@ -117,7 +121,7 @@ export function ProducerList({
 								disabled={isDeletingId === producer.id}
 								isLoading={isDeletingId === producer.id}
 							>
-								Delete
+								{t("common.delete")}
 							</Button>
 						</ActionButtons>
 					</CardContent>
