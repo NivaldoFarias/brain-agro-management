@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 
@@ -20,7 +19,6 @@ import { ROUTES } from "@/utils/";
  */
 export function CreateFarmPage(): ReactElement {
 	const navigate = useNavigate();
-	const [selectedProducerId, setSelectedProducerId] = useState<string>("");
 
 	const { data: producersData, isLoading: isLoadingProducers } = useGetProducersQuery({
 		page: 1,
@@ -32,7 +30,7 @@ export function CreateFarmPage(): ReactElement {
 		try {
 			await createFarm(data).unwrap();
 			// TODO: Show success toast when Toast component is ready
-			void navigate(ROUTES.farms.list);
+			await navigate(ROUTES.farms.list);
 		} catch (error) {
 			console.error("Failed to create farm:", error);
 			// TODO: Show error toast when Toast component is ready
@@ -78,7 +76,7 @@ export function CreateFarmPage(): ReactElement {
 
 			<FormCard>
 				<FarmForm
-					producerId={(selectedProducerId || producersData.data[0]?.id) ?? ""}
+					producerId={producersData.data[0]?.id ?? ""}
 					onSubmit={handleSubmit}
 					isLoading={isCreating}
 					submitLabel="Create Farm"

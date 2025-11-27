@@ -11,11 +11,22 @@
 import { rm } from "node:fs/promises";
 import path from "node:path";
 
-import Bun from "Bun";
+import Bun from "bun";
+
+import { LogLevel, RuntimeEnvironment } from "@agro/shared/utils/constants.util";
+import { createLogger } from "@agro/shared/utils/logger.util";
 
 const ROOT_DIR = import.meta.dir;
 const DIST_DIR = path.join(ROOT_DIR, "dist");
 const ENTRY_POINT = path.join(ROOT_DIR, "src", "main.ts");
+
+const logger = createLogger({
+	name: "build",
+	level: LogLevel.Debug,
+	environment: RuntimeEnvironment.Build,
+	logToConsole: true,
+	logsDir: path.join(ROOT_DIR, "logs"),
+});
 
 /**
  * Clean the dist directory before building.
@@ -23,11 +34,14 @@ const ENTRY_POINT = path.join(ROOT_DIR, "src", "main.ts");
 async function cleanDist(): Promise<void> {
 	try {
 		await rm(DIST_DIR, { recursive: true, force: true });
-		console.log("✓ Cleaned dist directory");
+
+		logger.info("✓ Cleaned dist directory");
 	} catch (error) {
 		if ((error as NodeJS.ErrnoException).code !== "ENOENT") {
 			throw error;
 		}
+
+		logger.info("✓ Dist directory does not exist, no need to clean");
 	}
 }
 
@@ -35,7 +49,7 @@ async function cleanDist(): Promise<void> {
  * Bundle the NestJS application using Bun's bundler.
  */
 async function buildApp(): Promise<void> {
-	console.log("Building API bundle...");
+	logger.info("Building API bundle...");
 
 	const result = await Bun.build({
 		entrypoints: [ENTRY_POINT],
@@ -68,26 +82,26 @@ async function buildApp(): Promise<void> {
 	});
 
 	if (!result.success) {
-		console.error("❌ Build failed with errors:");
+		logger.error("❌ Build failed with errors:");
 		for (const log of result.logs) {
-			console.error(log);
+			logger.error(log);
 		}
 		process.exit(1);
 	}
 
 	if (result.logs.length > 0) {
-		console.warn("⚠️ Build completed with warnings:");
+		logger.warn("⚠️ Build completed with warnings:");
 		for (const log of result.logs) {
-			console.warn(log);
+			logger.warn(log);
 		}
 	}
 
-	console.log("✓ Build completed successfully!");
-	console.log(`  Output: ${DIST_DIR}/main.js`);
+	logger.info("✓ Build completed successfully!");
+	logger.info(`  Output: ${DIST_DIR}/main.js`);
 
 	for (const output of result.outputs) {
 		const sizeInKB = (output.size / 1024).toFixed(2);
-		console.log(`  - ${output.path} (${sizeInKB} KB)`);
+		logger.info(`  - ${output.path} (${sizeInKB} KB)`);
 	}
 }
 
@@ -98,10 +112,10 @@ async function build(): Promise<void> {
 	try {
 		await cleanDist();
 		await buildApp();
-		console.log("\n✓ Build process completed successfully!");
+		logger.info("\n✓ Build process completed successfully!");
 	} catch (error) {
-		console.error("\n❌ Build process failed:");
-		console.error(error);
+		logger.error("\n❌ Build process failed:");
+		logger.error(error);
 		process.exit(1);
 	}
 }

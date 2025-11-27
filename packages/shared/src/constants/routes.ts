@@ -79,9 +79,6 @@ export const API_ROUTES_AUTH = {
 
 	/** Logout endpoint: `POST /api/auth/logout` */
 	logout: `${API_BASE}/auth/logout`,
-
-	/** Get current user profile: `GET /api/auth/profile` */
-	profile: `${API_BASE}/auth/profile`,
 } as const;
 
 /**
@@ -111,6 +108,19 @@ export const API_ROUTES_CITIES = {
 } as const;
 
 /**
+ * Documentation-related API endpoints.
+ *
+ * Provides access to API documentation and reference materials.
+ */
+export const API_ROUTES_DOCS = {
+	/** Swagger API documentation: `GET /api/docs` */
+	docs: `${API_BASE}/docs`,
+
+	/** Scalar API Reference: `GET /api/reference` */
+	reference: `${API_BASE}/reference`,
+} as const;
+
+/**
  * Consolidated API routes object.
  *
  * Provides all API endpoints in a single export for convenience.
@@ -130,4 +140,5 @@ export const API_ROUTES = {
 	auth: API_ROUTES_AUTH,
 	health: API_ROUTES_HEALTH,
 	cities: API_ROUTES_CITIES,
+	docs: API_ROUTES_DOCS,
 } as const;

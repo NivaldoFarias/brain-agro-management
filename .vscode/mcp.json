@@ -1,9 +1,16 @@
 {
-	"servers": {
-		"Vercel": {
-			"url": "https://mcp.vercel.com",
-			"type": "http"
-		}
-	},
-	"inputs": []
+    "inputs": [
+        {
+            "id": "CONTEXT7_API_KEY",
+            "type": "promptString",
+            "description": "API key for authentication",
+            "password": true
+        }
+    ],
+    "servers": {
+        "Vercel": {
+            "url": "https://mcp.vercel.com",
+            "type": "http"
+        }
+    }
 }

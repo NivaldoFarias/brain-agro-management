@@ -1,3 +1,5 @@
+import type { ApiResponse } from "node_modules/@agro/shared/src/types/api/response.types";
+
 import type {
 	CreateProducerRequest,
 	Producer,
@@ -9,17 +11,6 @@ import type {
 import { HttpMethod } from "@agro/shared/utils/constants.util";
 
 import { api } from "./baseApi";
-
-/**
- * Backend API response wrapper interface.
- */
-interface ApiResponse<T> {
-	data: T;
-	meta: {
-		timestamp: string;
-		correlationId?: string;
-	};
-}
 
 /**
  * Producers API endpoints using RTK Query.

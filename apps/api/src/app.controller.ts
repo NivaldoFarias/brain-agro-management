@@ -1,28 +1,19 @@
 import { Controller, Get } from "@nestjs/common";
 import { ApiExcludeController } from "@nestjs/swagger";
 
+import type { ApiAppMetadata } from "@agro/shared/types/api/app-metadata.types";
+
+import {
+	API_ROUTES_AUTH,
+	API_ROUTES_DOCS,
+	API_ROUTES_FARMS,
+	API_ROUTES_HEALTH,
+	API_ROUTES_PRODUCERS,
+} from "@agro/shared/constants/routes";
+
 import { Public } from "@/common/decorators/public.decorator";
 
 import { APP_INFO } from "./utils/constants.util";
-
-interface ApiAppMetadata {
-	name: string;
-	version: string;
-	description: string;
-	documentation: string;
-	endpoints: {
-		auth: string;
-		health: string;
-		producers: string;
-		farms: string;
-		statistics: {
-			totalArea: string;
-			byState: string;
-			landUse: string;
-			cropsDistribution: string;
-		};
-	};
-}
 
 /**
  * Root API controller providing basic information about the API.
@@ -49,17 +40,19 @@ export class AppController {
 			name: APP_INFO.name,
 			version: APP_INFO.version,
 			description: APP_INFO.description,
-			documentation: "/api/docs",
 			endpoints: {
-				auth: "/api/auth/login",
-				health: "/api/health",
-				producers: "/api/producers",
-				farms: "/api/farms",
+				documentation: API_ROUTES_DOCS.docs,
+				reference: API_ROUTES_DOCS.reference,
+				auth: API_ROUTES_AUTH.login,
+				health: API_ROUTES_HEALTH.health,
+				healthReady: API_ROUTES_HEALTH.ready,
+				producers: API_ROUTES_PRODUCERS.base,
+				farms: API_ROUTES_FARMS.base,
 				statistics: {
-					totalArea: "/api/farms/stats/total-area",
-					byState: "/api/farms/stats/by-state",
-					landUse: "/api/farms/stats/land-use",
-					cropsDistribution: "/api/farms/stats/crops-distribution",
+					totalArea: API_ROUTES_FARMS.stats.totalArea,
+					byState: API_ROUTES_FARMS.stats.byState,
+					landUse: API_ROUTES_FARMS.stats.landUse,
+					cropsDistribution: API_ROUTES_FARMS.stats.cropsDistribution,
 				},
 			},
 		};

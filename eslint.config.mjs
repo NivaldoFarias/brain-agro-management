@@ -5,14 +5,12 @@ import eslintConfigPrettier from "eslint-config-prettier";
 import eslintPluginJsxA11y from "eslint-plugin-jsx-a11y";
 import eslintPluginReact from "eslint-plugin-react";
 import eslintPluginReactHooks from "eslint-plugin-react-hooks";
-import eslintPluginUnicorn from "eslint-plugin-unicorn";
 import globals from "globals";
 import tseslint from "typescript-eslint";
 
 export default defineConfig(
 	tseslint.configs.strictTypeChecked,
 	tseslint.configs.stylisticTypeChecked,
-	eslintPluginUnicorn.configs.recommended,
 	{
 		ignores: [
 			"**/node_modules/**",
@@ -75,17 +73,6 @@ export default defineConfig(
 			"@typescript-eslint/no-floating-promises": "error",
 			"@typescript-eslint/array-type": ["error", { default: "generic" }],
 			"@typescript-eslint/no-extraneous-class": ["error", { allowWithDecorator: true }],
-			// "@typescript-eslint/no-unsafe-assignment": "off",
-			// "@typescript-eslint/no-unsafe-member-access": "off",
-			// "@typescript-eslint/no-unsafe-argument": "off",
-			// "@typescript-eslint/no-unsafe-return": "off",
-			// "@typescript-eslint/no-unsafe-call": "off",
-
-			/* Unicorn */
-			"unicorn/no-null": "off",
-			"unicorn/prevent-abbreviations": "off",
-			"unicorn/prefer-spread": "off",
-			"unicorn/no-useless-spread": "error",
 		},
 	},
 	{
@@ -144,19 +131,6 @@ export default defineConfig(
 
 			/* TypeScript */
 			"@typescript-eslint/array-type": ["error", { default: "array" }],
-
-			/* Unicorn */
-			"unicorn/prevent-abbreviations": "off",
-			"unicorn/prefer-global-this": "off",
-			"unicorn/filename-case": [
-				"error",
-				{
-					cases: {
-						camelCase: true,
-						pascalCase: true,
-					},
-				},
-			],
 		},
 	},
 	{

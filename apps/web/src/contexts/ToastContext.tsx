@@ -48,10 +48,9 @@ export function ToastProvider({ children }: ToastProviderProps): ReactElement {
 	const [toasts, setToasts] = useState<ToastMessage[]>([]);
 
 	const showToast = useCallback(({ title, description, variant, duration = 5000 }: Omit<ToastMessage, "id">) => {
-		const id = `toast-${Date.now()}-${Math.random()}`;
+		const id = `toast-${String(Date.now())}-${String(Math.random())}`;
 		setToasts((prev) => [...prev, { id, title, description, variant, duration }]);
 
-		// Auto-remove after duration
 		setTimeout(() => {
 			setToasts((prev) => prev.filter((toast) => toast.id !== id));
 		}, duration);

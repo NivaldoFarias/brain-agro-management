@@ -33,9 +33,19 @@ export interface LoggerConfig {
 	logToConsole?: boolean;
 
 	/**
-	 * Custom log file path
+	 * Directory path where log files will be stored.
 	 *
-	 * @default `logs/${timestamp}.pino.log`
+	 * Each app (api, web) should provide its own logs directory.
+	 * Example: `apps/api/logs` or `apps/web/logs`
+	 *
+	 * @default `./logs` (relative to current working directory)
+	 */
+	logsDir?: string;
+
+	/**
+	 * Custom log file path (overrides logsDir if provided)
+	 *
+	 * @default `${logsDir}/${timestamp}.pino.log`
 	 */
 	logFilePath?: string;
 }
@@ -46,6 +56,8 @@ export interface LoggerConfig {
  * Supports both file and console transports with conditional formatting based
  * on environment. File logs are always JSON-structured, while console logs use
  * pretty-printing in non-production environments.
+ *
+ * Each application should provide its own `logsDir` to keep logs organized by app.
  *
  * @param config Logger configuration options
  * @returns Configured Pino logger instance
@@ -59,6 +71,7 @@ export interface LoggerConfig {
  *   level: LogLevel.Info,
  *   environment: RuntimeEnvironment.Development,
  *   logToConsole: true,
+ *   logsDir: "apps/api/logs",
  * });
  *
  * logger.info("Server started");
@@ -71,10 +84,11 @@ export function createLogger(config: LoggerConfig): pino.Logger {
 		level = LogLevel.Info,
 		environment = RuntimeEnvironment.Development,
 		logToConsole = true,
+		logsDir = "./logs",
 		logFilePath,
 	} = config;
 
-	const defaultLogPath = `${import.meta.dirname}/logs/${new Date().toISOString().replaceAll(":", "-")}.pino.log`;
+	const defaultLogPath = `${logsDir}/${new Date().toISOString().replaceAll(":", "-")}.pino.log`;
 
 	const fileTransport = {
 		target: "pino/file",
@@ -97,7 +111,11 @@ export function createLogger(config: LoggerConfig): pino.Logger {
 	const shouldEnableConsoleTransport =
 		logToConsole && environment !== RuntimeEnvironment.Production;
 
-	// Use try-catch to handle Vite externalization in browser context
+	/**
+	 * Uses try-catch to handle Vite externalization in browser context.
+	 *
+	 * In browser builds, `process` may be undefined, so we fallback to a random PID.
+	 */
 	let processId: number;
 	try {
 		processId = process.pid;

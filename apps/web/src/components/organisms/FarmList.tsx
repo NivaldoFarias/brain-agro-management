@@ -112,7 +112,7 @@ export function FarmList({
 								</AreaBadge>
 							</FarmAreas>
 							<CropsList>
-								<strong>Crops:</strong> {farm.crops && farm.crops.length > 0 ? farm.crops.join(", ") : "None"}
+								<strong>Crops:</strong> {farm.crops.length > 0 ? farm.crops.join(", ") : "None"}
 							</CropsList>
 						</FarmInfo>
 						<ActionButtons>

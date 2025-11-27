@@ -137,6 +137,7 @@ export class FarmResponseDto {
 		description: "Crops cultivated on this farm",
 		example: ["Soja", "Milho"],
 		type: [String],
+		isArray: true,
 	})
 	@Expose()
 	crops!: Array<string>;

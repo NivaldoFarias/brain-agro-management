@@ -13,4 +13,5 @@ export const logger = createLogger({
 	level: env.WEB__LOG_LEVEL,
 	environment: env.NODE_ENV,
 	logToConsole: env.WEB__LOG_TO_CONSOLE,
+	logsDir: "./logs",
 });

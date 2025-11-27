@@ -60,7 +60,7 @@ export function LoginPage(): ReactElement {
 			await new Promise((resolve) => setTimeout(resolve, 100));
 
 			console.log("[LoginPage] Navigating to dashboard...");
-			void navigate(ROUTES.dashboard, { replace: true });
+			await navigate(ROUTES.dashboard, { replace: true });
 		} catch (error) {
 			console.error("[LoginPage] Login failed:", error);
 			const errorMsg = t("auth.loginError");
@@ -76,7 +76,11 @@ export function LoginPage(): ReactElement {
 					<Title>{t("app.title")}</Title>
 					<Subtitle>{t("app.subtitle")}</Subtitle>
 				</Header>{" "}
-				<form onSubmit={handleSubmit}>
+				<form
+					onSubmit={(e) => {
+						void handleSubmit(e);
+					}}
+				>
 					<FormField id="email" label={t("auth.email")} required>
 						<Input
 							id="email"

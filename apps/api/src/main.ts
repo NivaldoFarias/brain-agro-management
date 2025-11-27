@@ -68,7 +68,6 @@ async function runMigrations(): Promise<void> {
 	process.stdout.write("[Migration] Initializing DataSource for migrations...\n");
 
 	try {
-		// eslint-disable-next-line unicorn/import-style
 		const path = await import("node:path");
 		const fs = await import("node:fs/promises");
 
@@ -78,8 +77,6 @@ async function runMigrations(): Promise<void> {
 		await fs.mkdir(dbDir, { recursive: true });
 		process.stdout.write(`[Migration] Ensured database directory exists: ${dbDir}\n`);
 
-		// Create a migration-specific DataSource with synchronize disabled
-		// to prevent schema conflicts when running migrations
 		const { DataSource } = await import("typeorm");
 		const migrationDataSource = new DataSource({
 			...AppDataSource.options,
@@ -90,12 +87,14 @@ async function runMigrations(): Promise<void> {
 		process.stdout.write("[Migration] DataSource initialized successfully\n");
 
 		const pendingMigrations = await dataSource.showMigrations();
-		process.stdout.write(`[Migration] Pending migrations: ${pendingMigrations}\n`);
+		process.stdout.write(`[Migration] Pending migrations: ${String(pendingMigrations)}\n`);
 
 		if (pendingMigrations) {
 			process.stdout.write("[Migration] Running pending migrations...\n");
 			const migrations = await dataSource.runMigrations({ transaction: "all" });
-			process.stdout.write(`[Migration] Successfully ran ${migrations.length} migration(s):\n`);
+			process.stdout.write(
+				`[Migration] Successfully ran ${String(migrations.length)} migration(s):\n`,
+			);
 			for (const migration of migrations) {
 				process.stdout.write(`  - ${migration.name}\n`);
 			}
@@ -104,9 +103,11 @@ async function runMigrations(): Promise<void> {
 		}
 
 		await dataSource.destroy();
+
 		process.stdout.write("[Migration] DataSource closed\n");
 	} catch (error) {
-		process.stderr.write(`[Migration] Failed to run migrations: ${error}\n`);
+		process.stderr.write(`[Migration] Failed to run migrations: ${String(error)}\n`);
+
 		throw error;
 	}
 }

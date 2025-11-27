@@ -31,9 +31,7 @@ export function FarmsPage(): ReactElement {
 	};
 
 	const handleDelete = async (id: string) => {
-		if (!confirm(t("farms.deleteConfirm"))) {
-			return;
-		}
+		if (!confirm(t("farms.deleteConfirm"))) return;
 
 		try {
 			setDeletingId(id);

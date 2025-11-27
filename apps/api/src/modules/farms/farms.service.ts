@@ -1,10 +1,15 @@
 import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
+import { InjectPinoLogger } from "nestjs-pino";
 import { Repository } from "typeorm";
 
+import type { PinoLogger } from "nestjs-pino";
+
+import type { CropType } from "@agro/shared/utils/constants.util";
+
+import { OrderBy } from "@agro/shared/utils/constants.util";
 import { assertValidFarmArea } from "@agro/shared/validators/farm-area.validator";
 
-import { SortBy } from "@/common/enums/enums";
 import { Producer } from "@/modules/producers/entities/producer.entity";
 
 import { CreateFarmDto, FarmResponseDto, UpdateFarmDto } from "./dto";
@@ -39,10 +44,15 @@ export class FarmsService {
 	constructor(
 		@InjectRepository(Farm)
 		private readonly farmRepository: Repository<Farm>,
+
 		@InjectRepository(Producer)
 		private readonly producerRepository: Repository<Producer>,
+
 		@InjectRepository(FarmHarvestCrop)
 		private readonly farmHarvestCropRepository: Repository<FarmHarvestCrop>,
+
+		@InjectPinoLogger(FarmsService.name)
+		private readonly logger: PinoLogger,
 	) {}
 
 	/**
@@ -113,7 +123,7 @@ export class FarmsService {
 	async findAll(): Promise<Array<FarmResponseDto>> {
 		const farms = await this.farmRepository.find({
 			relations: ["farmHarvests", "farmHarvests.crops"],
-			order: { name: SortBy.Ascending },
+			order: { name: OrderBy.Ascending },
 		});
 
 		return farms.map((farm) => this.mapToResponseDto(farm));
@@ -234,7 +244,7 @@ export class FarmsService {
 	async findByProducer(producerId: string): Promise<Array<FarmResponseDto>> {
 		const farms = await this.farmRepository.find({
 			where: { producerId },
-			order: { name: SortBy.Ascending },
+			order: { name: OrderBy.Ascending },
 		});
 
 		return farms.map((farm) => this.mapToResponseDto(farm));
@@ -255,7 +265,7 @@ export class FarmsService {
 	async findByState(state: string): Promise<Array<FarmResponseDto>> {
 		const farms = await this.farmRepository.find({
 			where: { state },
-			order: { name: SortBy.Ascending },
+			order: { name: OrderBy.Ascending },
 		});
 
 		return farms.map((farm) => this.mapToResponseDto(farm));
@@ -298,7 +308,7 @@ export class FarmsService {
 			.select("farm.state", "state")
 			.addSelect("COUNT(farm.id)", "count")
 			.groupBy("farm.state")
-			.orderBy("count", "DESC")
+			.orderBy("count", OrderBy.Descending)
 			.getRawMany();
 
 		return results.map((result) => ({
@@ -363,7 +373,7 @@ export class FarmsService {
 			.select("fhc.cropType", "cropType")
 			.addSelect("COUNT(DISTINCT fh.farmId)", "count")
 			.groupBy("fhc.cropType")
-			.orderBy("count", "DESC")
+			.orderBy("count", OrderBy.Descending)
 			.getRawMany();
 
 		return results.map((result) => ({
@@ -375,11 +385,9 @@ export class FarmsService {
 	/**
 	 * Verifies that a producer exists in the database.
 	 *
-	 * @param producerId - The UUID of the producer to verify
+	 * @param producerId The UUID of the producer to verify
 	 *
 	 * @throws {NotFoundException} If the producer does not exist
-	 *
-	 * @private
 	 */
 	private async verifyProducerExists(producerId: string): Promise<void> {
 		const producerExists = await this.producerRepository.exists({ where: { id: producerId } });
@@ -392,25 +400,27 @@ export class FarmsService {
 	/**
 	 * Maps a Farm entity to a FarmResponseDto.
 	 *
-	 * @param farm - The farm entity to map
+	 * @param farm The farm entity to map
 	 *
 	 * @returns The mapped response DTO
-	 *
-	 * @private
 	 */
 	private mapToResponseDto(
-		farm: Farm & { farmHarvests?: Array<{ crops?: Array<{ cropType: string }> }> },
+		farm:
+			| Farm
+			| (Omit<Farm, "farmHarvests"> & {
+					farmHarvests?: Array<{ crops?: Array<{ cropType?: CropType }> }>;
+			  }),
 	): FarmResponseDto {
-		// Extract unique crop types from all farm harvests
 		const crops: Array<string> = [];
-		if (farm.farmHarvests && Array.isArray(farm.farmHarvests)) {
+
+		if (Array.isArray(farm.farmHarvests)) {
 			for (const farmHarvest of farm.farmHarvests) {
-				if (farmHarvest.crops && Array.isArray(farmHarvest.crops)) {
-					for (const crop of farmHarvest.crops) {
-						if (crop.cropType && !crops.includes(crop.cropType)) {
-							crops.push(crop.cropType);
-						}
-					}
+				if (!farmHarvest.crops || !Array.isArray(farmHarvest.crops)) continue;
+
+				for (const crop of farmHarvest.crops) {
+					if (!crop.cropType || crops.includes(crop.cropType)) continue;
+
+					crops.push(crop.cropType);
 				}
 			}
 		}

@@ -9,7 +9,7 @@
             "@agro/shared/*": ["../../packages/shared/src/*"],
             "@test/*": ["./test/*"]
         },
-        "types": ["node", "jest"]
+        "types": ["node", "jest", "bun"]
     },
     "include": ["src/**/*", "test/**/*", "package.json", "build.ts"],
     "references": [{ "path": "../../packages/shared" }]

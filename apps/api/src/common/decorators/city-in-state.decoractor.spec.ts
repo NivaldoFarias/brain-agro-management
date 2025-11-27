@@ -4,9 +4,9 @@ import { PinoLogger } from "nestjs-pino";
 
 import type { Repository } from "typeorm";
 
-import { City } from "@/modules/cities/entities/city.entity";
+import { BrazilianState } from "@agro/shared/utils/constants.util";
 
-import { BrazilianState } from "../enums/enums";
+import { City } from "@/modules/cities/entities/city.entity";
 
 import { IsCityInStateConstraint } from "./city-in-state.decorator";
 

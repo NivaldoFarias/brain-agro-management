@@ -1,5 +1,3 @@
-import path from "node:path";
-
 import { DataSource } from "typeorm";
 
 import { RuntimeEnvironment } from "@agro/shared/utils/constants.util";

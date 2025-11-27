@@ -15,4 +15,4 @@ export type { TransformedResponse, PaginatedData } from "./interceptors/transfor
 export { HttpExceptionFilter } from "./filters/http-exception.filter";
 export { ParseUUIDPipe } from "./pipes/parse-uuid.pipe";
 export { IsCityInStateConstraint } from "./decorators/city-in-state.decorator";
-export { BrazilianState, CropType } from "./enums/enums";
+export { BrazilianState, CropType } from "@agro/shared/utils/constants.util";

@@ -1,3 +1,5 @@
+import type { ApiResponse } from "node_modules/@agro/shared/src/types/api/response.types";
+
 import type {
 	CropDistribution,
 	LandUseStats,
@@ -6,17 +8,6 @@ import type {
 } from "@agro/shared/types/dashboard.types";
 
 import { api } from "./baseApi";
-
-/**
- * Backend API response wrapper interface.
- */
-interface ApiResponse<T> {
-	data: T;
-	meta: {
-		timestamp: string;
-		correlationId?: string;
-	};
-}
 
 /**
  * Dashboard statistics API endpoints using RTK Query.

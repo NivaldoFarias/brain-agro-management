@@ -2,8 +2,9 @@ import { faker } from "@faker-js/faker/locale/pt_BR";
 import { ApiProperty } from "@nestjs/swagger";
 import { IsEnum, IsNotEmpty, IsNumber, IsString, IsUUID, Length, Min } from "class-validator";
 
+import { BrazilianState } from "@agro/shared/utils/constants.util";
+
 import { IsCityInState } from "@/common/decorators/city-in-state.decorator";
-import { BrazilianState } from "@/common/enums/enums";
 
 /**
  * Data Transfer Object for creating a new farm.

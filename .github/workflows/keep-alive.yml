@@ -1,12 +1,9 @@
-# GitHub Actions workflow to prevent Hugging Face Space from sleeping
-# Pings the health endpoint every 30 minutes during business hours
 name: Keep HF Space Alive
 
 on:
   schedule:
-    # Run every 30 minutes between 6 AM and 11 PM UTC (adjust for your timezone)
     - cron: "*/30 6-23 * * *"
-  workflow_dispatch: # Allow manual trigger
+  workflow_dispatch:
 
 jobs:
   ping:

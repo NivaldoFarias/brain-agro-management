@@ -8,28 +8,39 @@ pinned: false
 app_port: 7860
 ---
 
-# Brain Agriculture - Avaliação Técnica
+# Brain Agriculture
 
 > **🌐 English Version**: [README.en.md](./docs/README.en.md)
 
 > [!IMPORTANT]
-> **🚀 Deploy em Produção (Live)**  
-> **URL base da API Backend**: [https://badivia-brain-ag-api.hf.space](https://badivia-brain-ag-api.hf.space/api)  
-> **Documentação Interativa da API**: [/api/reference](https://badivia-brain-ag-api.hf.space/api/reference) • [/api/docs](https://badivia-brain-ag-api.hf.space/api/docs)  
-> **Documentação API Swagger**: [/api/docs](https://badivia-brain-ag-api.hf.space/api/docs)  
-> **Health Check**: [/api/health](https://badivia-brain-ag-api.hf.space/api/health)  
-> **Deploy**: Hugging Face Spaces (Docker) com CD
+> **Deploy em Produção (Live)**  
+> - **URL base da API Backend**: [https://badivia-brain-ag-api.hf.space/api](https://badivia-brain-ag-api.hf.space/api)  
+> - **Documentação Interativa da API**: [/api/reference](https://badivia-brain-ag-api.hf.space/api/reference) 
+> - **Documentação API Swagger**: [/api/docs](https://badivia-brain-ag-api.hf.space/api/docs)  
+> - **Health Check API**: [/api/health](https://badivia-brain-ag-api.hf.space/api/health)  
+> - **Health Check DB**: [/api/health/ready](https://badivia-brain-ag-api.hf.space/api/health/ready)
 
-Sistema full-stack para gestão de produtores rurais e fazendas no Brasil. Desenvolvido como uma avaliação técnica utilizando Bun, NestJS, React e TypeScript.
+Sistema full-stack para gestão de produtores rurais e fazendas no Brasil. Desenvolvido como PoC (Prova de Conceito) utilizando Bun, NestJS, React e TypeScript.
 
 ## Sobre o Projeto
 
 Um monorepo pronto para produção que demonstra arquitetura limpa, segurança de tipos (type safety) e práticas de testes. Gerencia operações CRUD para produtores e fazendas, incluindo validação de documentos brasileiros (CPF/CNPJ), regras de área e dashboards analíticos.
 
-**Principais Funcionalidades**: Gestão de produtores • Operações de fazendas • Rastreamento de culturas • Dashboard com métricas por estado/cultura/uso do solo • Autenticação JWT • Documentação OpenAPI
-
-**Tecnologias**: Runtime Bun • NestJS + TypeORM • React 18 + Redux Toolkit • SQLite • Radix UI • Validação com Zod
-
+- **Principais Funcionalidades**: 
+  - Gestão de produtores 
+  - Operações de fazendas
+  - Rastreamento de culturas
+  - Dashboard com métricas por estado/cultura/uso do solo
+  - Autenticação JWT
+  - Documentação OpenAPI
+- **Tecnologias**: 
+  - Runtime: Bun 
+  - ORM: NestJS + TypeORM 
+  - Frontend: React 18 + Redux Toolkit 
+  - Banco de Dados: SQLite 
+  - UI: Radix UI 
+  - Validação: Zod
+  
 ## Estrutura do Projeto
 
 Consulte [MONOREPO.md](./docs/MONOREPO.md) para detalhes sobre a organização do workspace.
@@ -38,13 +49,11 @@ Consulte [MONOREPO.md](./docs/MONOREPO.md) para detalhes sobre a organização d
 brain-ag/
 ├── apps/
 │   ├── api/          # NestJS + TypeORM (veja docs/ARCHITECTURE.md)
-│   └── web/          # React + Redux Toolkit
+│   └── web/          # React + Redux Toolkit + Radix UI
 ├── packages/
 │   └── shared/       # Tipos, validadores, utilitários
 └── docs/             # Design do sistema e especificações
 ```
-
-**Stack**: Bun • NestJS • TypeORM • React 18 • Redux Toolkit • Radix UI • SQLite
 
 ## Quick Start
 
@@ -56,7 +65,7 @@ bun run dev         # Iniciar API + frontend
 bun test            # Executar testes
 ```
 
-**API rodando em**: `localhost:3333/api` • Docs em `/api/docs` • Health em `/health`  
+**API rodando em**: `localhost:3000/api` • Docs em `/api/docs` • Health em `/health`  
 **Frontend rodando em**: `localhost:5173`
 
 Comandos comuns: `dev:api`, `dev:web`, `build`, `lint`, `type-check` — veja `package.json`
@@ -81,8 +90,8 @@ Veja [ROADMAP.md](./docs/ROADMAP.md) para o checklist detalhado.
 - [ENVIRONMENT.md](./docs/ENVIRONMENT.md) — Variáveis de ambiente
 - [DOCKER.md](./docs/DOCKER.md) — Guia de deploy com Docker
 - [MONITORING.md](./docs/MONITORING.md) — Monitoramento, alertas e recuperação automática
-- [Swagger UI](http://localhost:3333/api/docs) — Documentação interativa da API (requer servidor rodando)
-- [Scalar Reference](http://localhost:3333/reference) — Referência moderna da API
+- [Swagger UI](https://badivia-brain-ag-api.hf.space/api/docs) — Documentação interativa da API (requer servidor rodando)
+- [Scalar Reference](https://badivia-brain-ag-api.hf.space/reference) — Referência moderna da API
 
 **Desenvolvimento**: Veja `.github/instructions/` para padrões de código (backend, frontend, banco de dados, testes, TypeScript)
 

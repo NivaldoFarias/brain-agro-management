@@ -13,11 +13,15 @@
 import { faker } from "@faker-js/faker/locale/pt_BR";
 import { DataSource } from "typeorm";
 
-import { LogLevel, RuntimeEnvironment } from "@agro/shared/utils/constants.util";
+import {
+	BrazilianState,
+	CropType,
+	LogLevel,
+	RuntimeEnvironment,
+} from "@agro/shared/utils/constants.util";
 import { generateDocument } from "@agro/shared/utils/cpf-cnpj.util";
 import { createLogger } from "@agro/shared/utils/logger.util";
 
-import { BrazilianState, CropType } from "@/common/enums/enums";
 import { AppDataSource } from "@/config/database.config";
 import { FarmHarvestCrop } from "@/modules/farms/entities/farm-harvest-crop.entity";
 import { FarmHarvest } from "@/modules/farms/entities/farm-harvest.entity";
@@ -30,6 +34,7 @@ const logger = createLogger({
 	level: LogLevel.Info,
 	environment: RuntimeEnvironment.Test,
 	logToConsole: true,
+	logsDir: "./logs",
 });
 
 /**

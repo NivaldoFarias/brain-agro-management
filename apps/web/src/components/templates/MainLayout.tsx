@@ -34,7 +34,7 @@ export function MainLayout({ children }: MainLayoutProps): ReactElement {
 	const handleLogout = (): void => {
 		logout();
 		toast.info(t("auth.logoutSuccess"), t("auth.logoutSuccess"));
-		navigate(ROUTES.auth.login, { replace: true });
+		void navigate(ROUTES.auth.login, { replace: true });
 	};
 
 	return (

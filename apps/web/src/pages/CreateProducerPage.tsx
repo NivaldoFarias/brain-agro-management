@@ -33,10 +33,6 @@ export function CreateProducerPage(): ReactElement {
 		}
 	};
 
-	const handleCancel = () => {
-		void navigate(ROUTES.producers.list);
-	};
-
 	return (
 		<Container>
 			<Header>

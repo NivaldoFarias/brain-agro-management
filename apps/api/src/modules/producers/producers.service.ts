@@ -7,10 +7,9 @@ import {
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 
+import { OrderBy } from "@agro/shared/utils/constants.util";
 import { stripCNPJFormatting, validateCNPJ } from "@agro/shared/validators/cnpj.validator";
 import { stripCPFFormatting, validateCPF } from "@agro/shared/validators/cpf.validator";
-
-import { SortBy } from "@/common/enums/enums";
 
 import { CreateProducerDto, ProducerResponseDto, UpdateProducerDto } from "./dto";
 import { Producer } from "./entities/producer.entity";
@@ -95,7 +94,7 @@ export class ProducersService {
 	 */
 	async findAll(): Promise<Array<ProducerResponseDto>> {
 		const producers = await this.producerRepository.find({
-			order: { name: SortBy.Ascending },
+			order: { name: OrderBy.Ascending },
 		});
 
 		return producers.map((producer) => this.mapToResponseDto(producer));

@@ -1,4 +1,4 @@
-import { createContext, useCallback, useContext, useEffect, useState } from "react";
+import { createContext, useCallback, useContext, useState } from "react";
 
 import type { ReactElement, ReactNode } from "react";
 
@@ -19,10 +19,10 @@ interface User {
  */
 interface AuthContextValue {
 	/** Current authentication token */
-	token: string | null;
+	token: string | undefined;
 
 	/** Current authenticated user */
-	user: User | null;
+	user: User | undefined;
 
 	/** Whether user is authenticated */
 	isAuthenticated: boolean;
@@ -57,26 +57,31 @@ interface AuthProviderProps {
  * ```
  */
 export function AuthProvider({ children }: AuthProviderProps): ReactElement {
-	const [token, setToken] = useState<string | null>(() => {
+	const [token, setToken] = useState<string | undefined>(() => {
 		try {
 			const storedToken = localStorage.getItem(TOKEN_STORAGE_KEY);
 			console.log("[AuthProvider] Initial token from localStorage:", storedToken ? "EXISTS" : "NULL");
-			return storedToken;
+
+			return storedToken ?? undefined;
 		} catch (error) {
 			console.error("[AuthProvider] Failed to read token from localStorage:", error);
-			return null;
+
+			return;
 		}
 	});
 
-	const [user, setUser] = useState<User | null>(() => {
+	const [user, setUser] = useState<User | undefined>(() => {
 		try {
 			const storedUser = localStorage.getItem("brain_ag_user");
-			const parsedUser = storedUser ? (JSON.parse(storedUser) as User) : null;
+			const parsedUser = storedUser ? (JSON.parse(storedUser) as User) : undefined;
+
 			console.log("[AuthProvider] Initial user from localStorage:", parsedUser);
+
 			return parsedUser;
 		} catch (error) {
 			console.error("[AuthProvider] Failed to read user from localStorage:", error);
-			return null;
+
+			return;
 		}
 	});
 
@@ -85,10 +90,12 @@ export function AuthProvider({ children }: AuthProviderProps): ReactElement {
 		try {
 			localStorage.setItem(TOKEN_STORAGE_KEY, accessToken);
 			localStorage.setItem("brain_ag_user", JSON.stringify({ email }));
+
 			console.log("[AuthProvider] Saved to localStorage successfully");
 
 			setToken(accessToken);
 			setUser({ email });
+
 			console.log("[AuthProvider] State updated - token and user set");
 		} catch (error) {
 			console.error("[AuthProvider] Failed to save authentication data:", error);
@@ -100,39 +107,13 @@ export function AuthProvider({ children }: AuthProviderProps): ReactElement {
 		try {
 			localStorage.removeItem(TOKEN_STORAGE_KEY);
 			localStorage.removeItem("brain_ag_user");
-			setToken(null);
-			setUser(null);
+			setToken(undefined);
+			setUser(undefined);
 			console.log("[AuthProvider] Logged out successfully");
 		} catch (error) {
 			console.error("[AuthProvider] Failed to clear authentication data:", error);
 		}
 	}, []);
-
-	// Synchronize state with localStorage on mount
-	useEffect(() => {
-		const storedToken = localStorage.getItem(TOKEN_STORAGE_KEY);
-		const storedUser = localStorage.getItem("brain_ag_user");
-
-		console.log("[AuthProvider] useEffect - syncing with localStorage");
-		console.log("[AuthProvider] localStorage token:", storedToken ? "EXISTS" : "NULL");
-		console.log("[AuthProvider] localStorage user:", storedUser ? "EXISTS" : "NULL");
-		console.log("[AuthProvider] Current state token:", token ? "EXISTS" : "NULL");
-		console.log("[AuthProvider] Current state user:", user);
-
-		if (storedToken && !token) {
-			console.log("[AuthProvider] Restoring token from localStorage");
-			setToken(storedToken);
-		}
-		if (storedUser && !user) {
-			try {
-				const parsedUser = JSON.parse(storedUser) as User;
-				console.log("[AuthProvider] Restoring user from localStorage:", parsedUser);
-				setUser(parsedUser);
-			} catch (error) {
-				console.error("[AuthProvider] Failed to parse stored user:", error);
-			}
-		}
-	}, [token, user]);
 
 	const isAuthenticated = Boolean(token);
 	console.log("[AuthProvider] isAuthenticated:", isAuthenticated, "| token:", token ? "EXISTS" : "NULL");
@@ -169,14 +150,14 @@ export function useAuth(): AuthContextValue {
 }
 
 /**
- * Gets the current authentication token from localStorage.
+ * Gets the current authentication token from {@link localStorage}.
  *
- * @returns Authentication token or null if not authenticated
+ * @returns Authentication token or `undefined` if not authenticated
  */
-export function getAuthToken(): string | null {
+export function getAuthToken(): string | undefined {
 	try {
-		return localStorage.getItem(TOKEN_STORAGE_KEY);
+		return localStorage.getItem(TOKEN_STORAGE_KEY) ?? undefined;
 	} catch {
-		return null;
+		return undefined;
 	}
 }
