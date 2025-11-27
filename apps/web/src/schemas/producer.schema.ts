@@ -19,13 +19,13 @@ import { validateCPF } from "@agro/shared/validators/cpf.validator";
  */
 export const createProducerSchema = z.object({
 	name: z
-		.string({ required_error: "Name is required" })
+		.string({ message: "Name is required" })
 		.min(3, "Name must be at least 3 characters")
 		.max(255, "Name must be at most 255 characters")
 		.trim(),
 
 	document: z
-		.string({ required_error: "Document is required" })
+		.string({ message: "Document is required" })
 		.min(11, "Document must have at least 11 digits")
 		.max(18, "Document must have at most 18 characters")
 		.transform((value) => value.replaceAll(/[^\d]/g, ""))

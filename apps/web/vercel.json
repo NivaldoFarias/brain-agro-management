@@ -1,5 +1,5 @@
 {
-    "buildCommand": "cd ../.. && bun run --filter='@agro/shared' build && bun run --filter='@agro/web' build",
+    "buildCommand": "cd ../.. && cd apps/web && bun run build",
     "outputDirectory": "dist",
     "installCommand": "cd ../.. && bun install",
     "framework": "vite",
