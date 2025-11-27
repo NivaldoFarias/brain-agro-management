@@ -10,6 +10,13 @@ app_port: 7860
 
 # Brain Agriculture Assessment
 
+> [!IMPORTANT]
+> **🚀 Live Production Deployment**  
+> **Backend API**: [https://badivia-brain-ag-api.hf.space](https://badivia-brain-ag-api.hf.space)  
+> **API Documentation**: [/api/reference](https://badivia-brain-ag-api.hf.space/api/reference) • [/api/docs](https://badivia-brain-ag-api.hf.space/api/docs)  
+> **Health Check**: [/api/health](https://badivia-brain-ag-api.hf.space/api/health)  
+> **Deployment**: Hugging Face Spaces (Docker) with automated CI/CD via git push
+
 Full-stack system for managing rural producers and farms in Brazil. Built as a technical assessment with Bun, NestJS, React, and TypeScript.
 
 ## What This Is
