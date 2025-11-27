@@ -131,6 +131,14 @@ const apiEnvSchema = z.object({
 	 * @see {@link environmentDefaults.API__SEED_DATABASE}
 	 */
 	API__SEED_DATABASE: z.stringbool().default(environmentDefaults.API__SEED_DATABASE),
+
+	/**
+	 * Base URL for the API (e.g., `http://localhost:3000`)
+	 *
+	 * @default "http://localhost:3000"
+	 * @see {@link environmentDefaults.API__BASE_URL}
+	 */
+	API__BASE_URL: z.url().default(environmentDefaults.API__BASE_URL),
 });
 
 /** Type-safe environment variables for the API application */

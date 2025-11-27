@@ -294,7 +294,7 @@ async function startServer(app: INestApplication, logger: Logger): Promise<void>
 	const port = String(env.API__PORT);
 	await app.listen(port);
 
-	logger.log(`Application running: http://localhost:${port}/api`, "Bootstrap");
-	logger.log(`Swagger documentation: http://localhost:${port}/api/docs`, "Bootstrap");
-	logger.log(`Scalar API reference: http://localhost:${port}/api/reference`, "Bootstrap");
+	logger.log(`Application running: ${env.API__BASE_URL}/api`, "Bootstrap");
+	logger.log(`Swagger documentation: ${env.API__BASE_URL}/api/docs`, "Bootstrap");
+	logger.log(`Scalar API reference: ${env.API__BASE_URL}/api/reference`, "Bootstrap");
 }
