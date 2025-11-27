@@ -28,9 +28,17 @@ if (import.meta.main) {
  * isolated in its own function for maintainability.
  */
 async function bootstrap(): Promise<void> {
+	// Diagnostic logging for environment variable
+	console.log("[Bootstrap] API__RUN_DB_MIGRATIONS (raw):", process.env["API__RUN_DB_MIGRATIONS"]);
+	console.log("[Bootstrap] API__RUN_DB_MIGRATIONS (parsed):", env.API__RUN_DB_MIGRATIONS);
+	console.log("[Bootstrap] Type:", typeof env.API__RUN_DB_MIGRATIONS);
+
 	// Run migrations if enabled (before creating the app)
 	if (env.API__RUN_DB_MIGRATIONS) {
+		console.log("[Bootstrap] Running migrations...");
 		await runMigrations();
+	} else {
+		console.log("[Bootstrap] Migrations disabled, skipping...");
 	}
 
 	const app = await NestFactory.create(AppModule, { bufferLogs: true });
