@@ -1,3 +1,13 @@
+---
+title: Brain Agriculture API
+emoji: 🌾
+colorFrom: green
+colorTo: blue
+sdk: docker
+pinned: false
+app_port: 7860
+---
+
 # Brain Agriculture Assessment
 
 Full-stack system for managing rural producers and farms in Brazil. Built as a technical assessment with Bun, NestJS, React, and TypeScript.
