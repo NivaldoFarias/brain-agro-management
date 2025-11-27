@@ -75,11 +75,7 @@ export function LoginPage(): ReactElement {
 					<Subtitle>Rural Producer Management System</Subtitle>
 				</Header>
 
-				<form
-					onSubmit={() => {
-						void handleSubmit;
-					}}
-				>
+				<form onSubmit={handleSubmit}>
 					<FormField id="email" label="Email" required>
 						<Input
 							id="email"
