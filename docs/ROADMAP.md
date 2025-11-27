@@ -1,7 +1,5 @@
-# Brain Agriculture - Implementation Roadmap
+# Implementation Roadmap
 
-> [!NOTE]
-> **Timeline**: 4-5 Days | **Stack**: Bun + NestJS + React + TypeScript | **Position**: Senior Full Stack Developer
 ## Project Overview
 
 Full-stack rural producer and farm management system for Brazilian agriculture. Implements CRUD operations, business rule validation, and analytics dashboard with production-grade architecture.

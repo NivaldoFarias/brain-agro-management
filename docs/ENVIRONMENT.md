@@ -28,49 +28,49 @@ All environment variables for all workspaces are defined in a single root `.env`
 
 **Naming Convention:**
 
-- **Shared variables**: No prefix (e.g., `NODE_ENV`, `LOG_LEVEL`)
-- **API variables**: `API_` prefix (e.g., `API_PORT`, `API_DATABASE_URL`)
-- **Web variables**: `VITE_` prefix (Vite convention for build-time vars)
+- **Shared variables**: No prefix (e.g., `NODE_ENV`)
+- **API variables**: `API__` prefix (double underscore, e.g., `API__PORT`, `API__DATABASE_PATH`)
+- **Web variables**: `WEB__VITE_` prefix (Vite convention for build-time vars)
 
 ```bash
 # Shared (no prefix) - Used by multiple apps
 NODE_ENV=development
-LOG_LEVEL=info
-LOG_TO_CONSOLE=true
 
-# API-specific (API_* prefix)
-API_PORT=3000
-API_DATABASE_URL=postgresql://...
-API_BASE_PATH=/api
+# API-specific (API__* prefix with double underscore)
+API__PORT=3000
+API__DATABASE_PATH=./apps/api/data/agro.db
+API__BASE_PATH=/api
+API__LOG_LEVEL=info
+API__LOG_TO_CONSOLE=true
+API__JWT_SECRET=your-secret-key-min-32-chars
 
-# Web-specific (VITE_* prefix for build-time variables)
-VITE_API_BASE_URL=http://localhost:3000/api
-VITE_ENABLE_DEVTOOLS=false
+# Web-specific (WEB__VITE_* prefix for build-time variables)
+WEB__VITE_API_BASE_URL=http://localhost:3000/api
+WEB__VITE_ENABLE_DEVTOOLS=false
 ```
 
 ### 2. Workspace-Specific Schemas
 
 Each app validates only the variables it needs:
 
-**API** (`apps/api/src/config/env.ts`):
+**API** (`apps/api/src/config/env.config.ts`):
 
 ```typescript
 const apiEnvSchema = z.object({
 	NODE_ENV: z.nativeEnum(RuntimeEnvironment), // Shared
-	LOG_LEVEL: z.nativeEnum(LogLevel), // Shared
-	API_PORT: z.coerce.number(), // API-specific
-	API_DATABASE_URL: z.string().url(), // API-specific
+	API__LOG_LEVEL: z.nativeEnum(LogLevel), // API-specific
+	API__PORT: z.coerce.number(), // API-specific
+	API__DATABASE_PATH: z.string(), // API-specific
 	// ... more API-specific variables
 });
 ```
 
-**Web** (`apps/web/src/config/env.ts`):
+**Web** (`apps/web/src/utils/env.util.ts`):
 
 ```typescript
 const webEnvSchema = z.object({
 	NODE_ENV: z.nativeEnum(RuntimeEnvironment),
-	LOG_LEVEL: z.nativeEnum(LogLevel),
-	VITE_API_BASE_URL: z.string().url(),
+	WEB__VITE_API_BASE_URL: z.string().url(),
 	// ... Web-specific variables
 });
 ```
@@ -80,18 +80,19 @@ const webEnvSchema = z.object({
 **API**:
 
 ```typescript
-import { env, logger } from "./config";
+import { env } from "@/config/env.config";
+import { logger } from "@/config/logger.config";
 
-logger.info({ port: env.API_PORT }, "Starting server");
+logger.info({ port: env.API__PORT }, "Starting server");
 // env is fully typed with API-specific variables
 ```
 
 **Web**:
 
 ```typescript
-import { env, logger } from "./config";
+import { env } from "@/utils/env.util";
 
-const apiClient = createClient(env.VITE_API_BASE_URL);
+const apiClient = createClient(env.WEB__VITE_API_BASE_URL);
 // env is fully typed with Web-specific variables
 ```
 
@@ -115,11 +116,12 @@ const apiClient = createClient(env.VITE_API_BASE_URL);
 
    ```bash
    # Required for API
-   DATABASE_URL=postgresql://user:pass@localhost:5432/agro_dev
+   API__JWT_SECRET=your-very-secure-secret-key-minimum-32-characters
+   API__DATABASE_PATH=./apps/api/data/agro.db
 
    # Optional: Override defaults
-   PORT=4000
-   LOG_LEVEL=debug
+   API__PORT=4000
+   API__LOG_LEVEL=debug
    ```
 
 3. Start development:
