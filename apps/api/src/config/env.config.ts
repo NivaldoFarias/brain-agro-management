@@ -145,4 +145,4 @@ const apiEnvSchema = z.object({
 export type ApiEnv = z.infer<typeof apiEnvSchema>;
 
 /** Validated environment configuration for the API */
-export const env = createEnv(apiEnvSchema);
+export const env = createEnv(apiEnvSchema, process.env);
