@@ -12,6 +12,7 @@
 		"./validators": "./src/validators/index.ts"
 	},
 	"scripts": {
+		"build": "tsc --build",
 		"type-check": "tsc --build",
 		"test": "bun test",
 		"clean": "rm -rf dist .turbo node_modules"
