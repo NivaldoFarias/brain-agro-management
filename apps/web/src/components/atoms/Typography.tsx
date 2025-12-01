@@ -110,7 +110,7 @@ const StyledText = styled.p<{ variant: TypographyVariant; align: string; color?:
 					font-size: ${props.theme.typography.fontSize["4xl"]};
 					font-weight: ${props.theme.typography.fontWeight.bold};
 					line-height: ${props.theme.typography.lineHeight.tight};
-					margin-bottom: ${props.theme.spacing.lg};
+					margin-bottom: ${props.theme.spacing.md};
 				`;
 			}
 			case "h2": {

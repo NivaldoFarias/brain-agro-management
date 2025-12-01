@@ -100,7 +100,7 @@ export function FarmList({
 						<FarmInfo>
 							<FarmName>{farm.name}</FarmName>
 							<FarmLocation>
-								{farm.city}, {farm.state}
+								{farm.city}, {t(`states.${farm.state}`)}
 							</FarmLocation>
 							<FarmAreas>
 								<AreaBadge>

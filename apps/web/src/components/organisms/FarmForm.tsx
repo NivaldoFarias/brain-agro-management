@@ -113,7 +113,7 @@ export function FarmForm({ onSubmit, isLoading = false, defaultValues, producerI
 				/>
 			</FormField>
 
-			<FormField id="state" label="State" required error={errors.state?.message} hint="Brazilian state (UF)">
+			<FormField id="state" label={t("farms.state")} required error={errors.state?.message} hint={t("farms.stateHint")}>
 				<Select
 					value={selectedState}
 					onValueChange={(value) => {
@@ -125,7 +125,7 @@ export function FarmForm({ onSubmit, isLoading = false, defaultValues, producerI
 					aria-label={t("farms.state")}
 					options={Object.values(BrazilianState).map((state) => ({
 						value: state,
-						label: state,
+						label: t(`states.${state}`),
 					}))}
 				/>
 			</FormField>
