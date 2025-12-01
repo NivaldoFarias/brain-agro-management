@@ -21,6 +21,9 @@ export enum RuntimeEnvironment {
 
 	/** Build-time environment */
 	Build = "build",
+
+	/** Seed environment for database seeding */
+	Seed = "seed",
 }
 
 /** Logging levels used throughout the application */

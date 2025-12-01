@@ -1,4 +1,6 @@
-import type { MigrationInterface, QueryRunner } from "typeorm";
+import type { MigrationScript } from "./migrationRunner";
+
+import { MigrationRunner } from "./migrationRunner";
 
 /**
  * Migration to add performance indexes on frequently queried columns
@@ -20,36 +22,32 @@ import type { MigrationInterface, QueryRunner } from "typeorm";
  *
  * @see {@link https://www.sqlite.org/queryplanner.html} for SQLite query optimization
  */
-export class AddPerformanceIndexes1732500000000 implements MigrationInterface {
+export class AddPerformanceIndexes1732500000000 extends MigrationRunner {
 	name = "AddPerformanceIndexes1732500000000";
 
 	/**
-	 * Creates performance indexes on frequently queried columns
+	 * Defines performance indexes for frequently queried columns
 	 *
-	 * @param queryRunner - TypeORM query runner for executing SQL
+	 * @returns Migration script with index definitions
 	 */
-	public async up(queryRunner: QueryRunner): Promise<void> {
-		// Index for farms.state - used in dashboard state distribution
-		await queryRunner.query(`
-			CREATE INDEX "IDX_farms_state" ON "farms" ("state")
-		`);
-
-		// Index for farm_harvest_crops.crop_type - used in dashboard crop distribution
-		await queryRunner.query(`
-			CREATE INDEX "IDX_farm_harvest_crops_crop_type" ON "farm_harvest_crops" ("crop_type")
-		`);
-
-		// Note: producers.document already has a unique constraint which creates an implicit index
-		// Note: farms.producer_id already has an index from InitialSchema migration
-	}
-
-	/**
-	 * Drops performance indexes
-	 *
-	 * @param queryRunner - TypeORM query runner for executing SQL
-	 */
-	public async down(queryRunner: QueryRunner): Promise<void> {
-		await queryRunner.query(`DROP INDEX "IDX_farm_harvest_crops_crop_type"`);
-		await queryRunner.query(`DROP INDEX "IDX_farms_state"`);
+	protected defineScripts(): MigrationScript {
+		return {
+			indexes: [
+				{
+					name: "IDX_farms_state",
+					sql: {
+						create: `CREATE INDEX "IDX_farms_state" ON "farms" ("state")`,
+						drop: `DROP INDEX "IDX_farms_state"`,
+					},
+				},
+				{
+					name: "IDX_farm_harvest_crops_crop_type",
+					sql: {
+						create: `CREATE INDEX "IDX_farm_harvest_crops_crop_type" ON "farm_harvest_crops" ("crop_type")`,
+						drop: `DROP INDEX "IDX_farm_harvest_crops_crop_type"`,
+					},
+				},
+			],
+		};
 	}
 }

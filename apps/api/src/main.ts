@@ -65,48 +65,56 @@ async function bootstrap(): Promise<void> {
  * @throws {Error} If migrations fail to run
  */
 async function runMigrations(): Promise<void> {
-	const migrationLogger = createLogger({ name: "Migration" });
+	const logger = createLogger({ name: "Migration" });
 
-	migrationLogger.info("Initializing DataSource for migrations...");
+	logger.info("Initializing DataSource for migrations...");
 
 	try {
 		const path = await import("node:path");
 		const fs = await import("node:fs/promises");
 
-		const dbPath = env.API__DATABASE_PATH;
-		const dbDir = path.dirname(dbPath);
+		const dbDir = path.dirname(env.API__DATABASE_PATH);
 
 		await fs.mkdir(dbDir, { recursive: true });
-		migrationLogger.info(`Ensured database directory exists: ${dbDir}`);
+		logger.info(`Ensured database directory exists: ${dbDir}`);
 
 		const { DataSource } = await import("typeorm");
-		const migrationDataSource = new DataSource({
+		const migrationDb = new DataSource({
 			...AppDataSource.options,
 			synchronize: false,
 		});
 
-		const dataSource = await migrationDataSource.initialize();
-		migrationLogger.info("DataSource initialized successfully");
+		const dataSource = await migrationDb.initialize();
+		logger.info("DataSource initialized successfully");
 
 		const pendingMigrations = await dataSource.showMigrations();
-		migrationLogger.info(`Pending migrations: ${String(pendingMigrations)}`);
+		logger.info(`Pending migrations: ${String(pendingMigrations)}`);
 
 		if (pendingMigrations) {
-			migrationLogger.info("Running pending migrations...");
+			logger.info("Running pending migrations...");
+
 			const migrations = await dataSource.runMigrations({ transaction: "all" });
-			migrationLogger.info(`Successfully ran ${String(migrations.length)} migration(s):`);
+
+			logger.info(`Successfully ran ${String(migrations.length)} migration(s):`);
+
 			for (const migration of migrations) {
-				migrationLogger.info(`  - ${migration.name}`);
+				logger.info(`  - ${migration.name}`);
 			}
 		} else {
-			migrationLogger.info("Database schema is up-to-date");
+			logger.info("Database schema is up-to-date");
 		}
 
 		await dataSource.destroy();
 
-		migrationLogger.info("DataSource closed");
+		logger.info("DataSource closed");
 	} catch (error) {
-		migrationLogger.error(`Failed to run migrations: ${String(error)}`);
+		logger.error(
+			{
+				error: error instanceof Error ? error.message : String(error),
+				stack: error instanceof Error ? error.stack : undefined,
+			},
+			"Migration failed",
+		);
 
 		throw error;
 	}
@@ -121,7 +129,9 @@ async function runMigrations(): Promise<void> {
  */
 function setupLogger(app: INestApplication): Logger {
 	const logger = app.get(Logger);
+
 	app.useLogger(logger);
+
 	return logger;
 }
 

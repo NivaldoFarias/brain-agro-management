@@ -52,7 +52,7 @@ export class City {
 	 *
 	 * @example "3509502" // (São Paulo city code)
 	 */
-	@Column({ type: "varchar", length: 7, nullable: false, unique: true })
+	@Column({ name: "ibge_code", type: "varchar", length: 7, nullable: false, unique: true })
 	ibgeCode!: string;
 
 	/**

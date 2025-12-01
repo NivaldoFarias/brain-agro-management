@@ -1,7 +1,7 @@
 import { faker } from "@faker-js/faker";
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { PinoLogger } from "nestjs-pino";
+import { InjectPinoLogger, PinoLogger } from "nestjs-pino";
 import { Repository } from "typeorm";
 
 import { OrderBy } from "@agro/shared/utils";
@@ -27,10 +27,10 @@ export class CitiesService {
 	constructor(
 		@InjectRepository(City)
 		private readonly cityRepository: Repository<City>,
+
+		@InjectPinoLogger(CitiesService.name)
 		private readonly logger: PinoLogger,
-	) {
-		this.logger.setContext(CitiesService.name);
-	}
+	) {}
 
 	/**
 	 * Finds all cities in a specific Brazilian state

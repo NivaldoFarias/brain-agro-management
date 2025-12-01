@@ -6,7 +6,9 @@
 
 import { LogLevel, RuntimeEnvironment } from "@agro/shared/utils";
 
-import { description, version } from "../../package.json";
+import { SeedScale } from "@/database/seeds/seed.constants";
+
+import { description, version } from "../../../package.json";
 
 /** API Application metadata */
 export const APP_INFO = {
@@ -58,6 +60,7 @@ export const environmentDefaults = {
 	API__LOG_LEVEL: LogLevel.Info,
 	API__LOG_TO_CONSOLE: true,
 	API__PORT: 3000,
+	API__BASE_URL: "http://localhost:3000",
 	API__DATABASE_PATH: "data/agro.db",
 	API__BASE_PATH: "/api",
 	API__DATABASE_LOGGING: false,
@@ -68,5 +71,6 @@ export const environmentDefaults = {
 	API__JWT_SECRET: "change-me-in-production-use-minimum-32-characters-secret-key",
 	API__JWT_EXPIRATION: "1h",
 	API__SEED_DATABASE: false,
-	API__BASE_URL: "http://localhost:3000",
+	API__SEED_SCALE: SeedScale.Medium,
+	API__IBGE_API_BASE_URL: "https://servicodados.ibge.gov.br/api/v1/localidades",
 } as const;

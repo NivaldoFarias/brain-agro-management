@@ -1,12 +1,7 @@
 import { DataSource } from "typeorm";
 
-import { RuntimeEnvironment } from "@agro/shared/utils";
-
 import { env } from "@/config/env.config";
-// Import migrations directly for runtime execution
-import { InitialSchema1732406400000 } from "@/database/migrations/1732406400000-InitialSchema";
-import { SeedCities1732406500000 } from "@/database/migrations/1732406500000-SeedCities";
-import { AddPerformanceIndexes1732500000000 } from "@/database/migrations/1732500000000-AddPerformanceIndexes";
+import { migrations } from "@/database/migrations";
 import { City } from "@/modules/cities/entities/city.entity";
 import { FarmHarvestCrop } from "@/modules/farms/entities/farm-harvest-crop.entity";
 import { FarmHarvest } from "@/modules/farms/entities/farm-harvest.entity";
@@ -15,7 +10,7 @@ import { Harvest } from "@/modules/farms/entities/harvest.entity";
 import { Producer } from "@/modules/producers/entities/producer.entity";
 
 /**
- * TypeORM DataSource configuration for CLI operations.
+ * TypeORM DataSource configuration for CLI operations and migrations.
  *
  * This configuration is used by the TypeORM CLI for:
  * - Generating migrations: `bun run migration:generate -- MigrationName`
@@ -27,16 +22,12 @@ import { Producer } from "@/modules/producers/entities/producer.entity";
  * @see {@link https://typeorm.io/data-source TypeORM DataSource Documentation}
  */
 export const AppDataSource = new DataSource({
-	type: "sqljs",
-	location: env.API__DATABASE_PATH,
-	autoSave: true,
+	type: "sqlite",
+	database: env.API__DATABASE_PATH,
 	entities: [Producer, Farm, Harvest, FarmHarvest, FarmHarvestCrop, City],
-	migrations: [
-		InitialSchema1732406400000,
-		SeedCities1732406500000,
-		AddPerformanceIndexes1732500000000,
-	],
-	// TEMPORARY: Auto-create tables in development (will use migrations in production)
-	synchronize: env.NODE_ENV !== RuntimeEnvironment.Production,
+	migrations,
+	migrationsTableName: "migrations",
+	migrationsRun: false,
+	synchronize: false,
 	logging: env.API__DATABASE_LOGGING,
 });

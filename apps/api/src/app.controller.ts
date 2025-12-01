@@ -13,7 +13,7 @@ import {
 
 import { Public } from "@/common/decorators/public.decorator";
 
-import { APP_INFO } from "./utils/constants.util";
+import { APP_INFO } from "./common/utils/constants.util";
 
 /**
  * Root API controller providing basic information about the API.
