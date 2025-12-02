@@ -1,5 +1,8 @@
+import { faker } from "@faker-js/faker";
 import { Body, Controller, Delete, Get, HttpStatus, Param, Patch, Post } from "@nestjs/common";
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
+
+import type { ListAllData } from "node_modules/@agro/shared/src/types/dashboard.types";
 
 import { ParseUUIDPipe } from "@/common";
 
@@ -73,13 +76,9 @@ export class ProducersController {
 		description: "List of producers",
 		type: [ProducerResponseDto],
 	})
-	async findAll(): Promise<{
-		data: Array<ProducerResponseDto>;
-		total: number;
-		page: number;
-		limit: number;
-	}> {
+	async findAll(): Promise<ListAllData<ProducerResponseDto>> {
 		const producers = await this.producersService.findAll();
+
 		return {
 			data: producers,
 			total: producers.length,
@@ -161,5 +160,24 @@ export class ProducersController {
 	@ApiResponse({ status: HttpStatus.NOT_FOUND, description: "Producer not found" })
 	remove(@Param("id", ParseUUIDPipe) id: string): Promise<void> {
 		return this.producersService.delete(id);
+	}
+
+	/**
+	 * Gets the total producer count.
+	 *
+	 * @returns Total producer count
+	 */
+	@Get("stats/count")
+	@ApiOperation({ summary: "Get total count of all producers" })
+	@ApiResponse({
+		status: HttpStatus.OK,
+		description: "Total producer count",
+		schema: {
+			type: "number",
+			example: faker.number.int({ min: 0 }) satisfies number,
+		},
+	})
+	getTotalCount(): Promise<number> {
+		return this.producersService.getTotalCount();
 	}
 }

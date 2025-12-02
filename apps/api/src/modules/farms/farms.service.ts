@@ -5,7 +5,8 @@ import { Repository } from "typeorm";
 
 import type { PinoLogger } from "nestjs-pino";
 
-import type { CropType } from "@agro/shared/utils";
+import type { CropDistribution, StateDistribution } from "@agro/shared/types";
+import type { BrazilianState, CropType } from "@agro/shared/utils";
 
 import { OrderBy } from "@agro/shared/utils";
 import { assertValidFarmArea } from "@agro/shared/validators";
@@ -292,6 +293,20 @@ export class FarmsService {
 	}
 
 	/**
+	 * Counts the total number of farms.
+	 *
+	 * @returns Total count of farms
+	 */
+	async getTotalCount(): Promise<number> {
+		const result: { count: string } | undefined = await this.farmRepository
+			.createQueryBuilder("farm")
+			.select("COUNT(farm.id)", "count")
+			.getRawOne();
+
+		return Number.parseInt(result?.count ?? "0", 10) || 0;
+	}
+
+	/**
 	 * Counts farms grouped by Brazilian state.
 	 *
 	 * @returns Array of objects containing state code and farm count
@@ -302,7 +317,7 @@ export class FarmsService {
 	 * // Returns: [{ state: "SP", count: 15 }, { state: "MG", count: 8 }, ...]
 	 * ```
 	 */
-	async countByState(): Promise<Array<{ state: string; count: number }>> {
+	async countByState(): Promise<Array<StateDistribution>> {
 		const results: Array<{ state: string; count: string }> = await this.farmRepository
 			.createQueryBuilder("farm")
 			.select("farm.state", "state")
@@ -312,7 +327,7 @@ export class FarmsService {
 			.getRawMany();
 
 		return results.map((result) => ({
-			state: result.state,
+			state: result.state as BrazilianState,
 			count: Number.parseInt(result.count, 10),
 		}));
 	}
@@ -366,7 +381,7 @@ export class FarmsService {
 	 * // ]
 	 * ```
 	 */
-	async getCropsDistribution(): Promise<Array<{ cropType: string; count: number }>> {
+	async getCropsDistribution(): Promise<Array<CropDistribution>> {
 		const results: Array<{ cropType: string; count: string }> = await this.farmHarvestCropRepository
 			.createQueryBuilder("fhc")
 			.innerJoin("fhc.farmHarvest", "fh")
@@ -376,10 +391,12 @@ export class FarmsService {
 			.orderBy("count", OrderBy.Descending)
 			.getRawMany();
 
-		return results.map((result) => ({
-			cropType: result.cropType,
-			count: Number.parseInt(result.count, 10),
-		}));
+		return results.map((result) => {
+			return {
+				cropType: result.cropType as CropType,
+				count: Number.parseInt(result.count, 10),
+			};
+		});
 	}
 
 	/**

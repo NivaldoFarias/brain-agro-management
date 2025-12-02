@@ -201,6 +201,15 @@ export class ProducersService {
 	}
 
 	/**
+	 * Gets the total count of all producers.
+	 *
+	 * @returns Total producer count
+	 */
+	async getTotalCount(): Promise<number> {
+		return this.producerRepository.count();
+	}
+
+	/**
 	 * Validates a Brazilian document (CPF or CNPJ) and strips formatting.
 	 *
 	 * Determines whether the document is CPF (11 digits) or CNPJ (14 digits)

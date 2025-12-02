@@ -2,6 +2,13 @@ import { faker } from "@faker-js/faker";
 import { Body, Controller, Delete, Get, HttpStatus, Param, Patch, Post } from "@nestjs/common";
 import { ApiBearerAuth, ApiOperation, ApiParam, ApiResponse, ApiTags } from "@nestjs/swagger";
 
+import type {
+	CropDistribution,
+	LandUseStats,
+	ListAllData,
+	StateDistribution,
+} from "@agro/shared/types";
+
 import { BrazilianState, CropType, ParseUUIDPipe } from "@/common";
 
 import { CreateFarmDto, FarmResponseDto, UpdateFarmDto } from "./dto";
@@ -77,12 +84,7 @@ export class FarmsController {
 		description: "List of farms",
 		type: [FarmResponseDto],
 	})
-	async findAll(): Promise<{
-		data: Array<FarmResponseDto>;
-		total: number;
-		page: number;
-		limit: number;
-	}> {
+	async findAll(): Promise<ListAllData<FarmResponseDto>> {
 		const farms = await this.farmsService.findAll();
 		return {
 			data: farms,
@@ -228,11 +230,32 @@ export class FarmsController {
 		description: "Total farm area in hectares",
 		schema: {
 			type: "number",
-			example: faker.number.float({ min: 1000, max: 20_000, fractionDigits: 2 }),
+			example: faker.number.float({ min: 1000, max: 20_000, fractionDigits: 2 }) satisfies number,
 		},
 	})
 	getTotalArea(): Promise<number> {
 		return this.farmsService.getTotalArea();
+	}
+
+	/**
+	 * Calculates the total area of all farms.
+	 *
+	 * Dashboard endpoint that aggregates the sum of all farm areas.
+	 *
+	 * @returns Total area in hectares
+	 */
+	@Get("stats/count")
+	@ApiOperation({ summary: "Get total count of all farms" })
+	@ApiResponse({
+		status: HttpStatus.OK,
+		description: "Total farm count",
+		schema: {
+			type: "number",
+			example: faker.number.int({ min: 0 }) satisfies number,
+		},
+	})
+	getTotalCount(): Promise<number> {
+		return this.farmsService.getTotalCount();
 	}
 
 	/**
@@ -252,10 +275,10 @@ export class FarmsController {
 			example: [
 				{ state: BrazilianState.SP, count: 15 },
 				{ state: BrazilianState.MG, count: 8 },
-			],
+			] satisfies Array<StateDistribution>,
 		},
 	})
-	countByState(): Promise<Array<{ state: string; count: number }>> {
+	countByState(): Promise<Array<StateDistribution>> {
 		return this.farmsService.countByState();
 	}
 
@@ -277,10 +300,10 @@ export class FarmsController {
 			example: {
 				arableArea: 5230.5,
 				vegetationArea: 1847.2,
-			},
+			} satisfies LandUseStats,
 		},
 	})
-	getLandUseStats(): Promise<{ arableArea: number; vegetationArea: number }> {
+	getLandUseStats(): Promise<LandUseStats> {
 		return this.farmsService.getLandUseStats();
 	}
 
@@ -303,10 +326,10 @@ export class FarmsController {
 				{ cropType: CropType.Soy, count: 15 },
 				{ cropType: CropType.Corn, count: 12 },
 				{ cropType: CropType.Coffee, count: 8 },
-			],
+			] satisfies Array<CropDistribution>,
 		},
 	})
-	getCropsDistribution(): Promise<Array<{ cropType: string; count: number }>> {
+	getCropsDistribution(): Promise<Array<CropDistribution>> {
 		return this.farmsService.getCropsDistribution();
 	}
 }

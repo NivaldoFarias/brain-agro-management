@@ -1,36 +1,6 @@
 import type { BrazilianState, CropType } from "../utils/constants.util";
 
 /**
- * Total area statistics for dashboard overview.
- *
- * Provides aggregated metrics for all farms in the system, including
- * total farm count and sum of all farm areas.
- *
- * @example
- * ```typescript
- * const stats: TotalAreaStats = {
- *   totalFarms: 150,
- *   totalAreaHectares: 12500.50
- * };
- * ```
- */
-export interface TotalAreaStats {
-	/**
-	 * Total number of registered farms.
-	 *
-	 * @minimum `0`
-	 */
-	totalFarms?: number;
-
-	/**
-	 * Sum of all farm areas in hectares.
-	 *
-	 * @minimum `0`
-	 */
-	totalAreaHectares?: number;
-}
-
-/**
  * Farm distribution by Brazilian state.
  *
  * Represents the count of farms for a specific state, used for
@@ -89,16 +59,6 @@ export interface CropDistribution {
 	 * @minimum `0`
 	 */
 	count: number;
-
-	/**
-	 * Percentage of farms cultivating this crop.
-	 *
-	 * Calculated as (count / total farms with crops) × 100
-	 *
-	 * @minimum `0`
-	 * @maximum `100`
-	 */
-	percentage: number;
 }
 
 /**
@@ -110,10 +70,8 @@ export interface CropDistribution {
  * @example
  * ```typescript
  * const stats: LandUseStats = {
- *   arableAreaHectares: 8500.75,
- *   vegetationAreaHectares: 3200.25,
- *   arablePercentage: 72.67,
- *   vegetationPercentage: 27.33
+ *   arableArea: 8500.75,
+ *   vegetationArea: 3200.25,
  * };
  * ```
  */
@@ -123,32 +81,42 @@ export interface LandUseStats {
 	 *
 	 * @minimum `0`
 	 */
-	arableAreaHectares: number;
+	arableArea: number;
 
 	/**
 	 * Total vegetation area across all farms in hectares.
 	 *
 	 * @minimum `0`
 	 */
-	vegetationAreaHectares: number;
+	vegetationArea: number;
+}
 
-	/**
-	 * Percentage of land used for cultivation.
-	 *
-	 * Calculated as (arableArea / totalArea) × 100
-	 *
-	 * @minimum `0`
-	 * @maximum `100`
-	 */
-	arablePercentage: number;
+/**
+ * Standardized response format for paginated list endpoints.
+ *
+ * Encapsulates an array of data items along with pagination metadata
+ * such as total item count, current page, and items per page.
+ *
+ * @example
+ * ```typescript
+ * const response: ListAllData<Farm> = {
+ *   data: [...],
+ *   total: 150,
+ *   page: 2,
+ *   limit: 25,
+ * };
+ * ```
+ */
+export interface ListAllData<T> {
+	/** Array of data items */
+	data: Array<T>;
 
-	/**
-	 * Percentage of land preserved as vegetation.
-	 *
-	 * Calculated as (vegetationArea / totalArea) × 100
-	 *
-	 * @minimum `0`
-	 * @maximum `100`
-	 */
-	vegetationPercentage: number;
+	/** Total number of items available */
+	total: number;
+
+	/** Current page number */
+	page: number;
+
+	/** Number of items per page */
+	limit: number;
 }

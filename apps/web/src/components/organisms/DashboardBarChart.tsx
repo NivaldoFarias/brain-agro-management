@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import {
 	Bar,
 	CartesianGrid,
@@ -44,6 +45,8 @@ interface DashboardBarChartProps {
  * ```
  */
 export function DashboardBarChart({ title, data, isLoading, error }: DashboardBarChartProps): ReactElement {
+	const { t } = useTranslation();
+
 	if (error) {
 		return <ErrorContainer>{error}</ErrorContainer>;
 	}
@@ -53,7 +56,7 @@ export function DashboardBarChart({ title, data, isLoading, error }: DashboardBa
 	}
 
 	if (!data || data.length === 0) {
-		return <EmptyContainer>No data available</EmptyContainer>;
+		return <EmptyContainer>{t(($) => $.common.noData)}</EmptyContainer>;
 	}
 
 	return (
@@ -61,7 +64,7 @@ export function DashboardBarChart({ title, data, isLoading, error }: DashboardBa
 			<Title>{title}</Title>
 			<ChartContainer>
 				<ResponsiveContainer width="100%" height={300}>
-					<RechartBarChart data={data} margin={{ top: 20, right: 30, left: 0, bottom: 60 }}>
+					<RechartBarChart data={data} margin={{ top: 20, right: 30, left: 0 }}>
 						<CartesianGrid strokeDasharray="3 3" stroke="#e7e5e4" />
 						<XAxis dataKey="name" angle={-45} textAnchor="end" height={100} />
 						<YAxis />
@@ -73,7 +76,7 @@ export function DashboardBarChart({ title, data, isLoading, error }: DashboardBa
 							}}
 						/>
 						<Legend />
-						<Bar dataKey="value" fill="#10B981" name="Farms" radius={[8, 8, 0, 0]} />
+						<Bar dataKey="value" fill="#10B981" name={t(($) => $.farms.title)} radius={[8, 8, 0, 0]} />
 					</RechartBarChart>
 				</ResponsiveContainer>
 			</ChartContainer>

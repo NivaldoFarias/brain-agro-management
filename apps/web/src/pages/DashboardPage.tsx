@@ -14,6 +14,7 @@ import {
 	useGetLandUseStatsQuery,
 	useGetStateDistributionQuery,
 	useGetTotalAreaStatsQuery,
+	useGetTotalFarmsCountQuery,
 } from "@/store/api/dashboardApi";
 
 /**
@@ -26,6 +27,7 @@ export function DashboardPage(): ReactElement {
 	const { t } = useTranslation();
 
 	const { data: totalAreaStats } = useGetTotalAreaStatsQuery(undefined);
+	const { data: totalFarmsCount } = useGetTotalFarmsCountQuery(undefined);
 	const {
 		data: stateDistribution,
 		isLoading: isLoadingState,
@@ -46,27 +48,25 @@ export function DashboardPage(): ReactElement {
 		})) ?? [];
 
 	/** Transformed crop distribution data for pie chart */
+	const totalCrops = cropDistribution?.reduce((sum, item) => sum + item.count, 0) ?? 0;
 	const cropChartData =
-		cropDistribution?.map((item) => {
-			console.log({ item });
-
-			return {
-				name: t(($) => $.crops[item.cropType]),
-				value: Math.round(item.percentage),
-			};
-		}) ?? [];
+		cropDistribution?.map((item) => ({
+			name: t(($) => $.crops[item.cropType]),
+			value: totalCrops > 0 ? Math.round((item.count / totalCrops) * 100) : 0,
+		})) ?? [];
 
 	/** Transformed land use data for pie chart */
+	const totalLand = landUseStats ? landUseStats.arableArea + landUseStats.vegetationArea : 0;
 	const landUseChartData =
 		landUseStats ?
 			[
 				{
 					name: t(($) => $.dashboard.arable),
-					value: Math.round(landUseStats.arablePercentage),
+					value: Math.round((landUseStats.arableArea / totalLand) * 100),
 				},
 				{
 					name: t(($) => $.dashboard.vegetation),
-					value: Math.round(landUseStats.vegetationPercentage),
+					value: Math.round((landUseStats.vegetationArea / totalLand) * 100),
 				},
 			]
 		:	[];
@@ -83,13 +83,13 @@ export function DashboardPage(): ReactElement {
 				<DashboardGrid columns={2}>
 					<DashboardStatCard
 						label={t(($) => $.dashboard.totalFarms)}
-						value={totalAreaStats?.totalFarms ?? 0}
+						value={totalFarmsCount ?? 0}
 						icon={<FarmIcon size={24} />}
 						variant="success"
 					/>
 					<DashboardStatCard
 						label={t(($) => $.dashboard.totalArea)}
-						value={totalAreaStats?.totalAreaHectares?.toFixed(2) ?? "0"}
+						value={totalAreaStats?.toFixed(2) ?? "0"}
 						unit="ha"
 						icon={<AreaIcon size={24} />}
 						variant="info"

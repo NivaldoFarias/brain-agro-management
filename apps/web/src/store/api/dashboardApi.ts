@@ -3,7 +3,6 @@ import type {
 	CropDistribution,
 	LandUseStats,
 	StateDistribution,
-	TotalAreaStats,
 } from "@agro/shared/types";
 
 import { api } from "./baseApi";
@@ -17,7 +16,7 @@ import { api } from "./baseApi";
 export const dashboardApi = api.injectEndpoints({
 	endpoints: (builder) => ({
 		/**
-		 * Fetches total farms count and total area in hectares.
+		 * Fetches total area in hectares.
 		 *
 		 * @example
 		 * ```tsx
@@ -25,10 +24,25 @@ export const dashboardApi = api.injectEndpoints({
 		 * console.log(`Total farms: ${data?.totalFarms}, Total area: ${data?.totalAreaHectares} ha`);
 		 * ```
 		 */
-		getTotalAreaStats: builder.query<TotalAreaStats, unknown>({
+		getTotalAreaStats: builder.query<number, unknown>({
 			query: () => "/farms/stats/total-area",
-			transformResponse: (response: ApiResponse<TotalAreaStats>) => response.data,
+			transformResponse: (response: ApiResponse<number>) => response.data,
 			providesTags: [{ type: "DashboardStats", id: "TOTAL_AREA" }],
+		}),
+
+		/**
+		 * Fetches total farms count.
+		 *
+		 * @example
+		 * ```tsx
+		 * const { data, isLoading } = useGetTotalFarmsCountQuery();
+		 * console.log(`Total farms: ${data}`);
+		 * ```
+		 */
+		getTotalFarmsCount: builder.query<number, unknown>({
+			query: () => "/farms/stats/count",
+			transformResponse: (response: ApiResponse<number>) => response.data,
+			providesTags: [{ type: "DashboardStats", id: "TOTAL_FARMS" }],
 		}),
 
 		/**
@@ -52,8 +66,8 @@ export const dashboardApi = api.injectEndpoints({
 		 * @example
 		 * ```tsx
 		 * const { data, isLoading } = useGetCropDistributionQuery();
-		 * data?.forEach(({ crop, count, percentage }) =>
-		 *   console.log(`${crop}: ${count} (${percentage}%)`)
+		 * data?.forEach(({ cropType, count, percentage }) =>
+		 *   console.log(`${cropType}: ${count} (${percentage}%)`)
 		 * );
 		 * ```
 		 */
@@ -77,12 +91,29 @@ export const dashboardApi = api.injectEndpoints({
 			transformResponse: (response: ApiResponse<LandUseStats>) => response.data,
 			providesTags: [{ type: "DashboardStats", id: "LAND_USE" }],
 		}),
+
+		/**
+		 * Fetches total producers count.
+		 *
+		 * @example
+		 * ```tsx
+		 * const { data, isLoading } = useGetProducersCountQuery();
+		 * console.log(`Total producers: ${data}`);
+		 * ```
+		 */
+		getProducersCount: builder.query<number, unknown>({
+			query: () => "/producers/stats/count",
+			transformResponse: (response: ApiResponse<number>) => response.data,
+			providesTags: [{ type: "DashboardStats", id: "PRODUCERS_COUNT" }],
+		}),
 	}),
 });
 
 export const {
 	useGetTotalAreaStatsQuery,
+	useGetTotalFarmsCountQuery,
 	useGetStateDistributionQuery,
 	useGetCropDistributionQuery,
 	useGetLandUseStatsQuery,
+	useGetProducersCountQuery,
 } = dashboardApi;
