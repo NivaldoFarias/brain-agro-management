@@ -148,23 +148,30 @@ bun run type-check   # Check TypeScript types
 
 ## Status
 
-### ✅ Implemented Features
+### Implemented 
 
-- **Backend API**: Complete CRUD for producers and farms
-- **Validation**: CPF/CNPJ and farm area rules
+- **Backend API**: Complete CRUD for producers and farms with validation
 - **Authentication**: JWT system with refresh tokens
-- **Documentation**: OpenAPI (Swagger + Scalar)
-- **Tests**: Unit test suite on backend
+- **Database**: TypeORM + Bun native SQLite with migrations
+- **Validation**: CPF/CNPJ validators and farm area constraints
+- **Documentation**: OpenAPI (Swagger + Scalar) with comprehensive examples
+- **Logging**: Structured Pino logs with correlation IDs
 - **CI/CD**: Automated pipeline with GitHub Actions
-- **Deploy**: Production on HuggingFace Spaces
+- **Deployment**: Live API on HuggingFace Spaces
+- **Frontend**: Complete CRUD interfaces with React + Redux Toolkit
+- **UI Components**: Radix UI-based design system (30+ components)
+- **Forms**: react-hook-form + Zod validation for all inputs
+- **Internationalization**: i18next with Portuguese and English
 
-### 🚧 In Development
+### 🚧 In Progress
 
-- **Dashboard UI**: Charts and visualizations (Recharts)
-- **E2E Tests**: Cypress for end-to-end testing
-- **Frontend Coverage**: Expanding React test suite
+- **Dashboard Charts**: Recharts installed, components pending implementation
+- **Testing Suite**: Infrastructure ready, test files pending
+- **Edit Pages**: Forms ready, data loading pending
+- **E2E Tests**: Cypress/Playwright setup pending
 
-> 📋 See [ROADMAP.md](./ROADMAP.md) for detailed checklist and complete progress.
+> [!TIP]
+> See [ROADMAP.md](./docs/ROADMAP.md) for detailed checklist and priority guidance.
 
 ## Documentation
 

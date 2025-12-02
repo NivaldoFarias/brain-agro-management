@@ -151,24 +151,30 @@ bun run type-check   # Verificar tipos TypeScript
 
 ## Status
 
-### ✅ Funcionalidades Implementadas
+### Implementedado
 
-- **Backend API**: CRUD completo de produtores e fazendas
-- **Validação**: CPF/CNPJ e regras de área de fazendas
+- **Backend API**: CRUD completo para produtores e fazendas com validação
 - **Autenticação**: Sistema JWT com refresh tokens
-- **Documentação**: OpenAPI (Swagger + Scalar)
-- **Testes**: Suite de testes unitários no backend
+- **Banco de Dados**: TypeORM + SQLite nativo do Bun com migrations
+- **Validação**: Validadores CPF/CNPJ e restrições de área das fazendas
+- **Documentação**: OpenAPI (Swagger + Scalar) com exemplos abrangentes
+- **Logging**: Logs estruturados com Pino e IDs de correlação
 - **CI/CD**: Pipeline automatizado com GitHub Actions
-- **Deploy**: Produção no HuggingFace Spaces
+- **Deploy**: API em produção no HuggingFace Spaces
+- **Frontend**: Interfaces CRUD completas com React + Redux Toolkit
+- **Componentes UI**: Sistema de design baseado em Radix UI (30+ componentes)
+- **Formulários**: react-hook-form + validação Zod para todos os inputs
+- **Internacionalização**: i18next com suporte a Português e Inglês
 
-### 🚧 Em Desenvolvimento
+### 🚧 Em Progresso
 
-- **Dashboard UI**: Gráficos e visualizações (Recharts)
-- **Testes E2E**: Cypress para testes end-to-end
-- **Cobertura Frontend**: Expansão da suite de testes React
+- **Gráficos do Dashboard**: Recharts instalado, componentes pendentes de implementação
+- **Suite de Testes**: Infraestrutura pronta, arquivos de teste pendentes
+- **Páginas de Edição**: Formulários prontos, carregamento de dados pendente
+- **Testes E2E**: Configuração do Cypress/Playwright pendente
 
 > [!TIP]
-> Consulte [ROADMAP.md](./docs/ROADMAP.md) para o checklist detalhado e progresso completo.
+> Consulte [ROADMAP.md](./docs/ROADMAP.md) para a lista detalhada de tarefas e prioridades.
 
 ## Documentação
 
