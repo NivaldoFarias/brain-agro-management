@@ -65,7 +65,7 @@ export function ProducerList({
 	const navigate = useNavigate();
 
 	if (isLoading) {
-		return <LoadingState message={t("producers.loadingProducers")} />;
+		return <LoadingState message={t(($) => $.producers.loadingProducers)} />;
 	}
 
 	if (error) {
@@ -75,8 +75,8 @@ export function ProducerList({
 	if (producers.length === 0) {
 		return (
 			<EmptyState
-				title={t("producers.noProducers")}
-				description={t("producers.registerNewProducer")}
+				title={t(($) => $.producers.noProducers)}
+				description={t(($) => $.producers.registerNewProducer)}
 				icon="👤"
 				action={
 					<Button
@@ -85,7 +85,7 @@ export function ProducerList({
 							void navigate("/producers/create");
 						}}
 					>
-						{t("producers.createProducer")}
+						{t(($) => $.producers.createProducer)}
 					</Button>
 				}
 			/>
@@ -101,7 +101,7 @@ export function ProducerList({
 							<ProducerName>{producer.name}</ProducerName>
 							<ProducerDocument>{producer.document}</ProducerDocument>
 							<ProducerMeta>
-								{t("form.createdAt")}: {new Date(producer.createdAt).toLocaleDateString()}
+								{t(($) => $.form.createdAt)}: {new Date(producer.createdAt).toLocaleDateString()}
 							</ProducerMeta>
 						</ProducerInfo>
 						<ActionButtons>
@@ -112,7 +112,7 @@ export function ProducerList({
 									void navigate(`/producers/${producer.id}/edit`);
 								}}
 							>
-								{t("common.edit")}
+								{t(($) => $.common.edit)}
 							</Button>
 							<Button
 								variant="danger"
@@ -121,7 +121,7 @@ export function ProducerList({
 								disabled={isDeletingId === producer.id}
 								isLoading={isDeletingId === producer.id}
 							>
-								{t("common.delete")}
+								{t(($) => $.common.delete)}
 							</Button>
 						</ActionButtons>
 					</CardContent>

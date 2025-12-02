@@ -43,7 +43,7 @@ export class FarmHarvestCrop {
 	farmHarvestId!: string;
 
 	/**
-	 * Type of crop planted (Soja, Milho, Algodão, Café, Cana de Açúcar)
+	 * Type of crop planted (soy, corn, cotton, coffee, sugarcane)
 	 */
 	@Column({ type: "varchar", length: 50, enum: CropType, name: "crop_type" })
 	cropType!: CropType;

@@ -1,5 +1,6 @@
 import { z } from "zod";
 
+import { SupportedLocale } from "@agro/shared/constants";
 import { createEnv, LogLevel, RuntimeEnvironment } from "@agro/shared/utils";
 
 import { environmentDefaults } from "@/common/utils/constants.util";
@@ -155,6 +156,14 @@ const apiEnvSchema = z.object({
 	 * @see {@link environmentDefaults.API__IBGE_API_BASE_URL}
 	 */
 	API__IBGE_API_BASE_URL: z.url().default(environmentDefaults.API__IBGE_API_BASE_URL),
+
+	/**
+	 * Application locale for internationalization
+	 *
+	 * @default "pt_BR"
+	 * @see {@link environmentDefaults.API__LOCALE}
+	 */
+	API__LOCALE: z.enum(SupportedLocale).default(environmentDefaults.API__LOCALE),
 });
 
 /** Type-safe environment variables for the API application */

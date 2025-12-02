@@ -5,16 +5,20 @@
  * seeding process, including state weights, crop combinations, and scale configurations.
  */
 
+import { SupportedLocale } from "@agro/shared/constants";
 import { BrazilianState, CropType } from "@agro/shared/utils";
 
-/**
- * Supported database seeding scales
- */
+/** Supported database seeding scales */
 export enum SeedScale {
 	Small = "small",
 	Medium = "medium",
 	Large = "large",
 }
+
+export const FARM_NAME_PREFIXES = {
+	[SupportedLocale.Portuguese]: ["Fazenda", "Sítio", "Chácara", "Rancho", "Estância"],
+	[SupportedLocale.English]: ["Farm", "Ranch", "Estate", "Homestead", "Plantation"],
+};
 
 /**
  * Seed configuration interface
@@ -129,13 +133,13 @@ export const STATE_WEIGHTS: Record<BrazilianState, number> = {
  * - Multi-crop systems
  */
 export const CROP_COMBINATIONS: Array<Array<CropType>> = [
-	[CropType.Soja, CropType.Milho],
-	[CropType.Soja],
-	[CropType.Milho],
-	[CropType.Algodao, CropType.Soja],
-	[CropType.Cafe],
-	[CropType.CanaDeAcucar],
-	[CropType.Soja, CropType.Milho, CropType.Algodao],
+	[CropType.Soy, CropType.Corn],
+	[CropType.Soy],
+	[CropType.Corn],
+	[CropType.Cotton, CropType.Soy],
+	[CropType.Coffee],
+	[CropType.Sugarcane],
+	[CropType.Soy, CropType.Corn, CropType.Cotton],
 ];
 
 /**

@@ -65,7 +65,7 @@ export function FarmList({
 	const navigate = useNavigate();
 
 	if (isLoading) {
-		return <LoadingState message={t("farms.loadingFarms")} />;
+		return <LoadingState message={t(($) => $.farms.loadingFarms)} />;
 	}
 
 	if (error) {
@@ -75,8 +75,8 @@ export function FarmList({
 	if (farms.length === 0) {
 		return (
 			<EmptyState
-				title={t("farms.noFarms")}
-				description={t("farms.createFirstFarm")}
+				title={t(($) => $.farms.noFarms)}
+				description={t(($) => $.farms.createFirstFarm)}
 				icon="🌾"
 				action={
 					<Button
@@ -85,7 +85,7 @@ export function FarmList({
 							void navigate("/farms/create");
 						}}
 					>
-						{t("farms.createFarm")}
+						{t(($) => $.farms.createFarm)}
 					</Button>
 				}
 			/>
@@ -100,22 +100,22 @@ export function FarmList({
 						<FarmInfo>
 							<FarmName>{farm.name}</FarmName>
 							<FarmLocation>
-								{farm.city}, {t(`states.${farm.state}`)}
+								{farm.city}, {t(($) => $.states[farm.state])}
 							</FarmLocation>
 							<FarmAreas>
 								<AreaBadge>
 									<strong>Total:</strong> {farm.totalArea.toFixed(2)} ha
 								</AreaBadge>
 								<AreaBadge>
-									<strong>{t("dashboard.arable")}:</strong> {farm.arableArea.toFixed(2)} ha
+									<strong>{t(($) => $.dashboard.arable)}:</strong> {farm.arableArea.toFixed(2)} ha
 								</AreaBadge>
 								<AreaBadge>
-									<strong>{t("dashboard.vegetation")}:</strong> {farm.vegetationArea.toFixed(2)} ha
+									<strong>{t(($) => $.dashboard.vegetation)}:</strong> {farm.vegetationArea.toFixed(2)} ha
 								</AreaBadge>
 							</FarmAreas>
 							<CropsList>
-								<strong>{t("dashboard.crops")}:</strong>{" "}
-								{farm.crops.length > 0 ? farm.crops.join(", ") : t("common.none")}
+								<strong>{t(($) => $.dashboard.crops)}:</strong>{" "}
+								{farm.crops.length > 0 ? farm.crops.join(", ") : t(($) => $.common.none)}
 							</CropsList>
 						</FarmInfo>
 						<ActionButtons>
@@ -126,7 +126,7 @@ export function FarmList({
 									void navigate(`/farms/${farm.id}/edit`);
 								}}
 							>
-								{t("common.edit")}
+								{t(($) => $.common.edit)}
 							</Button>
 							<Button
 								variant="danger"
@@ -135,7 +135,7 @@ export function FarmList({
 								disabled={isDeletingId === farm.id}
 								isLoading={isDeletingId === farm.id}
 							>
-								{t("common.delete")}
+								{t(($) => $.common.delete)}
 							</Button>
 						</ActionButtons>
 					</CardContent>

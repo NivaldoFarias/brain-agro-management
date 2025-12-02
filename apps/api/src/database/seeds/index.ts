@@ -16,8 +16,11 @@
 
 import { INestApplicationContext } from "@nestjs/common";
 import { NestFactory } from "@nestjs/core";
+import { Logger } from "nestjs-pino";
 
-import { createLogger, RuntimeEnvironment } from "@agro/shared/utils";
+import { AppDataSource } from "@/config/database.config";
+
+import { runMigrations } from "../migrations";
 
 import { SeedModule } from "./seed.module";
 import { SeedService } from "./seed.service";
@@ -37,31 +40,29 @@ if (import.meta.main) {
  * @see {@link https://docs.nestjs.com/standalone-applications|NestJS Standalone Applications}
  */
 async function seed(): Promise<void> {
-	const logger = createLogger({
-		name: "seed:cli",
-		environment: RuntimeEnvironment.Seed,
-		logToConsole: true,
-	});
 	let app: INestApplicationContext | undefined;
-
-	logger.info("Setting up database seeding context");
+	let logger: Logger | undefined;
 
 	try {
-		logger.info("Creating NestJS application context");
+		await runMigrations(AppDataSource.options);
 
 		app = await NestFactory.createApplicationContext(SeedModule);
 
-		logger.info("Retrieving SeedService from DI container");
+		logger = app.get(Logger);
+
+		if (logger) app.useLogger(logger);
+
+		logger?.log("Retrieving SeedService from DI container");
 		const seedService = app.get(SeedService);
 
 		await seedService.seed();
 	} catch (error) {
-		logger.error({ error }, "Seeding failed");
+		logger?.error({ error }, "Seeding failed");
 		throw error;
 	} finally {
 		if (app) {
 			await app.close();
-			logger.info("Application context closed");
+			logger?.log("Seeding Application context closed");
 		}
 	}
 }

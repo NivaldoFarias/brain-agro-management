@@ -2,7 +2,7 @@ import { faker } from "@faker-js/faker/locale/pt_BR";
 import { ApiProperty } from "@nestjs/swagger";
 import { Exclude, Expose } from "class-transformer";
 
-import { BrazilianState } from "@/common";
+import { BrazilianState, CropType } from "@/common";
 
 /**
  * Data Transfer Object for farm responses.
@@ -131,11 +131,11 @@ export class FarmResponseDto {
 	/**
 	 * Array of crop types cultivated on this farm.
 	 *
-	 * @example ["Soja", "Milho"]
+	 * @example ["soy", "corn"]
 	 */
 	@ApiProperty({
 		description: "Crops cultivated on this farm",
-		example: ["Soja", "Milho"],
+		example: [CropType.Soy, CropType.Corn],
 		type: [String],
 		isArray: true,
 	})

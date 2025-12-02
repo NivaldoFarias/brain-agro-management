@@ -1,6 +1,8 @@
 export { CreateFarmPage } from "./CreateFarmPage";
 export { CreateProducerPage } from "./CreateProducerPage";
 export { DashboardPage } from "./DashboardPage";
+export { EditFarmPage } from "./EditFarmPage";
+export { EditProducerPage } from "./EditProducerPage";
 export { FarmsPage } from "./FarmsPage";
 export { LoginPage } from "./LoginPage";
 export { NotFoundPage } from "./NotFoundPage";

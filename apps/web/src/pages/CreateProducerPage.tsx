@@ -29,20 +29,29 @@ export function CreateProducerPage(): ReactElement {
 		try {
 			await createProducer(data).unwrap();
 
-			toast.success(t("producers.createSuccess"), t("producers.producerAdded"));
+			toast.success(
+				t(($) => $.producers.createSuccess),
+				t(($) => $.producers.producerAdded),
+			);
 
 			await navigate(ROUTES.producers.list);
 		} catch (error) {
-			console.error(t("producers.createError"), error);
-			toast.error(t("producers.createError"), t("common.retry"));
+			console.error(
+				t(($) => $.producers.createError),
+				error,
+			);
+			toast.error(
+				t(($) => $.producers.createError),
+				t(($) => $.common.retry),
+			);
 		}
 	};
 
 	return (
 		<Container>
 			<Header>
-				<Typography variant="h1">{t("producers.createProducer")}</Typography>
-				<Typography variant="body">{t("producers.addNewProducer")}</Typography>
+				<Typography variant="h1">{t(($) => $.producers.createProducer)}</Typography>
+				<Typography variant="body">{t(($) => $.producers.addNewProducer)}</Typography>
 			</Header>
 
 			<FormCard>

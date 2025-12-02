@@ -53,6 +53,8 @@ export {
 	LogOut as LogOutIcon,
 	Home as HomeIcon,
 	Menu as MenuIcon,
+	Layers as AreaIcon,
+	BarChart as BarChartIcon,
 } from "lucide-react";
 
 /**

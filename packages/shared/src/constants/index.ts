@@ -1,7 +1,2 @@
-/**
- * Shared constants for routing and API endpoints.
- *
- * @module constants
- */
-
+export * from "./locale.constants.js";
 export * from "./routes.js";

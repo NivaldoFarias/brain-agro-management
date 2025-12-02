@@ -3,8 +3,18 @@ import styled from "styled-components";
 
 import type { ReactElement } from "react";
 
+import { DashboardBarChart } from "@/components/organisms/DashboardBarChart";
+import { DashboardGrid } from "@/components/organisms/DashboardGrid";
+import { DashboardPieChart } from "@/components/organisms/DashboardPieChart";
+import { DashboardStatCard } from "@/components/organisms/DashboardStatCard";
 import { PageContainer } from "@/components/templates/PageContainer";
-import { ChartIcon } from "@/components/ui/Icon";
+import { AreaIcon, FarmIcon } from "@/components/ui/Icon";
+import {
+	useGetCropDistributionQuery,
+	useGetLandUseStatsQuery,
+	useGetStateDistributionQuery,
+	useGetTotalAreaStatsQuery,
+} from "@/store/api/dashboardApi";
 
 /**
  * Dashboard page component displaying agricultural analytics.
@@ -15,19 +25,104 @@ import { ChartIcon } from "@/components/ui/Icon";
 export function DashboardPage(): ReactElement {
 	const { t } = useTranslation();
 
+	const { data: totalAreaStats } = useGetTotalAreaStatsQuery(undefined);
+	const {
+		data: stateDistribution,
+		isLoading: isLoadingState,
+		error: errorState,
+	} = useGetStateDistributionQuery(undefined);
+	const {
+		data: cropDistribution,
+		isLoading: isLoadingCrops,
+		error: errorCrops,
+	} = useGetCropDistributionQuery(undefined);
+	const { data: landUseStats, isLoading: isLoadingLandUse, error: errorLandUse } = useGetLandUseStatsQuery(undefined);
+
+	/** Transformed state distribution data for bar chart */
+	const stateChartData =
+		stateDistribution?.map((item) => ({
+			name: t(($) => $.states[item.state]),
+			value: item.count,
+		})) ?? [];
+
+	/** Transformed crop distribution data for pie chart */
+	const cropChartData =
+		cropDistribution?.map((item) => {
+			console.log({ item });
+
+			return {
+				name: t(($) => $.crops[item.cropType]),
+				value: Math.round(item.percentage),
+			};
+		}) ?? [];
+
+	/** Transformed land use data for pie chart */
+	const landUseChartData =
+		landUseStats ?
+			[
+				{
+					name: t(($) => $.dashboard.arable),
+					value: Math.round(landUseStats.arablePercentage),
+				},
+				{
+					name: t(($) => $.dashboard.vegetation),
+					value: Math.round(landUseStats.vegetationPercentage),
+				},
+			]
+		:	[];
+
 	return (
 		<PageContainer>
 			<Container>
 				<PageHeader>
-					<Title>{t("dashboard.title")}</Title>
-					<Subtitle>{t("dashboard.subtitle")}</Subtitle>
+					<Title>{t(($) => $.dashboard.title)}</Title>
+					<Subtitle>{t(($) => $.dashboard.subtitle)}</Subtitle>
 				</PageHeader>
 
-				<PlaceholderContent>
-					<ChartIcon size={48} strokeWidth={1.5} />
-					<PlaceholderText>{t("common.loading")}</PlaceholderText>
-					<PlaceholderDescription>{t("dashboard.noStats")}</PlaceholderDescription>
-				</PlaceholderContent>
+				{/* Stats Cards */}
+				<DashboardGrid columns={2}>
+					<DashboardStatCard
+						label={t(($) => $.dashboard.totalFarms)}
+						value={totalAreaStats?.totalFarms ?? 0}
+						icon={<FarmIcon size={24} />}
+						variant="success"
+					/>
+					<DashboardStatCard
+						label={t(($) => $.dashboard.totalArea)}
+						value={totalAreaStats?.totalAreaHectares?.toFixed(2) ?? "0"}
+						unit="ha"
+						icon={<AreaIcon size={24} />}
+						variant="info"
+					/>
+				</DashboardGrid>
+
+				{/* Charts */}
+				<ChartsSection>
+					<DashboardGrid columns={2}>
+						<DashboardBarChart
+							title={t(($) => $.dashboard.farmsByState)}
+							data={stateChartData}
+							isLoading={isLoadingState}
+							error={errorState ? t(($) => $.common.error) : null}
+						/>
+						<DashboardPieChart
+							title={t(($) => $.dashboard.cropsDistribution)}
+							data={cropChartData}
+							isLoading={isLoadingCrops}
+							error={errorCrops ? t(($) => $.common.error) : null}
+						/>
+					</DashboardGrid>
+
+					<DashboardGrid>
+						<DashboardPieChart
+							title={t(($) => $.dashboard.landUseDistribution)}
+							data={landUseChartData}
+							isLoading={isLoadingLandUse}
+							error={errorLandUse ? t(($) => $.common.error) : null}
+							colors={["#10B981", "#F59E0B"]}
+						/>
+					</DashboardGrid>
+				</ChartsSection>
 			</Container>
 		</PageContainer>
 	);
@@ -58,30 +153,8 @@ const Subtitle = styled.p`
 	margin: 0;
 `;
 
-const PlaceholderContent = styled.div`
+const ChartsSection = styled.div`
 	display: flex;
 	flex-direction: column;
-	align-items: center;
-	justify-content: center;
-	min-height: 400px;
-	background: ${(props) => props.theme.colors.surface};
-	border-radius: ${(props) => props.theme.borderRadius.lg};
-	border: 2px dashed ${(props) => props.theme.colors.border};
-	padding: ${(props) => props.theme.spacing["2xl"]};
-	gap: ${(props) => props.theme.spacing.md};
-	color: ${(props) => props.theme.colors.textSecondary};
-`;
-
-const PlaceholderText = styled.p`
-	font-size: ${(props) => props.theme.typography.fontSize.lg};
-	font-weight: ${(props) => props.theme.typography.fontWeight.semibold};
-	color: ${(props) => props.theme.colors.text};
-	margin: 0;
-`;
-
-const PlaceholderDescription = styled.p`
-	font-size: ${(props) => props.theme.typography.fontSize.sm};
-	color: ${(props) => props.theme.colors.textSecondary};
-	margin: 0;
-	text-align: center;
+	gap: ${(props) => props.theme.spacing.xl};
 `;

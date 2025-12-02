@@ -179,12 +179,12 @@
         "TO": "Tocantins"
     },
     "crops": {
-        "Soy": "Soja",
-        "Corn": "Milho",
-        "Cotton": "Algodão",
-        "Coffee": "Café",
-        "SugarcaneOrSugarCane": "Cana-de-Açúcar",
-        "Sugarcane": "Cana-de-Açúcar"
+        "soy": "Soja",
+        "corn": "Milho",
+        "cotton": "Algodão",
+        "coffee": "Café",
+        "sugarcaneOrSugarcane": "Cana-de-Açúcar",
+        "sugarcane": "Cana-de-Açúcar"
     },
     "app": {
         "title": "Brain Agriculture",

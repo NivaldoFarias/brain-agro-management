@@ -100,9 +100,6 @@ Full-stack rural producer and farm management system for Brazilian agriculture. 
 
 ### Frontend Implementation
 
-> [!NOTE]
-> **Auth Issue Resolved**: Frontend API response parsing fixed by adding `transformResponse` to all RTK Query endpoints to unwrap backend's `{data, meta}` wrapper format. Authentication now working correctly.
-
 | Feature               | Status | Notes                                                         |
 | --------------------- | ------ | ------------------------------------------------------------- |
 | React 18 + TypeScript | ✅      | Fully implemented with strict mode                            |
@@ -120,7 +117,7 @@ Full-stack rural producer and farm management system for Brazilian agriculture. 
 | Icon system           | ✅      | Lucide-react icons throughout                                 |
 | Edit routes           | ✅      | Placeholder routes for /edit pages                            |
 | Farms list display    | ✅      | Shows crops with conditional rendering                        |
-| Internationalization  | ✅      | i18next with pt-br and en locales                             |
+| Internationalization  | ✅      | i18next with type-safe selector API (pt-br and en locales)    |
 | Dashboard API hooks   | ✅      | RTK Query hooks for all stats endpoints                       |
 | Dashboard charts      | ⏳      | Recharts installed but not implemented                        |
 | Chart components      | ⏳      | StatCard, PieChart, BarChart pending                          |
@@ -133,7 +130,7 @@ Full-stack rural producer and farm management system for Brazilian agriculture. 
 
 ### Production Enhancements
 
-> [!WARNING]
+> [!IMPORTANT]
 > High priority items affect production readiness and should be completed before deployment.
 
 #### Priority 0 - Critical
@@ -340,6 +337,14 @@ Full-stack rural producer and farm management system for Brazilian agriculture. 
 - [x] Page components (Dashboard, Producers, Farms, Login, NotFound)
 - [x] Protected routes (ProtectedRoute wrapper)
 - [x] Edit route placeholders (returns NotFound currently)
+
+**Internationalization**
+- [x] i18next configuration with pt-br and en locales
+- [x] Type-safe translation keys with selector API
+- [x] TypeScript declaration file for i18next
+- [x] Full autocomplete and type checking for translation keys
+- [x] Migration from string-based to selector-based translations (104 calls)
+- [x] Dynamic template literal support with `as const`
 
 **Forms**
 - [x] react-hook-form integration
@@ -629,7 +634,7 @@ Full-stack rural producer and farm management system for Brazilian agriculture. 
 - Radix UI + Styled Components design system
 - react-hook-form + Zod validation
 - Responsive layouts and mobile support
-- Internationalization (i18next: pt-br, en)
+- Type-safe internationalization (i18next with selector API: pt-br, en)
 - Protected routes and JWT auth flow
 - Toast notifications
 - Complete CRUD interfaces for producers and farms

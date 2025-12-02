@@ -1,21 +1,28 @@
 import { Controller, Get, HttpStatus } from "@nestjs/common";
 import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
-import { HealthCheck, HealthCheckService, TypeOrmHealthIndicator } from "@nestjs/terminus";
 
-import type { HealthCheckResult } from "@nestjs/terminus";
+import type {
+	BasicHealthResponse,
+	DetailedHealthResponse,
+} from "./interfaces/health-response.interface";
 
 import { Public } from "@/common/decorators/public.decorator";
+
+import { HealthService } from "./health.service";
 
 /**
  * Health check controller for monitoring application status.
  *
  * Provides endpoints to verify application health and readiness for
  * load balancers, orchestrators, and monitoring systems. Includes checks
- * for database connectivity and overall application status.
+ * for database connectivity, memory usage, disk space, and overall application status.
  *
  * @example
  * ```bash
+ * # Basic liveness check
  * curl http://localhost:3000/api/health
+ *
+ * # Detailed readiness check
  * curl http://localhost:3000/api/health/ready
  * ```
  */
@@ -23,46 +30,53 @@ import { Public } from "@/common/decorators/public.decorator";
 @ApiTags("Health")
 @Controller("health")
 export class HealthController {
-	constructor(
-		private readonly health: HealthCheckService,
-		private readonly db: TypeOrmHealthIndicator,
-	) {}
+	constructor(private readonly healthService: HealthService) {}
 
 	/**
-	 * Basic health check endpoint.
+	 * Basic health check endpoint (liveness probe).
 	 *
 	 * Returns application health status without detailed checks. Useful for
 	 * simple liveness probes that only verify the application is responsive.
+	 * This endpoint is lightweight and does not check dependencies.
 	 *
-	 * @returns Health check result with overall status
+	 * @returns Health check result with uptime information
 	 *
 	 * @example
 	 * ```typescript
 	 * // Response
 	 * {
 	 *   "status": "ok",
-	 *   "info": {},
-	 *   "error": {},
-	 *   "details": {}
+	 *   "uptime": {
+	 *     "startTime": "2024-01-15T10:30:00.000Z",
+	 *     "uptimeSeconds": 3600,
+	 *     "uptimeFormatted": "1h 0m 0s"
+	 *   },
+	 *   "timestamp": "2024-01-15T11:30:00.000Z"
 	 * }
 	 * ```
 	 */
 	@Get()
-	@HealthCheck()
 	@ApiOperation({
 		summary: "Check application health",
-		description: "Basic liveness probe - verifies application is responsive",
+		description:
+			"Liveness probe - verifies application is responsive without checking dependencies",
 	})
 	@ApiResponse({
 		status: HttpStatus.OK,
-		description: "Application is healthy",
+		description: "Application is healthy and responsive",
 		schema: {
 			type: "object",
 			properties: {
 				status: { type: "string", example: "ok" },
-				info: { type: "object" },
-				error: { type: "object" },
-				details: { type: "object" },
+				uptime: {
+					type: "object",
+					properties: {
+						startTime: { type: "string", example: "2024-01-15T10:30:00.000Z" },
+						uptimeSeconds: { type: "number", example: 3600 },
+						uptimeFormatted: { type: "string", example: "1h 0m 0s" },
+					},
+				},
+				timestamp: { type: "string", example: "2024-01-15T11:30:00.000Z" },
 			},
 		},
 	})
@@ -70,73 +84,129 @@ export class HealthController {
 		status: HttpStatus.SERVICE_UNAVAILABLE,
 		description: "Application is unhealthy",
 	})
-	check(): Promise<HealthCheckResult> {
-		return this.health.check([]);
+	check(): BasicHealthResponse {
+		return this.healthService.getBasicHealth();
 	}
 
 	/**
-	 * Readiness check endpoint with detailed status.
+	 * Detailed readiness check endpoint.
 	 *
 	 * Verifies application is ready to handle requests by checking all
-	 * dependencies (database, external services). Use for readiness probes
+	 * dependencies (database, memory, disk). Use for readiness probes
 	 * in orchestration systems to determine when to route traffic.
+	 * Includes comprehensive metrics for monitoring dashboards.
 	 *
-	 * @returns Health check result including database connectivity status
+	 * @returns Health check result including all dependency statuses
 	 *
 	 * @example
 	 * ```typescript
 	 * // Response
 	 * {
 	 *   "status": "ok",
-	 *   "info": {
-	 *     "database": {
-	 *       "status": "up"
-	 *     }
+	 *   "uptime": {
+	 *     "startTime": "2024-01-15T10:30:00.000Z",
+	 *     "uptimeSeconds": 3600,
+	 *     "uptimeFormatted": "1h 0m 0s"
 	 *   },
-	 *   "error": {},
-	 *   "details": {
-	 *     "database": {
-	 *       "status": "up"
-	 *     }
-	 *   }
+	 *   "timestamp": "2024-01-15T11:30:00.000Z",
+	 *   "database": {
+	 *     "status": "up",
+	 *     "responseTime": 5,
+	 *     "type": "sqlite",
+	 *     "connection": "apps/api/data/agro.db",
+	 *     "tableCount": 7,
+	 *     "migrationsApplied": true
+	 *   },
+	 *   "memory": {
+	 *     "status": "up",
+	 *     "used": 536870912,
+	 *     "total": 8589934592,
+	 *     "usagePercent": 6.25,
+	 *     "heapUsed": 45678123,
+	 *     "heapTotal": 67108864
+	 *   },
+	 *   "disk": {
+	 *     "status": "up",
+	 *     "dbSize": 262144,
+	 *     "dbSizeFormatted": "256 KB",
+	 *     "path": "apps/api/data/agro.db"
+	 *   },
+	 *   "version": "0.0.1",
+	 *   "nodeVersion": "v20.10.0"
 	 * }
 	 * ```
 	 */
 	@Get("ready")
-	@HealthCheck()
 	@ApiOperation({
 		summary: "Check application readiness",
 		description:
-			"Readiness probe - verifies application and dependencies are ready to handle requests",
+			"Readiness probe - verifies application and all dependencies are ready to handle requests. Includes database connectivity, memory usage, disk space, and system metrics.",
 	})
 	@ApiResponse({
 		status: HttpStatus.OK,
-		description: "Application and dependencies are ready",
+		description: "Application and all dependencies are ready",
 		schema: {
 			type: "object",
 			properties: {
 				status: { type: "string", example: "ok" },
-				info: {
+				uptime: {
 					type: "object",
 					properties: {
-						database: {
-							type: "object",
-							properties: {
-								status: { type: "string", example: "up" },
-							},
-						},
+						startTime: { type: "string", example: "2024-01-15T10:30:00.000Z" },
+						uptimeSeconds: { type: "number", example: 3600 },
+						uptimeFormatted: { type: "string", example: "1h 0m 0s" },
 					},
 				},
-				error: { type: "object" },
-				details: { type: "object" },
+				timestamp: { type: "string", example: "2024-01-15T11:30:00.000Z" },
+				database: {
+					type: "object",
+					properties: {
+						status: { type: "string", example: "up" },
+						responseTime: { type: "number", example: 5 },
+						type: { type: "string", example: "sqlite" },
+						connection: { type: "string", example: "apps/api/data/agro.db" },
+						tableCount: { type: "number", example: 7 },
+						migrationsApplied: { type: "boolean", example: true },
+					},
+				},
+				memory: {
+					type: "object",
+					properties: {
+						status: { type: "string", example: "up" },
+						used: { type: "number", example: 536870912 },
+						total: { type: "number", example: 8589934592 },
+						usagePercent: { type: "number", example: 6.25 },
+						heapUsed: { type: "number", example: 45678123 },
+						heapTotal: { type: "number", example: 67108864 },
+					},
+				},
+				disk: {
+					type: "object",
+					properties: {
+						status: { type: "string", example: "up" },
+						dbSize: { type: "number", example: 262144 },
+						dbSizeFormatted: { type: "string", example: "256 KB" },
+						path: { type: "string", example: "apps/api/data/agro.db" },
+					},
+				},
+				version: { type: "string", example: "0.0.1" },
+				nodeVersion: { type: "string", example: "v20.10.0" },
 			},
 		},
 	})
 	@ApiResponse({
 		status: HttpStatus.SERVICE_UNAVAILABLE,
 		description: "Application or dependencies are not ready",
+		schema: {
+			type: "object",
+			properties: {
+				status: { type: "string", example: "error" },
+				message: { type: "string", example: "Database connection failed" },
+				timestamp: { type: "string", example: "2024-01-15T11:30:00.000Z" },
+			},
+		},
 	})
-	readiness(): Promise<HealthCheckResult> {
-		return this.health.check([() => this.db.pingCheck("database")]);
+	async readiness(): Promise<DetailedHealthResponse> {
+		return this.healthService.getDetailedHealth();
 	}
 }

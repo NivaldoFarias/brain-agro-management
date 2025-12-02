@@ -33,7 +33,10 @@ export function MainLayout({ children }: MainLayoutProps): ReactElement {
 
 	const handleLogout = (): void => {
 		logout();
-		toast.info(t("auth.logoutSuccess"), t("auth.logoutSuccess"));
+		toast.info(
+			t(($) => $.auth.logoutSuccess),
+			t(($) => $.auth.logoutSuccess),
+		);
 		void navigate(ROUTES.auth.login, { replace: true });
 	};
 
@@ -52,7 +55,7 @@ export function MainLayout({ children }: MainLayoutProps): ReactElement {
 							<CloseIcon size={20} />
 						:	<MenuIcon size={20} />}
 					</MenuButton>
-					<Logo>{t("app.title")}</Logo>
+					<Logo>{t(($) => $.app.title)}</Logo>
 				</HeaderLeft>
 				<HeaderRight>
 					<UserInfo>
@@ -60,7 +63,7 @@ export function MainLayout({ children }: MainLayoutProps): ReactElement {
 					</UserInfo>
 					<LogoutButton variant="tertiary" onClick={handleLogout} size="small">
 						<LogOutIcon size={16} />
-						{t("auth.logout")}
+						{t(($) => $.auth.logout)}
 					</LogoutButton>
 				</HeaderRight>
 			</Header>
@@ -70,15 +73,15 @@ export function MainLayout({ children }: MainLayoutProps): ReactElement {
 					<SidebarNav>
 						<NavItem to={ROUTES.dashboard}>
 							<ChartIcon size={20} />
-							<NavText>{t("nav.dashboard")}</NavText>
+							<NavText>{t(($) => $.nav.dashboard)}</NavText>
 						</NavItem>
 						<NavItem to={ROUTES.producers.list}>
 							<UsersIcon size={20} />
-							<NavText>{t("nav.producers")}</NavText>
+							<NavText>{t(($) => $.nav.producers)}</NavText>
 						</NavItem>
 						<NavItem to={ROUTES.farms.list}>
 							<FarmIcon size={20} />
-							<NavText>{t("nav.farms")}</NavText>
+							<NavText>{t(($) => $.nav.farms)}</NavText>
 						</NavItem>
 					</SidebarNav>
 				</Sidebar>

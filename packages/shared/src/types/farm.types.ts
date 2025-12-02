@@ -17,7 +17,7 @@ import type { BrazilianState, CropType } from "../utils/constants.util";
  *   totalArea: 100.5,
  *   arableArea: 70.0,
  *   vegetationArea: 25.0,
- *   crops: ["Soja", "Milho"],
+ *   crops: ["soy", "corn"],
  *   producerId: "producer-uuid",
  *   createdAt: "2024-01-15T10:30:00.000Z",
  *   updatedAt: "2024-01-15T10:30:00.000Z"
@@ -111,7 +111,7 @@ export interface Farm {
  *   totalArea: 100.5,
  *   arableArea: 70.0,
  *   vegetationArea: 25.0,
- *   crops: ["Soja", "Milho"],
+ *   crops: ["soy", "corn"],
  *   producerId: "550e8400-e29b-41d4-a716-446655440000"
  * };
  * ```
@@ -172,7 +172,7 @@ export interface CreateFarmRequest {
 	/**
 	 * Array of crop types cultivated on this farm.
 	 *
-	 * @example ["Soja", "Milho"]
+	 * @example ["soy", "corn"]
 	 * @see {@link CropType}
 	 */
 	crops: Array<CropType>;

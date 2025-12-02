@@ -20,14 +20,14 @@ export interface TotalAreaStats {
 	 *
 	 * @minimum `0`
 	 */
-	totalFarms: number;
+	totalFarms?: number;
 
 	/**
 	 * Sum of all farm areas in hectares.
 	 *
 	 * @minimum `0`
 	 */
-	totalAreaHectares: number;
+	totalAreaHectares?: number;
 }
 
 /**
@@ -69,7 +69,7 @@ export interface StateDistribution {
  * @example
  * ```typescript
  * const distribution: CropDistribution = {
- *   crop: "Soja",
+ *   crop: "soy",
  *   count: 85,
  *   percentage: 56.67
  * };
@@ -81,7 +81,7 @@ export interface CropDistribution {
 	 *
 	 * @see {@link CropType}
 	 */
-	crop: CropType;
+	cropType: CropType;
 
 	/**
 	 * Number of farms cultivating this crop.

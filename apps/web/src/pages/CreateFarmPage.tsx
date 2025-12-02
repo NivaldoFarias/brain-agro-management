@@ -34,19 +34,28 @@ export function CreateFarmPage(): ReactElement {
 		try {
 			await createFarm(data).unwrap();
 
-			toast.success(t("farms.createSuccess"), t("farms.farmAdded"));
+			toast.success(
+				t(($) => $.farms.createSuccess),
+				t(($) => $.farms.farmAdded),
+			);
 
 			await navigate(ROUTES.farms.list);
 		} catch (error) {
-			console.error(t("farms.createError"), error);
-			toast.error(t("farms.createError"), t("common.retry"));
+			console.error(
+				t(($) => $.farms.createError),
+				error,
+			);
+			toast.error(
+				t(($) => $.farms.createError),
+				t(($) => $.common.retry),
+			);
 		}
 	};
 
 	if (isLoadingProducers) {
 		return (
 			<Container>
-				<LoadingState message={t("farms.loadingProducers")} />
+				<LoadingState message={t(($) => $.producers.loadingProducers)} />
 			</Container>
 		);
 	}
@@ -55,8 +64,8 @@ export function CreateFarmPage(): ReactElement {
 		return (
 			<Container>
 				<EmptyState
-					title={t("farms.noProducers")}
-					description={t("farms.registerNewProducer")}
+					title={t(($) => $.producers.noProducers)}
+					description={t(($) => $.producers.registerNewProducer)}
 					action={
 						<button
 							onClick={() => {
@@ -64,7 +73,7 @@ export function CreateFarmPage(): ReactElement {
 							}}
 							style={{ cursor: "pointer" }}
 						>
-							{t("producers.createProducer")}
+							{t(($) => $.producers.createProducer)}
 						</button>
 					}
 				/>
@@ -75,8 +84,8 @@ export function CreateFarmPage(): ReactElement {
 	return (
 		<Container>
 			<Header>
-				<Typography variant="h1">{t("farms.createFarm")}</Typography>
-				<Typography variant="body">{t("farms.registerNewProperty")}</Typography>
+				<Typography variant="h1">{t(($) => $.farms.createFarm)}</Typography>
+				<Typography variant="body">{t(($) => $.farms.registerNewProperty)}</Typography>
 			</Header>
 
 			<FormCard>

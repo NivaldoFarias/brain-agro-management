@@ -108,7 +108,7 @@ export class SeedUtilities {
 	 * ```typescript
 	 * const crops = this.seedUtilities.getRandomCropCombination();
 	 * console.log(crops);
-	 * // [CropType.Soja, CropType.Milho] or [CropType.Cafe]
+	 * // [CropType.Soy, CropType.Corn] or [CropType.Coffee]
 	 * ```
 	 */
 	getRandomCropCombination(): Array<CropType> {

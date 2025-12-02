@@ -143,11 +143,11 @@ export enum BrazilianState {
  * as specified in the project requirements.
  */
 export enum CropType {
-	Soja = "Soja",
-	Milho = "Milho",
-	Algodao = "Algodão",
-	Cafe = "Café",
-	CanaDeAcucar = "Cana de Açúcar",
+	Soy = "soy",
+	Corn = "corn",
+	Cotton = "cotton",
+	Coffee = "coffee",
+	Sugarcane = "sugarcane",
 }
 
 /**

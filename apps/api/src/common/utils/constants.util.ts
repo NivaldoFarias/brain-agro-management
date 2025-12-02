@@ -4,6 +4,7 @@
  * Contains configuration values unique to the API application.
  */
 
+import { SupportedLocale } from "@agro/shared/constants";
 import { LogLevel, RuntimeEnvironment } from "@agro/shared/utils";
 
 import { SeedScale } from "@/database/seeds/seed.constants";
@@ -73,4 +74,5 @@ export const environmentDefaults = {
 	API__SEED_DATABASE: false,
 	API__SEED_SCALE: SeedScale.Medium,
 	API__IBGE_API_BASE_URL: "https://servicodados.ibge.gov.br/api/v1/localidades",
+	API__LOCALE: SupportedLocale.Portuguese,
 } as const;

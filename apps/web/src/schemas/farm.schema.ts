@@ -20,7 +20,7 @@ import { validateFarmArea } from "@agro/shared/validators";
  *   totalArea: 100.5,
  *   arableArea: 70.0,
  *   vegetationArea: 25.0,
- *   crops: ["Soja", "Milho"],
+ *   crops: ["soy", "corn"],
  *   producerId: "producer-uuid"
  * });
  * ```

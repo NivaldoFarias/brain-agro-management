@@ -300,9 +300,9 @@ export class FarmsController {
 		schema: {
 			type: "array",
 			example: [
-				{ cropType: CropType.Soja, count: 15 },
-				{ cropType: CropType.Milho, count: 12 },
-				{ cropType: CropType.Cafe, count: 8 },
+				{ cropType: CropType.Soy, count: 15 },
+				{ cropType: CropType.Corn, count: 12 },
+				{ cropType: CropType.Coffee, count: 8 },
 			],
 		},
 	})

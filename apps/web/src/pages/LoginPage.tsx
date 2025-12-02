@@ -40,7 +40,7 @@ export function LoginPage(): ReactElement {
 		console.log("[LoginPage] Email:", email);
 
 		if (!email || !password) {
-			const errorMsg = t("auth.required");
+			const errorMsg = t(($) => $.auth.required);
 			setError(errorMsg);
 			toast.error(errorMsg, errorMsg);
 			return;
@@ -55,7 +55,10 @@ export function LoginPage(): ReactElement {
 			setAuthToken(response.accessToken, email);
 			console.log("[LoginPage] setAuthToken completed");
 
-			toast.success(t("auth.loginSuccess"), t("auth.welcomeBack"));
+			toast.success(
+				t(($) => $.auth.loginSuccess),
+				t(($) => $.auth.welcomeBack),
+			);
 
 			await new Promise((resolve) => setTimeout(resolve, 100));
 
@@ -63,7 +66,7 @@ export function LoginPage(): ReactElement {
 			await navigate(ROUTES.dashboard, { replace: true });
 		} catch (error) {
 			console.error("[LoginPage] Login failed:", error);
-			const errorMsg = t("auth.loginError");
+			const errorMsg = t(($) => $.auth.loginError);
 			setError(errorMsg);
 			toast.error(errorMsg, errorMsg);
 		}
@@ -73,15 +76,15 @@ export function LoginPage(): ReactElement {
 		<PageContainer>
 			<LoginCard>
 				<Header>
-					<Title>{t("app.title")}</Title>
-					<Subtitle>{t("app.subtitle")}</Subtitle>
+					<Title>{t(($) => $.app.title)}</Title>
+					<Subtitle>{t(($) => $.app.subtitle)}</Subtitle>
 				</Header>
 				<form
 					onSubmit={(e) => {
 						void handleSubmit(e);
 					}}
 				>
-					<FormField id="email" label={t("auth.email")} required>
+					<FormField id="email" label={t(($) => $.auth.email)} required>
 						<Input
 							id="email"
 							type="email"
@@ -95,11 +98,11 @@ export function LoginPage(): ReactElement {
 						/>
 					</FormField>
 
-					<FormField id="password" label={t("auth.password")} required>
+					<FormField id="password" label={t(($) => $.auth.password)} required>
 						<Input
 							id="password"
 							type="password"
-							placeholder={t("auth.passwordPlaceholder")}
+							placeholder={t(($) => $.auth.passwordPlaceholder)}
 							value={password}
 							onChange={(event) => {
 								setPassword(event.target.value);
@@ -112,13 +115,13 @@ export function LoginPage(): ReactElement {
 					{error && <ErrorMessage message={error} />}
 
 					<Button variant="primary" type="submit" disabled={isLoading} isLoading={isLoading} fullWidth>
-						{isLoading ? `${t("auth.login")}...` : t("auth.login")}
+						{isLoading ? `${t(($) => $.auth.login)}...` : t(($) => $.auth.login)}
 					</Button>
 				</form>
 				<DemoCredentials>
-					<DemoTitle>{t("auth.demoCredentials")}</DemoTitle>
-					<DemoText>{t("auth.email")}: admin@example.com</DemoText>
-					<DemoText>{t("auth.password")}: admin123</DemoText>
+					<DemoTitle>{t(($) => $.auth.demoCredentials)}</DemoTitle>
+					<DemoText>{t(($) => $.auth.email)}: admin@example.com</DemoText>
+					<DemoText>{t(($) => $.auth.password)}: admin123</DemoText>
 				</DemoCredentials>
 			</LoginCard>
 		</PageContainer>

@@ -11,7 +11,7 @@ import { getRepositoryToken } from "@nestjs/typeorm";
 import { fixtures, TestConstants } from "test/fixtures";
 import { Repository } from "typeorm";
 
-import { OrderBy } from "@agro/shared/utils";
+import { CropType, OrderBy } from "@agro/shared/utils";
 
 import { BrazilianState } from "@/common";
 import { Producer } from "@/modules/producers/entities/producer.entity";
@@ -494,9 +494,9 @@ describe("FarmsService", () => {
 				groupBy: jest.fn().mockReturnThis(),
 				orderBy: jest.fn().mockReturnThis(),
 				getRawMany: jest.fn().mockResolvedValue([
-					{ cropType: "Soja", count: "15" },
-					{ cropType: "Milho", count: "12" },
-					{ cropType: "Café", count: "8" },
+					{ cropType: CropType.Soy, count: "15" },
+					{ cropType: CropType.Corn, count: "12" },
+					{ cropType: CropType.Coffee, count: "8" },
 				]),
 			};
 
@@ -505,9 +505,9 @@ describe("FarmsService", () => {
 			const result = await service.getCropsDistribution();
 
 			expect(result).toEqual([
-				{ cropType: "Soja", count: 15 },
-				{ cropType: "Milho", count: 12 },
-				{ cropType: "Café", count: 8 },
+				{ cropType: CropType.Soy, count: 15 },
+				{ cropType: CropType.Corn, count: 12 },
+				{ cropType: CropType.Coffee, count: 8 },
 			]);
 			expect(mockQueryBuilder.innerJoin).toHaveBeenCalledWith("fhc.farmHarvest", "fh");
 			expect(mockQueryBuilder.select).toHaveBeenCalledWith("fhc.cropType", "cropType");

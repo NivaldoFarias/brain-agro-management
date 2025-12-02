@@ -34,17 +34,20 @@ export function ProducersPage(): ReactElement {
 	};
 
 	const handleDelete = async (id: string) => {
-		if (!confirm(t("producers.deleteConfirm"))) {
+		if (!confirm(t(($) => $.producers.deleteConfirm))) {
 			return;
 		}
 
 		try {
 			setDeletingId(id);
 			await deleteProducer(id).unwrap();
-			toast.success(t("producers.deleteSuccess"));
+			toast.success(t(($) => $.producers.deleteSuccess));
 		} catch (error) {
 			console.error("Failed to delete producer:", error);
-			toast.error(t("producers.deleteError"), t("common.retry"));
+			toast.error(
+				t(($) => $.producers.deleteError),
+				t(($) => $.common.retry),
+			);
 		} finally {
 			setDeletingId(undefined);
 		}
@@ -55,17 +58,17 @@ export function ProducersPage(): ReactElement {
 			<Container>
 				<Header>
 					<div>
-						<Typography variant="h1">{t("producers.title")}</Typography>
-						<Typography variant="body">{t("producers.subtitle")}</Typography>
+						<Typography variant="h1">{t(($) => $.producers.title)}</Typography>
+						<Typography variant="body">{t(($) => $.producers.subtitle)}</Typography>
 					</div>
 					<Button variant="primary" onClick={handleCreate}>
-						{t("producers.createProducer")}
+						{t(($) => $.producers.createProducer)}
 					</Button>
 				</Header>{" "}
 				<ProducerList
 					producers={data?.data ?? []}
 					isLoading={isLoading}
-					error={error ? t("producers.loadError") : undefined}
+					error={error ? t(($) => $.producers.loadError) : undefined}
 					onDelete={(id) => {
 						void handleDelete(id);
 					}}
@@ -80,10 +83,10 @@ export function ProducersPage(): ReactElement {
 							}}
 							disabled={page === 1}
 						>
-							{t("common.previous")}
+							{t(($) => $.common.previous)}
 						</Button>
 						<Typography variant="body">
-							{t("common.page")} {page} {t("common.of")} {Math.ceil(data.total / 10)}
+							{t(($) => $.common.page)} {page} {t(($) => $.common.of)} {Math.ceil(data.total / 10)}
 						</Typography>
 						<Button
 							variant="secondary"
@@ -92,7 +95,7 @@ export function ProducersPage(): ReactElement {
 							}}
 							disabled={page >= Math.ceil(data.total / 10)}
 						>
-							{t("common.next")}
+							{t(($) => $.common.next)}
 						</Button>
 					</PaginationContainer>
 				)}

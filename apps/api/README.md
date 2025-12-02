@@ -359,7 +359,7 @@ bun run db:seed
 - Mix of CPF (individuals) and CNPJ (legal entities)
 - Farms across Brazilian states with realistic distribution
 - Multiple harvests per farm
-- Diverse crop types (Soja, Milho, Algodão, Café, Cana de Açúcar)
+- Diverse crop types (corn, soy, cotton, coffee, sugarcane)
 
 **Location**: `src/database/seeds/index.ts`
 

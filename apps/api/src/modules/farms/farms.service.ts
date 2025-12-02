@@ -360,9 +360,9 @@ export class FarmsService {
 	 * ```typescript
 	 * const distribution = await service.getCropsDistribution();
 	 * // Returns: [
-	 * //   { cropType: "Soja", count: 15 },
-	 * //   { cropType: "Milho", count: 12 },
-	 * //   { cropType: "Café", count: 8 }
+	 * //   { cropType: "soy", count: 15 },
+	 * //   { cropType: "corn", count: 12 },
+	 * //   { cropType: "coffee", count: 8 }
 	 * // ]
 	 * ```
 	 */

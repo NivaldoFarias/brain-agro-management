@@ -16,7 +16,7 @@ import { Farm } from "@/modules/farms/entities/farm.entity";
 import { Harvest } from "@/modules/farms/entities/harvest.entity";
 import { Producer } from "@/modules/producers/entities/producer.entity";
 
-import { SEED_SCALE_CONFIG } from "./seed.constants";
+import { FARM_NAME_PREFIXES, SEED_SCALE_CONFIG } from "./seed.constants";
 import { SeedUtilities } from "./seed.utilities";
 
 /**
@@ -105,18 +105,21 @@ export class SeedService {
 		const existingCount = await cityRepository.count();
 
 		if (existingCount > 0) {
-			this.logger.info(
+			this.logger.warn(
 				{ cityCount: existingCount },
 				"Cities already seeded, skipping IBGE API fetch",
 			);
+
 			return;
 		}
 
 		this.logger.info("Fetching Brazilian cities from IBGE API");
 		let totalCities = 0;
 
-		for (const state of Object.values(BrazilianState)) {
+		for (const [index, state] of Object.entries(BrazilianState)) {
 			try {
+				this.logger.debug({ index: Number(index) + 1, state }, "Fetching cities for state");
+
 				const cities = await this.ibgeApiService.fetchMunicipalitiesByState(state);
 				const cityEntities = cities.map((city) =>
 					cityRepository.create({
@@ -126,13 +129,18 @@ export class SeedService {
 					}),
 				);
 
+				this.logger.debug(
+					{ index: Number(index) + 1, state, cityCount: cityEntities.length },
+					"Saving cities for state",
+				);
+
 				await cityRepository.save(cityEntities);
 				totalCities += cities.length;
 
 				// Hardcoded delay to avoid IBGE API rate limiting
 				await delay(100);
 			} catch (error) {
-				this.logger.warn(
+				this.logger.error(
 					{ state, error: error instanceof Error ? error.message : String(error) },
 					"Failed to seed cities for state",
 				);
@@ -155,7 +163,8 @@ export class SeedService {
 		const existingCount = await producerRepository.count();
 
 		if (existingCount > 0) {
-			this.logger.info({ producerCount: existingCount }, "Producers already seeded, skipping");
+			this.logger.warn({ producerCount: existingCount }, "Producers already seeded, skipping");
+
 			return;
 		}
 
@@ -169,10 +178,14 @@ export class SeedService {
 					generateDocument.cnpj({ formatted: true })
 				:	generateDocument.cpf({ formatted: true });
 
+			this.logger.debug({ index: index + 1, isCompany, document }, "Creating producer");
+
 			const producer = producerRepository.create({
 				name: isCompany ? faker.company.name() : faker.person.fullName(),
 				document,
 			});
+
+			this.logger.debug({ producer }, "Created producer");
 
 			producers.push(producer);
 		}
@@ -200,7 +213,8 @@ export class SeedService {
 		const existingCount = await farmRepository.count();
 
 		if (existingCount > 0) {
-			this.logger.info({ farmCount: existingCount }, "Farms already seeded, skipping");
+			this.logger.warn({ farmCount: existingCount }, "Farms already seeded, skipping");
+
 			return;
 		}
 
@@ -220,8 +234,15 @@ export class SeedService {
 
 			const areas = this.seedUtilities.generateFarmAreas();
 
+			const farmNamePrefix = faker.helpers.arrayElement(FARM_NAME_PREFIXES[env.API__LOCALE]);
+
+			this.logger.debug(
+				{ index: index + 1, producerId: producer.id, state, city: city.name },
+				"Creating farm",
+			);
+
 			const farm = farmRepository.create({
-				name: `Fazenda ${faker.location.county()}`,
+				name: `${farmNamePrefix} ${faker.location.county()}`,
 				city: city.name,
 				state,
 				totalArea: areas.totalArea,
@@ -229,6 +250,8 @@ export class SeedService {
 				vegetationArea: areas.vegetationArea,
 				producerId: producer.id,
 			});
+
+			this.logger.debug({ farm }, "Created farm");
 
 			farms.push(farm);
 		}
@@ -256,7 +279,8 @@ export class SeedService {
 		const existingCount = await harvestRepository.count();
 
 		if (existingCount > 0) {
-			this.logger.info({ harvestCount: existingCount }, "Harvests already seeded, skipping");
+			this.logger.warn({ harvestCount: existingCount }, "Harvests already seeded, skipping");
+
 			return;
 		}
 
@@ -271,10 +295,14 @@ export class SeedService {
 		const startYear = currentYear - (this.seedConfig.harvestYears - 1);
 
 		for (let year = startYear; year <= currentYear; year++) {
+			this.logger.debug({ year }, "Creating harvest for year");
+
 			const harvest = harvestRepository.create({
 				year: String(year),
 				description: `Safra ${String(year)}/${String(year + 1)}`,
 			});
+
+			this.logger.debug({ harvest }, "Created harvest instance");
 
 			harvests.push(harvest);
 		}
@@ -293,13 +321,37 @@ export class SeedService {
 		const farms = await farmRepository.find();
 		let totalCrops = 0;
 
-		for (const farm of farms) {
+		for (const [farmIndex, farm] of farms.entries()) {
+			const farmContext = {
+				farmId: farm.id,
+				farmName: farm.name,
+				farmProgress: `${String(farmIndex + 1)}/${String(farms.length)}`,
+			};
+
 			const recentHarvests = faker.helpers.arrayElements(
 				harvests,
 				faker.number.int({ min: 1, max: harvests.length }),
 			);
 
-			for (const harvest of recentHarvests) {
+			this.logger.debug(
+				{
+					...farmContext,
+					harvestCount: recentHarvests.length,
+					harvestYears: recentHarvests.map((harvest) => harvest.year),
+				},
+				"Processing farm harvests",
+			);
+
+			for (const [harvestIndex, harvest] of recentHarvests.entries()) {
+				const harvestContext = {
+					...farmContext,
+					harvestId: harvest.id,
+					harvestYear: harvest.year,
+					harvestProgress: `${String(harvestIndex + 1)}/${String(recentHarvests.length)}`,
+				};
+
+				this.logger.debug(harvestContext, "Creating farm-harvest association");
+
 				const farmHarvest = farmHarvestRepository.create({
 					farmId: farm.id,
 					harvestId: harvest.id,
@@ -308,7 +360,21 @@ export class SeedService {
 				await farmHarvestRepository.save(farmHarvest);
 
 				const crops = this.seedUtilities.getRandomCropCombination();
-				for (const cropType of crops) {
+
+				this.logger.debug(
+					{ ...harvestContext, farmHarvestId: farmHarvest.id, cropCount: crops.length },
+					"Creating crop associations",
+				);
+
+				for (const [cropIndex, cropType] of crops.entries()) {
+					const cropContext = {
+						...harvestContext,
+						cropType,
+						cropProgress: `${String(cropIndex + 1)}/${String(crops.length)}`,
+					};
+
+					this.logger.debug(cropContext, "Associating crop with farm-harvest");
+
 					const crop = farmHarvestCropRepository.create({
 						farmHarvestId: farmHarvest.id,
 						cropType,
@@ -317,7 +383,11 @@ export class SeedService {
 					await farmHarvestCropRepository.save(crop);
 					totalCrops++;
 				}
+
+				this.logger.debug(harvestContext, "Completed harvest crop associations");
 			}
+
+			this.logger.debug(farmContext, "Completed farm harvest associations");
 		}
 
 		this.logger.info({ cropAssociations: totalCrops }, "Created crop associations");

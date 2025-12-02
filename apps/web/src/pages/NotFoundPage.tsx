@@ -18,12 +18,12 @@ export function NotFoundPage(): ReactElement {
 	return (
 		<Container>
 			<Typography variant="h1">404</Typography>
-			<Typography variant="h3">{t("notFoundPage.title")}</Typography>
+			<Typography variant="h3">{t(($) => $.notFoundPage.title)}</Typography>
 			<Typography variant="body" color="textSecondary">
-				{t("notFoundPage.description")}
+				{t(($) => $.notFoundPage.description)}
 			</Typography>
 			<Button variant="primary" onClick={() => (window.location.href = "/")}>
-				{t("notFoundPage.goToDashboard")}
+				{t(($) => $.notFoundPage.goToDashboard)}
 			</Button>
 		</Container>
 	);

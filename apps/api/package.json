@@ -20,7 +20,7 @@
 		"migration:run": "bun run typeorm migration:run -d src/config/database.config.ts",
 		"migration:revert": "bun run typeorm migration:revert -d src/config/database.config.ts",
 		"db:seed": "bun run src/database/seeds/index.ts",
-		"clean": "rm -rf dist .turbo node_modules"
+		"db:reset": "bun run migration:revert && bun run migration:run && bun run db:seed"
 	},
 	"dependencies": {
 		"@agro/shared": "workspace:*",

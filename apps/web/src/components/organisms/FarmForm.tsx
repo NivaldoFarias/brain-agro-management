@@ -89,7 +89,13 @@ export function FarmForm({ onSubmit, isLoading = false, defaultValues, producerI
 			}}
 			noValidate
 		>
-			<FormField id="name" label={t("farms.name")} required error={errors.name?.message} hint={t("farms.nameHint")}>
+			<FormField
+				id="name"
+				label={t(($) => $.farms.name)}
+				required
+				error={errors.name?.message}
+				hint={t(($) => $.farms.nameHint)}
+			>
 				<Input
 					{...register("name")}
 					id="name"
@@ -101,7 +107,13 @@ export function FarmForm({ onSubmit, isLoading = false, defaultValues, producerI
 				/>
 			</FormField>
 
-			<FormField id="city" label={t("farms.city")} required error={errors.city?.message} hint={t("farms.cityHint")}>
+			<FormField
+				id="city"
+				label={t(($) => $.farms.city)}
+				required
+				error={errors.city?.message}
+				hint={t(($) => $.farms.cityHint)}
+			>
 				<Input
 					{...register("city")}
 					id="city"
@@ -113,19 +125,25 @@ export function FarmForm({ onSubmit, isLoading = false, defaultValues, producerI
 				/>
 			</FormField>
 
-			<FormField id="state" label={t("farms.state")} required error={errors.state?.message} hint={t("farms.stateHint")}>
+			<FormField
+				id="state"
+				label={t(($) => $.farms.state)}
+				required
+				error={errors.state?.message}
+				hint={t(($) => $.farms.stateHint)}
+			>
 				<Select
 					value={selectedState}
 					onValueChange={(value) => {
 						setSelectedState(value);
 						setValue("state", value as BrazilianState, { shouldValidate: true });
 					}}
-					placeholder={t("farms.selectState")}
+					placeholder={t(($) => $.farms.selectState)}
 					disabled={isLoading}
-					aria-label={t("farms.state")}
+					aria-label={t(($) => $.farms.state)}
 					options={Object.values(BrazilianState).map((state) => ({
 						value: state,
-						label: t(`states.${state}`),
+						label: t(($) => $.states[state]),
 					}))}
 				/>
 			</FormField>
@@ -133,10 +151,10 @@ export function FarmForm({ onSubmit, isLoading = false, defaultValues, producerI
 			<AreaFieldsGroup>
 				<FormField
 					id="totalArea"
-					label={t("farms.totalArea")}
+					label={t(($) => $.farms.totalArea)}
 					required
 					error={errors.totalArea?.message}
-					hint={t("farms.totalAreaHint")}
+					hint={t(($) => $.farms.totalAreaHint)}
 				>
 					<Input
 						{...register("totalArea", { valueAsNumber: true })}
@@ -153,10 +171,10 @@ export function FarmForm({ onSubmit, isLoading = false, defaultValues, producerI
 
 				<FormField
 					id="arableArea"
-					label={t("farms.arableArea")}
+					label={t(($) => $.farms.arableArea)}
 					required
 					error={errors.arableArea?.message}
-					hint={t("farms.arableAreaHint")}
+					hint={t(($) => $.farms.arableAreaHint)}
 				>
 					<Input
 						{...register("arableArea", { valueAsNumber: true })}
@@ -173,10 +191,10 @@ export function FarmForm({ onSubmit, isLoading = false, defaultValues, producerI
 
 				<FormField
 					id="vegetationArea"
-					label={t("farms.vegetationArea")}
+					label={t(($) => $.farms.vegetationArea)}
 					required
 					error={errors.vegetationArea?.message}
-					hint={t("farms.vegetationAreaHint")}
+					hint={t(($) => $.farms.vegetationAreaHint)}
 				>
 					<Input
 						{...register("vegetationArea", { valueAsNumber: true })}
@@ -192,7 +210,13 @@ export function FarmForm({ onSubmit, isLoading = false, defaultValues, producerI
 				</FormField>
 			</AreaFieldsGroup>
 
-			<FormField id="crops" label={t("farms.crops")} required error={errors.crops?.message} hint={t("farms.cropsHint")}>
+			<FormField
+				id="crops"
+				label={t(($) => $.farms.crops)}
+				required
+				error={errors.crops?.message}
+				hint={t(($) => $.farms.cropsHint)}
+			>
 				<CropSelector>
 					{Object.values(CropType).map((crop) => (
 						<CropCheckbox key={crop}>
@@ -213,7 +237,7 @@ export function FarmForm({ onSubmit, isLoading = false, defaultValues, producerI
 
 			<ButtonGroup>
 				<Button type="submit" variant="primary" disabled={isLoading} isLoading={isLoading}>
-					{t("farms.submitLabel")}
+					{t(($) => $.farms.submitLabel)}
 				</Button>
 			</ButtonGroup>
 		</Form>

@@ -7,6 +7,7 @@
 export interface FarmAreaValidationResult {
 	/** Whether the farm areas are valid */
 	isValid: boolean;
+
 	/** Error message if validation failed, undefined otherwise */
 	error?: string;
 }

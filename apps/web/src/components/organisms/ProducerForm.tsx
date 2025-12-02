@@ -64,10 +64,10 @@ export function ProducerForm({ onSubmit, isLoading = false, defaultValues }: Pro
 		>
 			<FormField
 				id="name"
-				label={t("producers.name")}
+				label={t(($) => $.producers.name)}
 				required
 				error={errors.name?.message}
-				hint={t("producers.nameHint")}
+				hint={t(($) => $.producers.nameHint)}
 			>
 				<Input
 					{...register("name")}
@@ -82,10 +82,10 @@ export function ProducerForm({ onSubmit, isLoading = false, defaultValues }: Pro
 
 			<FormField
 				id="document"
-				label={t("producers.document")}
+				label={t(($) => $.producers.document)}
 				required
 				error={errors.document?.message}
-				hint={t("producers.documentHint")}
+				hint={t(($) => $.producers.documentHint)}
 			>
 				<Input
 					{...register("document")}
@@ -100,7 +100,7 @@ export function ProducerForm({ onSubmit, isLoading = false, defaultValues }: Pro
 
 			<ButtonGroup>
 				<Button type="submit" variant="primary" disabled={isLoading} isLoading={isLoading}>
-					{t("producers.submitLabel")}
+					{t(($) => $.producers.submitLabel)}
 				</Button>
 			</ButtonGroup>
 		</Form>

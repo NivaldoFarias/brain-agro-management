@@ -31,14 +31,14 @@ export function FarmsPage(): ReactElement {
 	};
 
 	const handleDelete = async (id: string) => {
-		if (!confirm(t("farms.deleteConfirm"))) return;
+		if (!confirm(t(($) => $.farms.deleteConfirm))) return;
 
 		try {
 			setDeletingId(id);
 			await deleteFarm(id).unwrap();
 		} catch (error) {
 			console.error("Failed to delete farm:", error);
-			alert(t("farms.deleteError"));
+			alert(t(($) => $.farms.deleteError));
 		} finally {
 			setDeletingId(undefined);
 		}
@@ -48,18 +48,18 @@ export function FarmsPage(): ReactElement {
 		<Container>
 			<Header>
 				<div>
-					<Typography variant="h1">{t("farms.title")}</Typography>
-					<Typography variant="body">{t("farms.subtitle")}</Typography>
+					<Typography variant="h1">{t(($) => $.farms.title)}</Typography>
+					<Typography variant="body">{t(($) => $.farms.subtitle)}</Typography>
 				</div>
 				<Button variant="primary" onClick={handleCreate}>
-					{t("farms.createFarm")}
+					{t(($) => $.farms.createFarm)}
 				</Button>
 			</Header>
 
 			<FarmList
 				farms={data?.data ?? []}
 				isLoading={isLoading}
-				error={error ? t("farms.loadError") : undefined}
+				error={error ? t(($) => $.farms.loadError) : undefined}
 				onRetry={() => {
 					void refetch();
 				}}
@@ -78,10 +78,10 @@ export function FarmsPage(): ReactElement {
 						}}
 						disabled={page === 1}
 					>
-						{t("common.previous")}
+						{t(($) => $.common.previous)}
 					</Button>
 					<Typography variant="body">
-						{t("common.page")} {page} {t("common.of")} {Math.ceil(data.total / 10)}
+						{t(($) => $.common.page)} {page} {t(($) => $.common.of)} {Math.ceil(data.total / 10)}
 					</Typography>
 					<Button
 						variant="secondary"
@@ -90,7 +90,7 @@ export function FarmsPage(): ReactElement {
 						}}
 						disabled={page >= Math.ceil(data.total / 10)}
 					>
-						{t("common.next")}
+						{t(($) => $.common.next)}
 					</Button>
 				</PaginationContainer>
 			)}

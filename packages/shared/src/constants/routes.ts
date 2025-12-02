@@ -87,11 +87,11 @@ export const API_ROUTES_AUTH = {
  * Used for monitoring and liveness/readiness probes.
  */
 export const API_ROUTES_HEALTH = {
-	/** Basic health check: `GET /health` */
-	health: "/health",
+	/** Basic health check: `GET /api/health` */
+	health: `${API_BASE}/health`,
 
-	/** Detailed readiness check: `GET /health/ready` */
-	ready: "/health/ready",
+	/** Detailed readiness check: `GET /api/health/ready` */
+	ready: `${API_BASE}/health/ready`,
 } as const;
 
 /**
