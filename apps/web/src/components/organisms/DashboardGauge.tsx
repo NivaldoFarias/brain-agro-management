@@ -1,26 +1,17 @@
 import { useTranslation } from "react-i18next";
-import {
-	Bar,
-	CartesianGrid,
-	Legend,
-	BarChart as RechartBarChart,
-	ResponsiveContainer,
-	Tooltip,
-	XAxis,
-	YAxis,
-} from "recharts";
+import { Cell, Legend, Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts";
 import styled from "styled-components";
 
 import type { ReactElement } from "react";
-import type { BarProps, XAxisProps, YAxisProps } from "recharts";
+import type { PieProps } from "recharts";
 
-/** Props for the {@link DashboardBarChart} component */
-interface DashboardBarChartProps {
-	/** Chart title/label */
+/** Props for the {@link DashboardGauge} component */
+interface DashboardGaugeProps {
+	/** Gauge title/label */
 	title: string;
 
-	/** Chart data array with required `name` and `value` fields */
-	data?: { name: string; value: number; [key: string]: unknown }[];
+	/** Gauge data array with required `name`, `value`, and `color` fields */
+	data?: { name: string; value: number; color: string }[];
 
 	/** Loading state indicator */
 	isLoading?: boolean;
@@ -28,31 +19,28 @@ interface DashboardBarChartProps {
 	/** Error message to display */
 	error?: string | null;
 
-	/** Optional Recharts Bar Chart component props overrides */
-	overrides?: {
-		bar?: Partial<BarProps>;
-		xAxis?: Partial<XAxisProps>;
-		yAxis?: Partial<YAxisProps>;
-	};
+	/** Optional Recharts Pie component props overrides */
+	overrides?: Partial<PieProps>;
 }
 
 /**
- * Displays a responsive bar chart for comparing categorical data.
+ * Displays a circular gauge chart for percentage-based metrics.
  *
- * Used for metrics like farms by state distribution.
+ * Used for showing land use efficiency breakdown (arable, vegetation, unused).
  *
  * @example
  * ```tsx
- * <DashboardBarChart
- *   title="Farms by State"
+ * <DashboardGauge
+ *   title="Land Efficiency"
  *   data={[
- *     { name: "SP", value: 10 },
- *     { name: "MG", value: 8 },
+ *     { name: "Arable", value: 68, color: "#10B981" },
+ *     { name: "Vegetation", value: 22, color: "#F59E0B" },
+ *     { name: "Unused", value: 10, color: "#EF4444" }
  *   ]}
  * />
  * ```
  */
-export function DashboardBarChart({ title, data, isLoading, error, overrides }: DashboardBarChartProps): ReactElement {
+export function DashboardGauge({ title, data, isLoading, error, overrides }: DashboardGaugeProps): ReactElement {
 	const { t } = useTranslation();
 
 	if (error) {
@@ -72,34 +60,26 @@ export function DashboardBarChart({ title, data, isLoading, error, overrides }: 
 			<Title>{title}</Title>
 			<ChartContainer>
 				<ResponsiveContainer width="100%" height={300}>
-					<RechartBarChart data={data} margin={{ top: 20, right: 30, left: 0, bottom: 5 }}>
-						<CartesianGrid strokeDasharray="3 3" stroke="#e7e5e4" />
-						<XAxis
-							dataKey="name"
-							angle={-45}
-							textAnchor="end"
-							height={100}
-							style={{ fontSize: "11px" }}
-							{...(overrides?.xAxis as unknown as Record<string, unknown>)}
-						/>
-						<YAxis {...(overrides?.yAxis as unknown as Record<string, unknown>)} />
-						<Tooltip
-							contentStyle={{
-								backgroundColor: "#fff",
-								border: "1px solid #e7e5e4",
-								borderRadius: "8px",
-							}}
-						/>
-						<Legend />
-						<Bar
+					<PieChart margin={{ top: 10, right: 10, bottom: 10, left: 10 }}>
+						<Pie
+							data={data}
+							cx="50%"
+							cy="50%"
+							innerRadius={60}
+							outerRadius={90}
 							dataKey="value"
-							fill="#10B981"
-							name={t(($) => $.farms.title)}
-							radius={[8, 8, 0, 0]}
-							label={{ position: "top", fontSize: 10 }}
-							{...(overrides?.bar as unknown as Record<string, unknown>)}
-						/>
-					</RechartBarChart>
+							label={({ name, value }) => `${name}: ${String(value.toFixed(1))}%`}
+							labelLine={false}
+							style={{ fontSize: "11px" }}
+							{...(overrides as unknown as Record<string, unknown>)}
+						>
+							{data.map((entry, index) => (
+								<Cell key={`cell-${String(index)}`} fill={entry.color} />
+							))}
+						</Pie>
+						<Tooltip formatter={(value: number) => `${value.toFixed(1)}%`} />
+						<Legend />
+					</PieChart>
 				</ResponsiveContainer>
 			</ChartContainer>
 		</Container>

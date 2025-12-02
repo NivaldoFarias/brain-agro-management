@@ -3,6 +3,7 @@ import { Cell, Legend, Pie, PieChart as RechartPieChart, ResponsiveContainer, To
 import styled from "styled-components";
 
 import type { ReactElement } from "react";
+import type { PieProps } from "recharts";
 
 /** Props for the {@link DashboardPieChart} component */
 interface DashboardPieChartProps {
@@ -20,6 +21,9 @@ interface DashboardPieChartProps {
 
 	/** Array of colors for pie slices */
 	colors?: string[];
+
+	/** Optional Recharts Pie component props overrides */
+	overrides?: Partial<PieProps>;
 }
 
 const DEFAULT_COLORS = ["#10B981", "#F59E0B", "#8B5CF6", "#3B82F6", "#EF4444", "#EC4899"];
@@ -46,6 +50,7 @@ export function DashboardPieChart({
 	data,
 	isLoading,
 	error,
+	overrides,
 	colors = DEFAULT_COLORS,
 }: DashboardPieChartProps): ReactElement {
 	const { t } = useTranslation();
@@ -74,9 +79,10 @@ export function DashboardPieChart({
 							cy="50%"
 							labelLine={false}
 							label={renderLabel}
-							outerRadius={100}
+							outerRadius={75}
 							fill="#8884d8"
 							dataKey="value"
+							{...(overrides as unknown as Record<string, unknown>)}
 						>
 							{data.map((_, index) => (
 								<Cell key={`cell-${String(index)}`} fill={colors[index % colors.length]} />
@@ -100,6 +106,9 @@ export function DashboardPieChart({
 
 /**
  * Custom label renderer for pie chart slices
+ *
+ * @param props Label properties from Recharts
+ * @param dataLength Number of data items for font size calculation
  */
 function renderLabel({ value }: { name: string; value: number }): string {
 	return `${String(value)}%`;

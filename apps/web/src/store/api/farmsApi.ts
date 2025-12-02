@@ -69,7 +69,10 @@ export const farmsApi = api.injectEndpoints({
 				body,
 			}),
 			transformResponse: (response: ApiResponse<Farm>) => response.data,
-			invalidatesTags: [{ type: "Farm", id: "LIST" }, { type: "DashboardStats" }],
+			invalidatesTags: [
+				{ type: "Farm", id: "LIST" },
+				{ type: "DashboardStats", id: "ALL" },
+			],
 		}),
 
 		/**
@@ -91,7 +94,7 @@ export const farmsApi = api.injectEndpoints({
 			invalidatesTags: (result, error, { id }) => [
 				{ type: "Farm", id },
 				{ type: "Farm", id: "LIST" },
-				{ type: "DashboardStats" },
+				{ type: "DashboardStats", id: "ALL" },
 			],
 		}),
 
@@ -113,7 +116,7 @@ export const farmsApi = api.injectEndpoints({
 			invalidatesTags: (result, error, id) => [
 				{ type: "Farm", id },
 				{ type: "Farm", id: "LIST" },
-				{ type: "DashboardStats" },
+				{ type: "DashboardStats", id: "ALL" },
 			],
 		}),
 	}),

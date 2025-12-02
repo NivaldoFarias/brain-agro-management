@@ -15,6 +15,7 @@ import { TransformInterceptor } from "./common/interceptors/transform.intercepto
 import { AppDataSource } from "./config/database.config";
 import { SeedModule } from "./database/seeds/seed.module";
 import { AuthModule } from "./modules/auth/auth.module";
+import { DashboardModule } from "./modules/dashboard/dashboard.module";
 import { FarmsModule } from "./modules/farms/farms.module";
 import { HealthModule } from "./modules/health/health.module";
 import { ProducersModule } from "./modules/producers/producers.module";
@@ -49,6 +50,7 @@ import { ProducersModule } from "./modules/producers/producers.module";
 		HealthModule,
 		ProducersModule,
 		FarmsModule,
+		DashboardModule,
 	],
 	controllers: [AppController],
 	providers: [

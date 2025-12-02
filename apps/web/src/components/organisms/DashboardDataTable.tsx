@@ -1,58 +1,59 @@
 import { useTranslation } from "react-i18next";
-import {
-	Bar,
-	CartesianGrid,
-	Legend,
-	BarChart as RechartBarChart,
-	ResponsiveContainer,
-	Tooltip,
-	XAxis,
-	YAxis,
-} from "recharts";
 import styled from "styled-components";
 
 import type { ReactElement } from "react";
-import type { BarProps, XAxisProps, YAxisProps } from "recharts";
 
-/** Props for the {@link DashboardBarChart} component */
-interface DashboardBarChartProps {
-	/** Chart title/label */
+/** Props for the {@link DashboardDataTable} component */
+interface DashboardDataTableProps<T> {
+	/** Table title/heading */
 	title: string;
 
-	/** Chart data array with required `name` and `value` fields */
-	data?: { name: string; value: number; [key: string]: unknown }[];
+	/** Array of data items to display */
+	data?: T[];
+
+	/** Column definitions specifying which fields to display */
+	columns: {
+		/** Column header label */
+		header: string;
+
+		/** Accessor function to get cell value from row data */
+		accessor: (row: T) => string | number;
+
+		/** Optional formatter function for cell values */
+		format?: (value: string | number) => string;
+	}[];
 
 	/** Loading state indicator */
 	isLoading?: boolean;
 
 	/** Error message to display */
 	error?: string | null;
-
-	/** Optional Recharts Bar Chart component props overrides */
-	overrides?: {
-		bar?: Partial<BarProps>;
-		xAxis?: Partial<XAxisProps>;
-		yAxis?: Partial<YAxisProps>;
-	};
 }
 
 /**
- * Displays a responsive bar chart for comparing categorical data.
+ * Displays tabular data with customizable columns.
  *
- * Used for metrics like farms by state distribution.
+ * Used for showing top records like largest farms or most productive producers.
  *
  * @example
  * ```tsx
- * <DashboardBarChart
- *   title="Farms by State"
- *   data={[
- *     { name: "SP", value: 10 },
- *     { name: "MG", value: 8 },
+ * <DashboardDataTable
+ *   title="Largest Farms"
+ *   data={farms}
+ *   columns={[
+ *     { header: "Name", accessor: (row) => row.name },
+ *     { header: "Area", accessor: (row) => row.totalArea, format: (v) => `${v} ha` }
  *   ]}
  * />
  * ```
  */
-export function DashboardBarChart({ title, data, isLoading, error, overrides }: DashboardBarChartProps): ReactElement {
+export function DashboardDataTable<T>({
+	title,
+	data,
+	columns,
+	isLoading,
+	error,
+}: DashboardDataTableProps<T>): ReactElement {
 	const { t } = useTranslation();
 
 	if (error) {
@@ -70,38 +71,28 @@ export function DashboardBarChart({ title, data, isLoading, error, overrides }: 
 	return (
 		<Container>
 			<Title>{title}</Title>
-			<ChartContainer>
-				<ResponsiveContainer width="100%" height={300}>
-					<RechartBarChart data={data} margin={{ top: 20, right: 30, left: 0, bottom: 5 }}>
-						<CartesianGrid strokeDasharray="3 3" stroke="#e7e5e4" />
-						<XAxis
-							dataKey="name"
-							angle={-45}
-							textAnchor="end"
-							height={100}
-							style={{ fontSize: "11px" }}
-							{...(overrides?.xAxis as unknown as Record<string, unknown>)}
-						/>
-						<YAxis {...(overrides?.yAxis as unknown as Record<string, unknown>)} />
-						<Tooltip
-							contentStyle={{
-								backgroundColor: "#fff",
-								border: "1px solid #e7e5e4",
-								borderRadius: "8px",
-							}}
-						/>
-						<Legend />
-						<Bar
-							dataKey="value"
-							fill="#10B981"
-							name={t(($) => $.farms.title)}
-							radius={[8, 8, 0, 0]}
-							label={{ position: "top", fontSize: 10 }}
-							{...(overrides?.bar as unknown as Record<string, unknown>)}
-						/>
-					</RechartBarChart>
-				</ResponsiveContainer>
-			</ChartContainer>
+			<TableWrapper>
+				<Table>
+					<thead>
+						<TableRow>
+							{columns.map((column, index) => (
+								<TableHeader key={index}>{column.header}</TableHeader>
+							))}
+						</TableRow>
+					</thead>
+					<tbody>
+						{data.map((row, rowIndex) => (
+							<TableRow key={rowIndex}>
+								{columns.map((column, colIndex) => {
+									const value = column.accessor(row);
+									const formattedValue = column.format ? column.format(value) : value;
+									return <TableCell key={colIndex}>{formattedValue}</TableCell>;
+								})}
+							</TableRow>
+						))}
+					</tbody>
+				</Table>
+			</TableWrapper>
 		</Container>
 	);
 }
@@ -124,16 +115,46 @@ const Title = styled.h3`
 	color: ${(props) => props.theme.colors.text};
 `;
 
-const ChartContainer = styled.div`
+const TableWrapper = styled.div`
+	overflow-x: auto;
+	border-radius: ${(props) => props.theme.borderRadius.md};
+	border: 1px solid ${(props) => props.theme.colors.border};
+`;
+
+const Table = styled.table`
 	width: 100%;
-	height: 350px;
+	border-collapse: collapse;
+	font-size: ${(props) => props.theme.typography.fontSize.sm};
+`;
+
+const TableRow = styled.tr`
+	&:not(:last-child) {
+		border-bottom: 1px solid ${(props) => props.theme.colors.border};
+	}
+
+	tbody &:hover {
+		background: ${(props) => props.theme.colors.backgroundAlt};
+	}
+`;
+
+const TableHeader = styled.th`
+	padding: ${(props) => props.theme.spacing.md};
+	text-align: left;
+	font-weight: ${(props) => props.theme.typography.fontWeight.semibold};
+	color: ${(props) => props.theme.colors.text};
+	background: ${(props) => props.theme.colors.backgroundAlt};
+`;
+
+const TableCell = styled.td`
+	padding: ${(props) => props.theme.spacing.md};
+	color: ${(props) => props.theme.colors.textSecondary};
 `;
 
 const ErrorContainer = styled.div`
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	min-height: 300px;
+	min-height: 200px;
 	padding: ${(props) => props.theme.spacing.xl};
 	background: ${(props) => props.theme.colors.surface};
 	border: 1px solid ${(props) => props.theme.colors.error};
@@ -147,7 +168,7 @@ const EmptyContainer = styled.div`
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	min-height: 300px;
+	min-height: 200px;
 	padding: ${(props) => props.theme.spacing.xl};
 	background: ${(props) => props.theme.colors.surface};
 	border: 1px dashed ${(props) => props.theme.colors.border};

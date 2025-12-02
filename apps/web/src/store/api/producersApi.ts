@@ -72,7 +72,10 @@ export const producersApi = api.injectEndpoints({
 				body,
 			}),
 			transformResponse: (response: ApiResponse<Producer>) => response.data,
-			invalidatesTags: [{ type: "Producer", id: "LIST" }],
+			invalidatesTags: [
+				{ type: "Producer", id: "LIST" },
+				{ type: "DashboardStats", id: "ALL" },
+			],
 		}),
 
 		/**
@@ -94,6 +97,7 @@ export const producersApi = api.injectEndpoints({
 			invalidatesTags: (result, error, { id }) => [
 				{ type: "Producer", id },
 				{ type: "Producer", id: "LIST" },
+				{ type: "DashboardStats", id: "ALL" },
 			],
 		}),
 
@@ -115,6 +119,7 @@ export const producersApi = api.injectEndpoints({
 			invalidatesTags: (result, error, id) => [
 				{ type: "Producer", id },
 				{ type: "Producer", id: "LIST" },
+				{ type: "DashboardStats", id: "ALL" },
 			],
 		}),
 	}),

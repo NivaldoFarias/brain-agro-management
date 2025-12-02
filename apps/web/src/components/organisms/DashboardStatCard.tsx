@@ -29,7 +29,12 @@ interface DashboardStatCardProps {
 	/**
 	 * Optional variant styling
 	 */
-	variant?: "default" | "success" | "warning" | "info";
+	variant?: "default" | "success" | "warning" | "info" | "primary" | "error";
+
+	/**
+	 * Loading state indicator
+	 */
+	isLoading?: boolean;
 }
 
 /**
@@ -53,7 +58,12 @@ export function DashboardStatCard({
 	icon,
 	unit,
 	variant = "default",
+	isLoading = false,
 }: DashboardStatCardProps): ReactElement {
+	if (isLoading) {
+		return <SkeletonCard />;
+	}
+
 	return (
 		<Card $variant={variant}>
 			{icon && <IconContainer>{icon}</IconContainer>}
@@ -89,6 +99,10 @@ const Card = styled.div<{ $variant: string }>`
 					return props.theme.colors.warning;
 				case "info":
 					return props.theme.colors.info;
+				case "primary":
+					return props.theme.colors.primary;
+				case "error":
+					return props.theme.colors.error;
 				default:
 					return props.theme.colors.borderFocus;
 			}
@@ -146,4 +160,37 @@ const Unit = styled.span`
 	font-size: ${(props) => props.theme.typography.fontSize.sm};
 	color: ${(props) => props.theme.colors.textSecondary};
 	font-weight: ${(props) => props.theme.typography.fontWeight.normal};
+`;
+
+const SkeletonCard = styled.div`
+	display: flex;
+	align-items: center;
+	gap: ${(props) => props.theme.spacing.lg};
+	padding: ${(props) => props.theme.spacing.xl};
+	border: 1px solid ${(props) => props.theme.colors.border};
+	border-radius: ${(props) => props.theme.borderRadius.lg};
+	box-shadow: ${(props) => props.theme.shadows.sm};
+	min-height: 100px;
+	background: linear-gradient(
+		90deg,
+		${(props) => props.theme.colors.backgroundAlt} 25%,
+		${(props) => props.theme.colors.surface} 50%,
+		${(props) => props.theme.colors.backgroundAlt} 75%
+	);
+	background-size: 200% 100%;
+	animation: shimmer 2s infinite;
+
+	@keyframes shimmer {
+		0% {
+			background-position: 200% 0;
+		}
+		100% {
+			background-position: -200% 0;
+		}
+	}
+
+	@media (max-width: ${(props) => props.theme.breakpoints.md}) {
+		gap: ${(props) => props.theme.spacing.md};
+		padding: ${(props) => props.theme.spacing.lg};
+	}
 `;
