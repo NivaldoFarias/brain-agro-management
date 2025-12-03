@@ -35,7 +35,7 @@ export class AppController {
 	 * ```
 	 */
 	@Get()
-	getApiInfo(): ApiAppMetadata {
+	public getApiInfo(): ApiAppMetadata {
 		return {
 			name: APP_INFO.name,
 			version: APP_INFO.version,

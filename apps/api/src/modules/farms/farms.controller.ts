@@ -65,7 +65,7 @@ export class FarmsController {
 		description: "Invalid input data or area constraints violated",
 	})
 	@ApiResponse({ status: HttpStatus.NOT_FOUND, description: "Producer not found" })
-	create(@Body() createFarmDto: CreateFarmDto): Promise<FarmResponseDto> {
+	public create(@Body() createFarmDto: CreateFarmDto): Promise<FarmResponseDto> {
 		return this.farmsService.create(createFarmDto);
 	}
 
@@ -84,7 +84,7 @@ export class FarmsController {
 		description: "List of farms",
 		type: [FarmResponseDto],
 	})
-	async findAll(): Promise<ListAllData<FarmResponseDto>> {
+	public async findAll(): Promise<ListAllData<FarmResponseDto>> {
 		const farms = await this.farmsService.findAll();
 		return {
 			data: farms,
@@ -113,7 +113,7 @@ export class FarmsController {
 		type: FarmResponseDto,
 	})
 	@ApiResponse({ status: HttpStatus.NOT_FOUND, description: "Farm not found" })
-	findOne(@Param("id", ParseUUIDPipe) id: string): Promise<FarmResponseDto> {
+	public findOne(@Param("id", ParseUUIDPipe) id: string): Promise<FarmResponseDto> {
 		return this.farmsService.findOne(id);
 	}
 
@@ -133,7 +133,7 @@ export class FarmsController {
 		description: "List of farms for the producer",
 		type: [FarmResponseDto],
 	})
-	findByProducer(
+	public findByProducer(
 		@Param("producerId", ParseUUIDPipe) producerId: string,
 	): Promise<Array<FarmResponseDto>> {
 		return this.farmsService.findByProducer(producerId);
@@ -160,7 +160,7 @@ export class FarmsController {
 		description: "List of farms in the state",
 		type: [FarmResponseDto],
 	})
-	findByState(@Param("state") state: string): Promise<Array<FarmResponseDto>> {
+	public findByState(@Param("state") state: string): Promise<Array<FarmResponseDto>> {
 		return this.farmsService.findByState(state);
 	}
 
@@ -190,7 +190,7 @@ export class FarmsController {
 		description: "Invalid input data or area constraints violated",
 	})
 	@ApiResponse({ status: HttpStatus.NOT_FOUND, description: "Farm or producer not found" })
-	update(
+	public update(
 		@Param("id", ParseUUIDPipe) id: string,
 		@Body() updateFarmDto: UpdateFarmDto,
 	): Promise<FarmResponseDto> {
@@ -212,7 +212,7 @@ export class FarmsController {
 	@ApiOperation({ summary: "Delete farm" })
 	@ApiResponse({ status: HttpStatus.OK, description: "Farm deleted successfully" })
 	@ApiResponse({ status: HttpStatus.NOT_FOUND, description: "Farm not found" })
-	remove(@Param("id", ParseUUIDPipe) id: string): Promise<void> {
+	public remove(@Param("id", ParseUUIDPipe) id: string): Promise<void> {
 		return this.farmsService.delete(id);
 	}
 
@@ -233,7 +233,7 @@ export class FarmsController {
 			example: faker.number.float({ min: 1000, max: 20_000, fractionDigits: 2 }) satisfies number,
 		},
 	})
-	getTotalArea(): Promise<number> {
+	public getTotalArea(): Promise<number> {
 		return this.farmsService.getTotalArea();
 	}
 
@@ -254,7 +254,7 @@ export class FarmsController {
 			example: faker.number.int({ min: 0 }) satisfies number,
 		},
 	})
-	getTotalCount(): Promise<number> {
+	public getTotalCount(): Promise<number> {
 		return this.farmsService.getTotalCount();
 	}
 
@@ -278,7 +278,7 @@ export class FarmsController {
 			] satisfies Array<StateDistribution>,
 		},
 	})
-	countByState(): Promise<Array<StateDistribution>> {
+	public countByState(): Promise<Array<StateDistribution>> {
 		return this.farmsService.countByState();
 	}
 
@@ -303,7 +303,7 @@ export class FarmsController {
 			} satisfies LandUseStats,
 		},
 	})
-	getLandUseStats(): Promise<LandUseStats> {
+	public getLandUseStats(): Promise<LandUseStats> {
 		return this.farmsService.getLandUseStats();
 	}
 
@@ -329,7 +329,7 @@ export class FarmsController {
 			] satisfies Array<CropDistribution>,
 		},
 	})
-	getCropsDistribution(): Promise<Array<CropDistribution>> {
+	public getCropsDistribution(): Promise<Array<CropDistribution>> {
 		return this.farmsService.getCropsDistribution();
 	}
 }

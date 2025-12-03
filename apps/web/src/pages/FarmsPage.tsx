@@ -23,7 +23,7 @@ export function FarmsPage(): ReactElement {
 	const [page, setPage] = useState(1);
 	const [deletingId, setDeletingId] = useState<string | undefined>();
 
-	const { data, isLoading, error, refetch } = useGetFarmsQuery({ page, limit: 10 });
+	const { data: farms, isLoading, error, refetch } = useGetFarmsQuery({ page, limit: 10 });
 	const [deleteFarm] = useDeleteFarmMutation();
 
 	const handleCreate = () => {
@@ -57,7 +57,7 @@ export function FarmsPage(): ReactElement {
 			</Header>
 
 			<FarmList
-				farms={data?.data ?? []}
+				farms={farms?.data ?? []}
 				isLoading={isLoading}
 				error={error ? t(($) => $.farms.loadError) : undefined}
 				onRetry={() => {
@@ -69,7 +69,7 @@ export function FarmsPage(): ReactElement {
 				isDeletingId={deletingId}
 			/>
 
-			{data && data.total > 10 && (
+			{farms && farms.total > 10 && (
 				<PaginationContainer>
 					<Button
 						variant="secondary"
@@ -81,14 +81,14 @@ export function FarmsPage(): ReactElement {
 						{t(($) => $.common.previous)}
 					</Button>
 					<Typography variant="body">
-						{t(($) => $.common.page)} {page} {t(($) => $.common.of)} {Math.ceil(data.total / 10)}
+						{t(($) => $.common.page)} {page} {t(($) => $.common.of)} {Math.ceil(farms.total / 10)}
 					</Typography>
 					<Button
 						variant="secondary"
 						onClick={() => {
 							setPage((page) => page + 1);
 						}}
-						disabled={page >= Math.ceil(data.total / 10)}
+						disabled={page >= Math.ceil(farms.total / 10)}
 					>
 						{t(($) => $.common.next)}
 					</Button>

@@ -8,9 +8,9 @@ import {
 	UpdateDateColumn,
 } from "typeorm";
 
-import type { FarmHarvest } from "./farm-harvest.entity";
-
 import { CropType } from "@/common";
+
+import { FarmHarvest } from "./farm-harvest.entity";
 
 /**
  * FarmHarvestCrop entity representing specific crops planted in a farm during a harvest
@@ -30,40 +30,28 @@ import { CropType } from "@/common";
  */
 @Entity("farm_harvest_crops")
 export class FarmHarvestCrop {
-	/**
-	 * Unique identifier (UUID v4)
-	 */
+	/** Unique identifier (UUID v4) */
 	@PrimaryGeneratedColumn("uuid")
 	id!: string;
 
-	/**
-	 * ID of the farm-harvest association
-	 */
+	/** ID of the farm-harvest association */
 	@Column({ type: "uuid", name: "farm_harvest_id" })
 	farmHarvestId!: string;
 
-	/**
-	 * Type of crop planted (soy, corn, cotton, coffee, sugarcane)
-	 */
+	/** Type of crop planted (soy, corn, cotton, coffee, sugarcane) */
 	@Column({ type: "varchar", length: 50, enum: CropType, name: "crop_type" })
 	cropType!: CropType;
 
-	/**
-	 * Farm-harvest association this crop belongs to
-	 */
-	@ManyToOne("FarmHarvest", "crops", { lazy: true })
+	/** Farm-harvest association this crop belongs to */
+	@ManyToOne(() => FarmHarvest, (farmHarvest) => farmHarvest.crops)
 	@JoinColumn({ name: "farm_harvest_id" })
-	farmHarvest!: Promise<FarmHarvest>;
+	farmHarvest!: FarmHarvest;
 
-	/**
-	 * Timestamp of record creation
-	 */
+	/** Timestamp of record creation */
 	@CreateDateColumn({ name: "created_at" })
 	createdAt!: Date;
 
-	/**
-	 * Timestamp of last record update
-	 */
+	/** Timestamp of last record update */
 	@UpdateDateColumn({ name: "updated_at" })
 	updatedAt!: Date;
 }

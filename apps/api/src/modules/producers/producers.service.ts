@@ -68,7 +68,7 @@ export class ProducersService {
 	 * });
 	 * ```
 	 */
-	async create(createProducerDto: CreateProducerDto): Promise<ProducerResponseDto> {
+	public async create(createProducerDto: CreateProducerDto): Promise<ProducerResponseDto> {
 		const { name, document } = createProducerDto;
 
 		const strippedDocument = this.validateAndStripDocument(document);
@@ -96,7 +96,7 @@ export class ProducersService {
 	 * console.log(`Found ${producers.length} producers`);
 	 * ```
 	 */
-	async findAll(): Promise<Array<ProducerResponseDto>> {
+	public async findAll(): Promise<Array<ProducerResponseDto>> {
 		const producers = await this.producerRepository.find({
 			order: { name: OrderBy.Ascending },
 		});
@@ -118,7 +118,7 @@ export class ProducersService {
 	 * const producer = await service.findOne("550e8400-e29b-41d4-a716-446655440000");
 	 * ```
 	 */
-	async findOne(id: string): Promise<ProducerResponseDto> {
+	public async findOne(id: string): Promise<ProducerResponseDto> {
 		const producer = await this.producerRepository.findOne({
 			where: { id },
 			relations: ["farms"],
@@ -155,7 +155,10 @@ export class ProducersService {
 	 * );
 	 * ```
 	 */
-	async update(id: string, updateProducerDto: UpdateProducerDto): Promise<ProducerResponseDto> {
+	public async update(
+		id: string,
+		updateProducerDto: UpdateProducerDto,
+	): Promise<ProducerResponseDto> {
 		const producer = await this.producerRepository.findOne({ where: { id } });
 
 		if (!producer) {
@@ -192,7 +195,7 @@ export class ProducersService {
 	 * await service.delete("550e8400-e29b-41d4-a716-446655440000");
 	 * ```
 	 */
-	async delete(id: string): Promise<void> {
+	public async delete(id: string): Promise<void> {
 		const result = await this.producerRepository.delete(id);
 
 		if (result.affected === 0) {
@@ -205,7 +208,7 @@ export class ProducersService {
 	 *
 	 * @returns Total producer count
 	 */
-	async getTotalCount(): Promise<number> {
+	public async getTotalCount(): Promise<number> {
 		return this.producerRepository.count();
 	}
 

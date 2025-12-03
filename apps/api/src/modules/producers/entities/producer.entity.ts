@@ -7,7 +7,7 @@ import {
 	UpdateDateColumn,
 } from "typeorm";
 
-import type { Farm } from "@/modules/farms/entities/";
+import { Farm } from "@/modules/farms/entities/";
 
 /**
  * Producer entity representing a rural producer in the agricultural management system
@@ -26,9 +26,7 @@ import type { Farm } from "@/modules/farms/entities/";
  */
 @Entity("producers")
 export class Producer {
-	/**
-	 * Unique identifier (UUID v4)
-	 */
+	/** Unique identifier (UUID v4) */
 	@PrimaryGeneratedColumn("uuid")
 	id!: string;
 
@@ -44,16 +42,14 @@ export class Producer {
 	@Column({ type: "varchar", length: 14, unique: true })
 	document!: string;
 
-	/**
-	 * Producer's full name or company name
-	 */
+	/** Producer's full name or company name */
 	@Column({ type: "varchar", length: 255 })
 	name!: string;
 
 	/**
 	 * Farms owned by this producer
 	 *
-	 * Uses lazy loading to avoid N+1 queries. Load explicitly when needed:
+	 * Uses eager loading to avoid N+1 queries. Load explicitly when needed:
 	 * ```typescript
 	 * const producer = await producerRepository.findOne({
 	 *   where: { id },
@@ -61,18 +57,14 @@ export class Producer {
 	 * });
 	 * ```
 	 */
-	@OneToMany("Farm", "producer", { lazy: true })
-	farms!: Promise<Array<Farm>>;
+	@OneToMany(() => Farm, (farm) => farm.producer)
+	farms!: Array<Farm>;
 
-	/**
-	 * Timestamp of record creation
-	 */
+	/** Timestamp of record creation */
 	@CreateDateColumn({ name: "created_at" })
 	createdAt!: Date;
 
-	/**
-	 * Timestamp of last record update
-	 */
+	/** Timestamp of last record update */
 	@UpdateDateColumn({ name: "updated_at" })
 	updatedAt!: Date;
 }

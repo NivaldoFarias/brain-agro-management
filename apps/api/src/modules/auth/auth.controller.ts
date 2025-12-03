@@ -21,7 +21,7 @@ import { LoginDto } from "./dto/login.dto";
  * Provides login functionality and token generation for API access.
  */
 @Public()
-@ApiTags("auth")
+@ApiTags("Auth")
 @Controller("auth")
 export class AuthController {
 	constructor(private readonly authService: AuthService) {}

@@ -22,6 +22,12 @@
         "page": "Page",
         "of": "of"
     },
+    "abbreviations": {
+        "hectares": "ha",
+        "kilometers": "km",
+        "meters": "m",
+        "squareMeters": "m²"
+    },
     "auth": {
         "login": "Login",
         "logout": "Logout",

@@ -109,13 +109,15 @@ export function FarmList({
 							</FarmLocation>
 							<FarmAreas>
 								<AreaBadge>
-									<strong>Total:</strong> {farm.totalArea.toFixed(2)} ha
+									<strong>Total:</strong> {farm.totalArea.toFixed(2)} {t(($) => $.abbreviations.hectares)}
 								</AreaBadge>
 								<AreaBadge>
-									<strong>{t(($) => $.dashboard.arable)}:</strong> {farm.arableArea.toFixed(2)} ha
+									<strong>{t(($) => $.dashboard.arable)}:</strong> {farm.arableArea.toFixed(2)}{" "}
+									{t(($) => $.abbreviations.hectares)}
 								</AreaBadge>
 								<AreaBadge>
-									<strong>{t(($) => $.dashboard.vegetation)}:</strong> {farm.vegetationArea.toFixed(2)} ha
+									<strong>{t(($) => $.dashboard.vegetation)}:</strong> {farm.vegetationArea.toFixed(2)}{" "}
+									{t(($) => $.abbreviations.hectares)}
 								</AreaBadge>
 							</FarmAreas>
 							<CropsList>

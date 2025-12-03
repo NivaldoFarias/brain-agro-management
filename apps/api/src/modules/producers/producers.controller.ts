@@ -57,7 +57,7 @@ export class ProducersController {
 	})
 	@ApiResponse({ status: HttpStatus.BAD_REQUEST, description: "Invalid input data" })
 	@ApiResponse({ status: HttpStatus.CONFLICT, description: "Document already exists" })
-	create(@Body() createProducerDto: CreateProducerDto): Promise<ProducerResponseDto> {
+	public create(@Body() createProducerDto: CreateProducerDto): Promise<ProducerResponseDto> {
 		return this.producersService.create(createProducerDto);
 	}
 
@@ -76,7 +76,7 @@ export class ProducersController {
 		description: "List of producers",
 		type: [ProducerResponseDto],
 	})
-	async findAll(): Promise<ListAllData<ProducerResponseDto>> {
+	public async findAll(): Promise<ListAllData<ProducerResponseDto>> {
 		const producers = await this.producersService.findAll();
 
 		return {
@@ -106,7 +106,7 @@ export class ProducersController {
 		type: ProducerResponseDto,
 	})
 	@ApiResponse({ status: HttpStatus.NOT_FOUND, description: "Producer not found" })
-	findOne(@Param("id", ParseUUIDPipe) id: string): Promise<ProducerResponseDto> {
+	public findOne(@Param("id", ParseUUIDPipe) id: string): Promise<ProducerResponseDto> {
 		return this.producersService.findOne(id);
 	}
 
@@ -136,7 +136,7 @@ export class ProducersController {
 	@ApiResponse({ status: HttpStatus.BAD_REQUEST, description: "Invalid input data" })
 	@ApiResponse({ status: HttpStatus.NOT_FOUND, description: "Producer not found" })
 	@ApiResponse({ status: HttpStatus.CONFLICT, description: "Document already exists" })
-	update(
+	public update(
 		@Param("id", ParseUUIDPipe) id: string,
 		@Body() updateProducerDto: UpdateProducerDto,
 	): Promise<ProducerResponseDto> {
@@ -158,7 +158,7 @@ export class ProducersController {
 	@ApiOperation({ summary: "Delete producer" })
 	@ApiResponse({ status: HttpStatus.OK, description: "Producer deleted successfully" })
 	@ApiResponse({ status: HttpStatus.NOT_FOUND, description: "Producer not found" })
-	remove(@Param("id", ParseUUIDPipe) id: string): Promise<void> {
+	public remove(@Param("id", ParseUUIDPipe) id: string): Promise<void> {
 		return this.producersService.delete(id);
 	}
 
@@ -177,7 +177,7 @@ export class ProducersController {
 			example: faker.number.int({ min: 0 }) satisfies number,
 		},
 	})
-	getTotalCount(): Promise<number> {
+	public getTotalCount(): Promise<number> {
 		return this.producersService.getTotalCount();
 	}
 }

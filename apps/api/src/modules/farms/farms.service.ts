@@ -83,7 +83,7 @@ export class FarmsService {
 	 * });
 	 * ```
 	 */
-	async create(createFarmDto: CreateFarmDto): Promise<FarmResponseDto> {
+	public async create(createFarmDto: CreateFarmDto): Promise<FarmResponseDto> {
 		const { name, city, state, totalArea, arableArea, vegetationArea, producerId } = createFarmDto;
 
 		await this.verifyProducerExists(producerId);
@@ -120,9 +120,9 @@ export class FarmsService {
 	 * console.log(`Found ${farms.length} farms`);
 	 * ```
 	 */
-	async findAll(): Promise<Array<FarmResponseDto>> {
+	public async findAll(): Promise<Array<FarmResponseDto>> {
 		const farms = await this.farmRepository.find({
-			relations: ["farmHarvests", "farmHarvests.crops"],
+			relations: { farmHarvests: { crops: true } },
 			order: { name: OrderBy.Ascending },
 		});
 
@@ -143,11 +143,13 @@ export class FarmsService {
 	 * const farm = await service.findOne("770e9600-g40d-63f6-c938-668877662222");
 	 * ```
 	 */
-	async findOne(id: string): Promise<FarmResponseDto> {
-		const farm = await this.farmRepository.findOne({
-			where: { id },
-			relations: ["producer"],
-		});
+	public async findOne(id: string): Promise<FarmResponseDto> {
+		const farm = await this.farmRepository
+			.createQueryBuilder("farm")
+			.leftJoinAndSelect("farm.farmHarvests", "farmHarvest")
+			.leftJoinAndSelect("farmHarvest.crops", "crop")
+			.where("farm.id = :id", { id })
+			.getOne();
 
 		if (!farm) {
 			throw new NotFoundException(`Farm with ID ${id} not found`);
@@ -179,7 +181,7 @@ export class FarmsService {
 	 * );
 	 * ```
 	 */
-	async update(id: string, updateFarmDto: UpdateFarmDto): Promise<FarmResponseDto> {
+	public async update(id: string, updateFarmDto: UpdateFarmDto): Promise<FarmResponseDto> {
 		const farm = await this.farmRepository.findOne({ where: { id } });
 
 		if (!farm) {
@@ -221,7 +223,7 @@ export class FarmsService {
 	 * await service.delete("770e9600-g40d-63f6-c938-668877662222");
 	 * ```
 	 */
-	async delete(id: string): Promise<void> {
+	public async delete(id: string): Promise<void> {
 		const result = await this.farmRepository.delete(id);
 
 		if (result.affected === 0) {
@@ -241,11 +243,14 @@ export class FarmsService {
 	 * const farms = await service.findByProducer("550e8400-e29b-41d4-a716-446655440000");
 	 * ```
 	 */
-	async findByProducer(producerId: string): Promise<Array<FarmResponseDto>> {
-		const farms = await this.farmRepository.find({
-			where: { producerId },
-			order: { name: OrderBy.Ascending },
-		});
+	public async findByProducer(producerId: string): Promise<Array<FarmResponseDto>> {
+		const farms = await this.farmRepository
+			.createQueryBuilder("farm")
+			.leftJoinAndSelect("farm.farmHarvests", "farmHarvest")
+			.leftJoinAndSelect("farmHarvest.crops", "crop")
+			.where("farm.producerId = :producerId", { producerId })
+			.orderBy("farm.name", OrderBy.Ascending)
+			.getMany();
 
 		return farms.map((farm) => this.mapToResponseDto(farm));
 	}
@@ -262,11 +267,14 @@ export class FarmsService {
 	 * const farms = await service.findByState(BrazilianState.SP);
 	 * ```
 	 */
-	async findByState(state: string): Promise<Array<FarmResponseDto>> {
-		const farms = await this.farmRepository.find({
-			where: { state },
-			order: { name: OrderBy.Ascending },
-		});
+	public async findByState(state: string): Promise<Array<FarmResponseDto>> {
+		const farms = await this.farmRepository
+			.createQueryBuilder("farm")
+			.leftJoinAndSelect("farm.farmHarvests", "farmHarvest")
+			.leftJoinAndSelect("farmHarvest.crops", "crop")
+			.where("farm.state = :state", { state })
+			.orderBy("farm.name", OrderBy.Ascending)
+			.getMany();
 
 		return farms.map((farm) => this.mapToResponseDto(farm));
 	}
@@ -282,7 +290,7 @@ export class FarmsService {
 	 * console.log(`Total: ${totalHectares} hectares`);
 	 * ```
 	 */
-	async getTotalArea(): Promise<number> {
+	public async getTotalArea(): Promise<number> {
 		const result: { total: string } | undefined = await this.farmRepository
 			.createQueryBuilder("farm")
 			.select("SUM(farm.totalArea)", "total")
@@ -296,7 +304,7 @@ export class FarmsService {
 	 *
 	 * @returns Total count of farms
 	 */
-	async getTotalCount(): Promise<number> {
+	public async getTotalCount(): Promise<number> {
 		const result: { count: string } | undefined = await this.farmRepository
 			.createQueryBuilder("farm")
 			.select("COUNT(farm.id)", "count")
@@ -316,7 +324,7 @@ export class FarmsService {
 	 * // Returns: [{ state: "SP", count: 15 }, { state: "MG", count: 8 }, ...]
 	 * ```
 	 */
-	async countByState(): Promise<Array<StateDistribution>> {
+	public async countByState(): Promise<Array<StateDistribution>> {
 		const results: Array<{ state: string; count: string }> = await this.farmRepository
 			.createQueryBuilder("farm")
 			.select("farm.state", "state")
@@ -342,7 +350,7 @@ export class FarmsService {
 	 * // Returns: { arableArea: 5230.5, vegetationArea: 1847.2 }
 	 * ```
 	 */
-	async getLandUseStats(): Promise<{ arableArea: number; vegetationArea: number }> {
+	public async getLandUseStats(): Promise<{ arableArea: number; vegetationArea: number }> {
 		const result: { arableArea: string; vegetationArea: string } | undefined =
 			await this.farmRepository
 				.createQueryBuilder("farm")
@@ -380,7 +388,7 @@ export class FarmsService {
 	 * // ]
 	 * ```
 	 */
-	async getCropsDistribution(): Promise<Array<CropDistribution>> {
+	public async getCropsDistribution(): Promise<Array<CropDistribution>> {
 		const results: Array<{ cropType: string; count: string }> = await this.farmHarvestCropRepository
 			.createQueryBuilder("fhc")
 			.innerJoin("fhc.farmHarvest", "fh")
@@ -416,9 +424,12 @@ export class FarmsService {
 	/**
 	 * Maps a Farm entity to a FarmResponseDto.
 	 *
-	 * @param farm The farm entity to map
+	 * Extracts unique crop types from all farm harvests and flattens them
+	 * into a single array of crop types for the response.
 	 *
-	 * @returns The mapped response DTO
+	 * @param farm The farm entity to map (with eagerly loaded farmHarvests and crops)
+	 *
+	 * @returns The mapped response DTO with flattened crops array
 	 */
 	private mapToResponseDto(
 		farm:
@@ -431,9 +442,9 @@ export class FarmsService {
 
 		if (Array.isArray(farm.farmHarvests)) {
 			for (const farmHarvest of farm.farmHarvests) {
-				if (!farmHarvest.crops || !Array.isArray(farmHarvest.crops)) continue;
+				const harvestCrops = Array.isArray(farmHarvest.crops) ? farmHarvest.crops : [];
 
-				for (const crop of farmHarvest.crops) {
+				for (const crop of harvestCrops) {
 					if (!crop.cropType || crops.includes(crop.cropType)) continue;
 
 					crops.push(crop.cropType);

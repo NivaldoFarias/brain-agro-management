@@ -7,7 +7,7 @@ import {
 	UpdateDateColumn,
 } from "typeorm";
 
-import type { FarmHarvest } from "./farm-harvest.entity";
+import { FarmHarvest } from "./farm-harvest.entity";
 
 /**
  * Harvest entity representing agricultural seasons/cycles
@@ -23,9 +23,7 @@ import type { FarmHarvest } from "./farm-harvest.entity";
  */
 @Entity("harvests")
 export class Harvest {
-	/**
-	 * Unique identifier (UUID v4)
-	 */
+	/** Unique identifier (UUID v4) */
 	@PrimaryGeneratedColumn("uuid")
 	id!: string;
 
@@ -37,9 +35,7 @@ export class Harvest {
 	@Column({ type: "varchar", length: 20, unique: true })
 	year!: string;
 
-	/**
-	 * Optional description of the harvest season
-	 */
+	/** Optional description of the harvest season */
 	@Column({ type: "text", nullable: true })
 	description?: string;
 
@@ -48,18 +44,14 @@ export class Harvest {
 	 *
 	 * Represents which farms participated in this harvest and what crops were planted.
 	 */
-	@OneToMany("FarmHarvest", "harvest", { lazy: true })
-	farmHarvests!: Promise<Array<FarmHarvest>>;
+	@OneToMany(() => FarmHarvest, (farmHarvest) => farmHarvest.harvest)
+	farmHarvests!: Array<FarmHarvest>;
 
-	/**
-	 * Timestamp of record creation
-	 */
+	/** Timestamp of record creation */
 	@CreateDateColumn({ name: "created_at" })
 	createdAt!: Date;
 
-	/**
-	 * Timestamp of last record update
-	 */
+	/** Timestamp of last record update */
 	@UpdateDateColumn({ name: "updated_at" })
 	updatedAt!: Date;
 }

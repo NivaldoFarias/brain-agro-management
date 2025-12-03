@@ -9,9 +9,9 @@ import {
 	UpdateDateColumn,
 } from "typeorm";
 
-import type { FarmHarvestCrop } from "./farm-harvest-crop.entity";
-import type { Farm } from "./farm.entity";
-import type { Harvest } from "./harvest.entity";
+import { FarmHarvestCrop } from "./farm-harvest-crop.entity";
+import { Farm } from "./farm.entity";
+import { Harvest } from "./harvest.entity";
 
 /**
  * FarmHarvest join entity representing a farm's participation in a harvest
@@ -30,8 +30,7 @@ import type { Harvest } from "./harvest.entity";
  */
 @Entity("farm_harvests")
 export class FarmHarvest {
-	/**
-	 * Unique identifier (UUID v4)
+	/** Unique identifier (UUID v4)
 	 */
 	@PrimaryGeneratedColumn("uuid")
 	id!: string;
@@ -51,22 +50,22 @@ export class FarmHarvest {
 	/**
 	 * Farm participating in this harvest
 	 */
-	@ManyToOne("Farm", "farmHarvests", { lazy: true })
+	@ManyToOne(() => Farm, (farm) => farm.farmHarvests)
 	@JoinColumn({ name: "farm_id" })
-	farm!: Promise<Farm>;
+	farm!: Farm;
 
 	/**
 	 * Harvest season this farm is participating in
 	 */
-	@ManyToOne("Harvest", "farmHarvests", { lazy: true })
+	@ManyToOne(() => Harvest, (harvest) => harvest.farmHarvests)
 	@JoinColumn({ name: "harvest_id" })
-	harvest!: Promise<Harvest>;
+	harvest!: Harvest;
 
 	/**
 	 * Crops planted in this farm during this harvest
 	 */
-	@OneToMany("FarmHarvestCrop", "farmHarvest", { lazy: true })
-	crops!: Promise<Array<FarmHarvestCrop>>;
+	@OneToMany(() => FarmHarvestCrop, (farmHarvestCrop) => farmHarvestCrop.farmHarvest)
+	crops!: Array<FarmHarvestCrop>;
 
 	/**
 	 * Timestamp of record creation
