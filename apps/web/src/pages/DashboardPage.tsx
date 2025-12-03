@@ -33,7 +33,7 @@ import { useGetDashboardStatsQuery } from "@/store/api/dashboardApi";
  */
 export function DashboardPage(): ReactElement {
 	const { t } = useTranslation();
-	const { data: stats, isLoading, error } = useGetDashboardStatsQuery();
+	const { data: stats, isLoading, error } = useGetDashboardStatsQuery(undefined);
 
 	/** Transformed state distribution data for bar chart */
 	const stateChartData = useMemo(

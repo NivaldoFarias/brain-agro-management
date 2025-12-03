@@ -15,10 +15,11 @@ import type {
 	StateDistribution,
 } from "node_modules/@agro/shared/src/types/dashboard.types";
 
-import type { BrazilianState, CropType } from "@agro/shared/utils";
+import type { CitiesByState } from "@agro/shared/types";
 
-import { OrderBy } from "@agro/shared/utils";
+import { BrazilianState, CropType, OrderBy } from "@agro/shared/utils";
 
+import { City } from "@/modules/cities/entities/city.entity";
 import { Farm } from "@/modules/farms/entities/farm.entity";
 import { Producer } from "@/modules/producers/entities/producer.entity";
 
@@ -42,6 +43,9 @@ import { Producer } from "@/modules/producers/entities/producer.entity";
 @Injectable()
 export class DashboardService {
 	constructor(
+		@InjectRepository(City)
+		private readonly cityRepository: Repository<City>,
+
 		@InjectRepository(Farm)
 		private readonly farmRepository: Repository<Farm>,
 
@@ -271,19 +275,14 @@ export class DashboardService {
 			take: limit,
 		});
 
-		return Promise.all(
-			farms.map(async (farm) => {
-				const producer = await farm.producer;
-				return {
-					id: farm.id,
-					name: farm.name,
-					state: farm.state,
-					city: farm.city,
-					totalArea: farm.totalArea,
-					producerName: producer.name,
-				};
-			}),
-		);
+		return farms.map((farm) => ({
+			id: farm.id,
+			name: farm.name,
+			state: farm.state,
+			city: farm.city,
+			totalArea: farm.totalArea,
+			producerName: farm.producer.name,
+		}));
 	}
 
 	/**
@@ -321,5 +320,43 @@ export class DashboardService {
 			farmCount: Number.parseInt(result.farmCount, 10),
 			totalArea: Number.parseFloat(result.totalArea) || 0,
 		}));
+	}
+
+	/**
+	 * Gets all unique cities grouped by Brazilian state.
+	 *
+	 * Queries all cities from the database (seeded from IBGE) and organizes
+	 * them into a map structure for efficient client-side filtering.
+	 *
+	 * @returns Object mapping state codes to arrays of cities
+	 *
+	 * @example
+	 * ```typescript
+	 * const cities = await service.getCitiesByState();
+	 * console.log(cities.SP); // [{ name: "São Paulo", state: "SP" }, ...]
+	 * ```
+	 */
+	async getCitiesByState(): Promise<CitiesByState> {
+		this.logger.debug("Fetching cities grouped by state");
+
+		const cities = await this.cityRepository.find({
+			select: ["name", "state"],
+			order: {
+				state: OrderBy.Ascending,
+				name: OrderBy.Ascending,
+			},
+		});
+
+		const citiesByState: CitiesByState = {} as CitiesByState;
+
+		for (const city of cities) {
+			citiesByState[city.state as BrazilianState] ??= [];
+
+			citiesByState[city.state as BrazilianState].push(city.name);
+		}
+
+		this.logger.debug({ totalCities: cities.length }, "Cities grouped successfully");
+
+		return citiesByState;
 	}
 }

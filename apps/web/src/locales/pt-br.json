@@ -1,8 +1,8 @@
 {
     "common": {
-        "loading": "Carregando...",
+        "loading": "Carregando",
         "error": "Erro",
-        "retry": "Tentar novamente",
+        "retry": "Tente novamente",
         "save": "Salvar",
         "cancel": "Cancelar",
         "delete": "Excluir",
@@ -97,6 +97,9 @@
         "state": "Estado",
         "stateHint": "Estado brasileiro (UF)",
         "selectState": "Selecione um estado",
+        "selectCity": "Selecione uma cidade",
+        "selectStateFirst": "Selecione um estado primeiro",
+        "noCitiesAvailable": "Nenhuma cidade disponível",
         "totalArea": "Área Total (ha)",
         "totalAreaHint": "Área total da fazenda (ha)",
         "arableArea": "Área Agricultável (ha)",

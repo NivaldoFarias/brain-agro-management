@@ -7,7 +7,6 @@ import {
 	ValidatorConstraint,
 	ValidatorConstraintInterface,
 } from "class-validator";
-import { PinoLogger } from "nestjs-pino";
 import { Repository } from "typeorm";
 
 import { City } from "@/modules/cities/entities/city.entity";
@@ -36,17 +35,13 @@ export class IsCityInStateConstraint implements ValidatorConstraintInterface {
 	constructor(
 		@InjectRepository(City)
 		private readonly cityRepository: Repository<City>,
-		private readonly logger: PinoLogger,
-	) {
-		this.logger.setContext(IsCityInStateConstraint.name);
-	}
+	) {}
 
 	/**
 	 * Validates city exists in the specified state
 	 *
 	 * Performs case-insensitive lookup in the cities table populated from IBGE data.
-	 * Fails gracefully if database query encounters errors, logging the issue for
-	 * monitoring and debugging.
+	 * Fails gracefully if database query encounters errors.
 	 *
 	 * @param city City name to validate
 	 * @param args Validation arguments containing the DTO object
@@ -59,9 +54,7 @@ export class IsCityInStateConstraint implements ValidatorConstraintInterface {
 		const dto = args.object as { state?: string };
 		const state = dto.state;
 
-		if (!state) {
-			return false;
-		}
+		if (!state) return false;
 
 		try {
 			const cityExists = await this.cityRepository
@@ -71,8 +64,7 @@ export class IsCityInStateConstraint implements ValidatorConstraintInterface {
 				.getExists();
 
 			return cityExists;
-		} catch (error) {
-			this.logger.error({ err: error, city, state }, "Failed to validate city-state combination");
+		} catch {
 			return false;
 		}
 	}

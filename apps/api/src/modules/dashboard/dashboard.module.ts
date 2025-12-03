@@ -1,6 +1,7 @@
 import { Module } from "@nestjs/common";
 import { TypeOrmModule } from "@nestjs/typeorm";
 
+import { City } from "@/modules/cities/entities/city.entity";
 import { Farm } from "@/modules/farms/entities/farm.entity";
 import { Producer } from "@/modules/producers/entities/producer.entity";
 
@@ -22,7 +23,7 @@ import { DashboardService } from "./dashboard.service";
  * ```
  */
 @Module({
-	imports: [TypeOrmModule.forFeature([Farm, Producer])],
+	imports: [TypeOrmModule.forFeature([City, Farm, Producer])],
 	controllers: [DashboardController],
 	providers: [DashboardService],
 })

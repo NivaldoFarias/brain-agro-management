@@ -1,8 +1,18 @@
 import { faker } from "@faker-js/faker/locale/pt_BR";
 import { ApiProperty } from "@nestjs/swagger";
-import { IsEnum, IsNotEmpty, IsNumber, IsString, IsUUID, Length, Min } from "class-validator";
+import {
+	IsArray,
+	IsEnum,
+	IsNotEmpty,
+	IsNumber,
+	IsOptional,
+	IsString,
+	IsUUID,
+	Length,
+	Min,
+} from "class-validator";
 
-import { BrazilianState } from "@agro/shared/utils";
+import { BrazilianState, CropType } from "@agro/shared/utils";
 
 import { IsCityInState } from "@/common/decorators/city-in-state.decorator";
 
@@ -148,4 +158,24 @@ export class CreateFarmDto {
 	@IsNotEmpty({ message: "Producer ID is required" })
 	@IsUUID("4", { message: "Producer ID must be a valid UUID" })
 	producerId!: string;
+
+	/**
+	 * Array of crops to be planted on this farm.
+	 *
+	 * Optional field. Each crop must be a valid CropType enum value.
+	 * Used to initialize crops for the current or next harvest cycle.
+	 *
+	 * @example [CropType.Soy, CropType.Corn]
+	 */
+	@ApiProperty({
+		description: "Array of crops planted on this farm",
+		example: [CropType.Soy, CropType.Corn],
+		enum: CropType,
+		isArray: true,
+		required: false,
+	})
+	@IsOptional()
+	@IsArray({ message: "Crops must be an array" })
+	@IsEnum(CropType, { each: true, message: "Each crop must be a valid crop type" })
+	crops?: Array<CropType>;
 }

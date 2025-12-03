@@ -83,6 +83,9 @@ export const STORAGE_KEYS = {
 
 	/** User preferences */
 	userPreferences: "agro:user:preferences",
+
+	/** Cached cities grouped by state */
+	citiesByState: "agro:cities:byState",
 } as const;
 
 export const environmentDefaults = {

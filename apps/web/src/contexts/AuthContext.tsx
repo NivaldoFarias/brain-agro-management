@@ -2,6 +2,8 @@ import { createContext, useCallback, useContext, useState } from "react";
 
 import type { ReactElement, ReactNode } from "react";
 
+import { useLocalStorageContext } from "./LocalStorageContext";
+
 /**
  * Token storage key in localStorage.
  */
@@ -17,7 +19,7 @@ interface User {
 /**
  * Auth context value interface.
  */
-interface AuthContextValue {
+export interface AuthContextValue {
 	/** Current authentication token */
 	token: string | undefined;
 
@@ -57,39 +59,30 @@ interface AuthProviderProps {
  * ```
  */
 export function AuthProvider({ children }: AuthProviderProps): ReactElement {
+	const storage = useLocalStorageContext();
+
 	const [token, setToken] = useState<string | undefined>(() => {
-		try {
-			const storedToken = localStorage.getItem(TOKEN_STORAGE_KEY);
-			console.log("[AuthProvider] Initial token from localStorage:", storedToken ? "EXISTS" : "NULL");
+		const storedToken = storage.getItem<string>(TOKEN_STORAGE_KEY);
 
-			return storedToken ?? undefined;
-		} catch (error) {
-			console.error("[AuthProvider] Failed to read token from localStorage:", error);
+		console.log("[AuthProvider] Initial token from localStorage:", storedToken ? "EXISTS" : "NULL");
 
-			return;
-		}
+		return storedToken;
 	});
 
 	const [user, setUser] = useState<User | undefined>(() => {
-		try {
-			const storedUser = localStorage.getItem("brain_ag_user");
-			const parsedUser = storedUser ? (JSON.parse(storedUser) as User) : undefined;
+		const parsedUser = storage.getItem<User>("brain_ag_user");
 
-			console.log("[AuthProvider] Initial user from localStorage:", parsedUser);
+		console.log("[AuthProvider] Initial user from localStorage:", parsedUser);
 
-			return parsedUser;
-		} catch (error) {
-			console.error("[AuthProvider] Failed to read user from localStorage:", error);
-
-			return;
-		}
+		return parsedUser;
 	});
 
-	const login = useCallback((accessToken: string, email: string) => {
-		console.log("[AuthProvider] login() called with email:", email);
-		try {
-			localStorage.setItem(TOKEN_STORAGE_KEY, accessToken);
-			localStorage.setItem("brain_ag_user", JSON.stringify({ email }));
+	const login = useCallback(
+		(accessToken: string, email: string) => {
+			console.log("[AuthProvider] login() called with email:", email);
+
+			storage.setItem(TOKEN_STORAGE_KEY, accessToken);
+			storage.setItem("brain_ag_user", { email });
 
 			console.log("[AuthProvider] Saved to localStorage successfully");
 
@@ -97,23 +90,20 @@ export function AuthProvider({ children }: AuthProviderProps): ReactElement {
 			setUser({ email });
 
 			console.log("[AuthProvider] State updated - token and user set");
-		} catch (error) {
-			console.error("[AuthProvider] Failed to save authentication data:", error);
-		}
-	}, []);
+		},
+		[storage],
+	);
 
 	const logout = useCallback(() => {
 		console.log("[AuthProvider] logout() called");
-		try {
-			localStorage.removeItem(TOKEN_STORAGE_KEY);
-			localStorage.removeItem("brain_ag_user");
-			setToken(undefined);
-			setUser(undefined);
-			console.log("[AuthProvider] Logged out successfully");
-		} catch (error) {
-			console.error("[AuthProvider] Failed to clear authentication data:", error);
-		}
-	}, []);
+
+		storage.removeItem(TOKEN_STORAGE_KEY);
+		storage.removeItem("brain_ag_user");
+		setToken(undefined);
+		setUser(undefined);
+
+		console.log("[AuthProvider] Logged out successfully");
+	}, [storage]);
 
 	const isAuthenticated = Boolean(token);
 	console.log("[AuthProvider] isAuthenticated:", isAuthenticated, "| token:", token ? "EXISTS" : "NULL");
@@ -150,13 +140,20 @@ export function useAuth(): AuthContextValue {
 }
 
 /**
- * Gets the current authentication token from {@link localStorage}.
+ * Gets the current authentication token from localStorage.
+ *
+ * This function directly accesses localStorage and is primarily used
+ * for base API configuration. Use `useAuth()` hook in components instead.
  *
  * @returns Authentication token or `undefined` if not authenticated
  */
 export function getAuthToken(): string | undefined {
 	try {
-		return localStorage.getItem(TOKEN_STORAGE_KEY) ?? undefined;
+		const item = window.localStorage.getItem(TOKEN_STORAGE_KEY);
+
+		const parsed = JSON.parse(item ?? "null") as unknown;
+
+		return typeof parsed === "string" ? parsed : undefined;
 	} catch {
 		return undefined;
 	}

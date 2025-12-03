@@ -1,31 +1,61 @@
+import { Theme } from "@radix-ui/themes";
 import { Provider } from "react-redux";
 import { ThemeProvider } from "styled-components";
 
 import type { ReactElement } from "react";
 
-import { AuthProvider } from "./contexts/AuthContext";
+import "@radix-ui/themes/styles.css";
+
+import { CitiesDataLoader } from "./components/organisms/CitiesDataLoader";
+import { AuthProvider, useAuth } from "./contexts/AuthContext";
+import { LocalStorageProvider } from "./contexts/LocalStorageContext";
 import { ToastProvider } from "./contexts/ToastContext";
 import { AppRouter } from "./routes/AppRouter";
 import { store } from "./store";
 import { GlobalStyles, theme } from "./theme";
 
 /**
+ * Inner app component that conditionally loads cities data.
+ *
+ * Wraps AppRouter with CitiesDataLoader only when user is authenticated
+ * to avoid unnecessary API calls on the login page.
+ */
+function AppContent(): ReactElement {
+	const { isAuthenticated } = useAuth();
+
+	return (
+		<>
+			<GlobalStyles />
+			{isAuthenticated ?
+				<CitiesDataLoader>
+					<AppRouter />
+				</CitiesDataLoader>
+			:	<AppRouter />}
+		</>
+	);
+}
+
+/**
  * Root application component for Brain Agriculture.
  *
- * Wraps the application with Redux Provider, AuthProvider, ToastProvider,
- * ThemeProvider, and global styles. Renders the main router component with all routes.
+ * Wraps the application with Redux Provider, LocalStorageProvider, AuthProvider,
+ * ToastProvider, ThemeProvider (styled-components), Radix UI Theme, and global styles.
+ * Conditionally loads cities data when authenticated for form support.
  */
 export function App(): ReactElement {
 	return (
 		<Provider store={store}>
-			<AuthProvider>
-				<ThemeProvider theme={theme}>
-					<ToastProvider>
-						<GlobalStyles />
-						<AppRouter />
-					</ToastProvider>
-				</ThemeProvider>
-			</AuthProvider>
+			<LocalStorageProvider>
+				<AuthProvider>
+					<ThemeProvider theme={theme}>
+						<Theme accentColor="green" grayColor="sage" radius="medium" scaling="100%">
+							<ToastProvider>
+								<AppContent />
+							</ToastProvider>
+						</Theme>
+					</ThemeProvider>
+				</AuthProvider>
+			</LocalStorageProvider>
 		</Provider>
 	);
 }

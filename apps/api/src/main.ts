@@ -2,6 +2,7 @@ import { BadRequestException, ValidationPipe } from "@nestjs/common";
 import { NestFactory } from "@nestjs/core";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 import { apiReference } from "@scalar/nestjs-api-reference";
+import { useContainer } from "class-validator";
 import helmet from "helmet";
 import { Logger } from "nestjs-pino";
 
@@ -32,6 +33,8 @@ async function bootstrap(): Promise<void> {
 	await runMigrations(AppDataSource.options);
 
 	const app = await NestFactory.create(AppModule, { bufferLogs: true });
+
+	useContainer(app.select(AppModule), { fallbackOnErrors: true });
 
 	const logger = setupLogger(app);
 	setupSecurity(app);

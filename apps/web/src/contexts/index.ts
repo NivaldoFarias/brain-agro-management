@@ -5,4 +5,5 @@
  */
 
 export * from "./AuthContext";
+export * from "./LocalStorageContext";
 export * from "./ToastContext";
