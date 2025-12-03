@@ -7,7 +7,7 @@ import {
 	UpdateDateColumn,
 } from "typeorm";
 
-import type { Farm } from "../../farms/entities/farm.entity";
+import type { Farm } from "@/modules/farms/entities/";
 
 /**
  * Producer entity representing a rural producer in the agricultural management system

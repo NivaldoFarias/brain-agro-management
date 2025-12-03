@@ -1,5 +1,6 @@
 import fs from "node:fs";
 import os from "node:os";
+import process from "node:process";
 
 import { Injectable } from "@nestjs/common";
 import { InjectDataSource } from "@nestjs/typeorm";
@@ -16,6 +17,8 @@ import type {
 } from "./interfaces/health-response.interface";
 
 import { env } from "@/config/env.config";
+
+import { version } from "../../../package.json";
 
 /**
  * Health check service providing detailed application and dependency status.
@@ -75,7 +78,7 @@ export class HealthService {
 			database,
 			memory,
 			disk,
-			version: process.env["npm_package_version"] ?? "0.0.1",
+			version,
 			nodeVersion: process.version,
 		};
 	}
@@ -201,9 +204,10 @@ export class HealthService {
 	/**
 	 * Determine overall application status based on component health.
 	 *
-	 * @param database - Database health status
-	 * @param memory - Memory health status
-	 * @param disk - Disk health status
+	 * @param database Database health status
+	 * @param memory Memory health status
+	 * @param disk Disk health status
+	 *
 	 * @returns Overall health status
 	 */
 	private determineOverallStatus(
@@ -227,7 +231,8 @@ export class HealthService {
 	 *
 	 * Removes sensitive information while keeping useful path details.
 	 *
-	 * @param path - Original database path
+	 * @param path Original database path
+	 *
 	 * @returns Sanitized path
 	 */
 	private sanitizeDatabasePath(path: string): string {
@@ -238,7 +243,8 @@ export class HealthService {
 	/**
 	 * Format bytes to human-readable string.
 	 *
-	 * @param bytes - Number of bytes
+	 * @param bytes Number of bytes
+	 *
 	 * @returns Formatted string (e.g., "1.5 MB")
 	 */
 	private formatBytes(bytes: number): string {
@@ -255,7 +261,8 @@ export class HealthService {
 	/**
 	 * Format uptime seconds to human-readable string.
 	 *
-	 * @param seconds - Uptime in seconds
+	 * @param seconds Uptime in seconds
+	 *
 	 * @returns Formatted string (e.g., "2h 15m 30s")
 	 */
 	private formatUptime(seconds: number): string {

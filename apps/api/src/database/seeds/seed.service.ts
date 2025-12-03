@@ -3,11 +3,12 @@ import { Injectable } from "@nestjs/common";
 import { InjectPinoLogger, PinoLogger } from "nestjs-pino";
 import { DataSource } from "typeorm";
 
+import type { SeedConfig } from "./seed.constants";
+
 import { BrazilianState, generateDocument } from "@agro/shared/utils";
 
 import { delay } from "@/common";
-import { env } from "@/config/env.config";
-import { createPinoConfig } from "@/config/logger.config";
+import { createPinoConfig, env } from "@/config/";
 import { City } from "@/modules/cities/entities/city.entity";
 import { IbgeApiService } from "@/modules/cities/ibge-api.service";
 import { FarmHarvestCrop } from "@/modules/farms/entities/farm-harvest-crop.entity";
@@ -16,7 +17,7 @@ import { Farm } from "@/modules/farms/entities/farm.entity";
 import { Harvest } from "@/modules/farms/entities/harvest.entity";
 import { Producer } from "@/modules/producers/entities/producer.entity";
 
-import { FARM_NAME_PREFIXES, SEED_SCALE_CONFIG } from "./seed.constants";
+import { FARM_NAME_PREFIXES } from "./seed.constants";
 import { SeedUtilities } from "./seed.utilities";
 
 /**
@@ -41,7 +42,7 @@ import { SeedUtilities } from "./seed.utilities";
 @Injectable()
 export class SeedService {
 	/** Resolved seed configuration based on environment scale setting */
-	private readonly seedConfig = SEED_SCALE_CONFIG[env.API__SEED_SCALE];
+	private readonly seedConfig: SeedConfig;
 
 	constructor(
 		private readonly dataSource: DataSource,
@@ -50,7 +51,9 @@ export class SeedService {
 
 		@InjectPinoLogger(SeedService.name)
 		private readonly logger = new PinoLogger(createPinoConfig()),
-	) {}
+	) {
+		this.seedConfig = this.seedUtilities.generateSeedDatasets()[env.API__SEED_SCALE];
+	}
 
 	/**
 	 * Seeds the database with all application data if enabled.

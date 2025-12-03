@@ -14,11 +14,10 @@ import { Repository } from "typeorm";
 import { CropType, OrderBy } from "@agro/shared/utils";
 
 import { BrazilianState } from "@/common";
-import { Producer } from "@/modules/producers/entities/producer.entity";
+import { Producer } from "@/modules/producers/entities/";
 
 import { CreateFarmDto, UpdateFarmDto } from "./dto";
-import { FarmHarvestCrop } from "./entities/farm-harvest-crop.entity";
-import { Farm } from "./entities/farm.entity";
+import { Farm, FarmHarvestCrop } from "./entities/";
 import { FarmsService } from "./farms.service";
 
 describe("FarmsService", () => {

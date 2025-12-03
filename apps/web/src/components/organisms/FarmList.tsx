@@ -10,7 +10,6 @@ import { Button } from "../ui/Button";
 import { Card } from "../ui/Card";
 import { EmptyState } from "../ui/EmptyState";
 import { ErrorMessage } from "../ui/ErrorMessage";
-import { LoadingState } from "../ui/LoadingState";
 
 /** Props for the FarmList component */
 export interface FarmListProps {
@@ -65,7 +64,13 @@ export function FarmList({
 	const navigate = useNavigate();
 
 	if (isLoading) {
-		return <LoadingState message={t(($) => $.farms.loadingFarms)} />;
+		return (
+			<ListContainer>
+				{Array.from({ length: 5 }).map((_, index) => (
+					<SkeletonCard key={index} />
+				))}
+			</ListContainer>
+		);
 	}
 
 	if (error) {
@@ -220,5 +225,31 @@ const ActionButtons = styled.div`
 	@media (max-width: ${(props) => props.theme.breakpoints.md}) {
 		width: 100%;
 		justify-content: flex-end;
+	}
+`;
+
+const SkeletonCard = styled.div`
+	padding: ${(props) => props.theme.spacing.md};
+	background: ${(props) => props.theme.colors.surface};
+	border: 1px solid ${(props) => props.theme.colors.border};
+	border-radius: ${(props) => props.theme.borderRadius.lg};
+	box-shadow: ${(props) => props.theme.shadows.sm};
+	min-height: 180px;
+	background: linear-gradient(
+		90deg,
+		${(props) => props.theme.colors.backgroundAlt} 25%,
+		${(props) => props.theme.colors.surface} 50%,
+		${(props) => props.theme.colors.backgroundAlt} 75%
+	);
+	background-size: 200% 100%;
+	animation: shimmer 2s infinite;
+
+	@keyframes shimmer {
+		0% {
+			background-position: 200% 0;
+		}
+		100% {
+			background-position: -200% 0;
+		}
 	}
 `;

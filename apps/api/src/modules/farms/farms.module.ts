@@ -3,12 +3,11 @@ import { TypeOrmModule } from "@nestjs/typeorm";
 
 import { IsCityInStateConstraint } from "@/common/decorators/city-in-state.decorator";
 import { City } from "@/modules/cities/entities/city.entity";
-import { Producer } from "@/modules/producers/entities/producer.entity";
+import { Producer } from "@/modules/producers/entities/";
 
 import { CitiesModule } from "../cities/cities.module";
 
-import { FarmHarvestCrop } from "./entities/farm-harvest-crop.entity";
-import { Farm } from "./entities/farm.entity";
+import { Farm, FarmHarvestCrop } from "./entities/";
 import { FarmsController } from "./farms.controller";
 import { FarmsService } from "./farms.service";
 

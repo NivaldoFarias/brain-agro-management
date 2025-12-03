@@ -1,25 +1,10 @@
-/**
- * Health check response interfaces.
- *
- * Provides strongly-typed responses for health check endpoints,
- * enabling better monitoring, alerting, and debugging capabilities.
- *
- * @module health/interfaces
- */
-
-/**
- * Overall health status indicator.
- */
+/** Overall health status indicator */
 export type HealthStatus = "ok" | "error" | "shutting_down";
 
-/**
- * Individual component/dependency status.
- */
+/** Individual component/dependency status */
 export type ComponentStatus = "up" | "down";
 
-/**
- * Database health information.
- */
+/** Database health information */
 export interface DatabaseHealth {
 	/** Database connection status */
 	status: ComponentStatus;
@@ -40,9 +25,7 @@ export interface DatabaseHealth {
 	migrationsApplied?: boolean;
 }
 
-/**
- * Memory usage information.
- */
+/** Memory usage information */
 export interface MemoryHealth {
 	/** Memory status */
 	status: ComponentStatus;
@@ -63,9 +46,7 @@ export interface MemoryHealth {
 	heapTotal: number;
 }
 
-/**
- * Disk usage information.
- */
+/** Disk usage information */
 export interface DiskHealth {
 	/** Disk status */
 	status: ComponentStatus;
@@ -80,9 +61,7 @@ export interface DiskHealth {
 	path: string;
 }
 
-/**
- * Application uptime information.
- */
+/** Application uptime information */
 export interface UptimeInfo {
 	/** Application start time (ISO 8601) */
 	startTime: string;

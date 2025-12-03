@@ -1,9 +1,11 @@
 import { faker } from "@faker-js/faker/locale/pt_BR";
 import { Injectable } from "@nestjs/common";
 
+import type { SeedConfig } from "./seed.constants";
+
 import { BrazilianState, CropType } from "@agro/shared/utils";
 
-import { CROP_COMBINATIONS, STATE_WEIGHTS } from "./seed.constants";
+import { CROP_COMBINATIONS, SeedScale, STATE_WEIGHTS } from "./seed.constants";
 
 /**
  * Database seeding utilities provider.
@@ -41,7 +43,7 @@ export class SeedUtilities {
 	 * // Returns states like MT, PR more frequently than AC, RR
 	 * ```
 	 */
-	getWeightedRandomState(): BrazilianState {
+	public getWeightedRandomState(): BrazilianState {
 		const random = Math.random();
 		let cumulative = 0;
 
@@ -53,7 +55,6 @@ export class SeedUtilities {
 			}
 		}
 
-		// Fallback to MT (most agricultural state)
 		return BrazilianState.MT;
 	}
 
@@ -77,7 +78,7 @@ export class SeedUtilities {
 	 * // { totalArea: 1234.56, arableArea: 864.19, vegetationArea: 185.67 }
 	 * ```
 	 */
-	generateFarmAreas(): {
+	public generateFarmAreas(): {
 		totalArea: number;
 		arableArea: number;
 		vegetationArea: number;
@@ -91,6 +92,43 @@ export class SeedUtilities {
 		);
 
 		return { totalArea, arableArea, vegetationArea };
+	}
+
+	/**
+	 * Generates seed dataset configurations for different scales.
+	 *
+	 * Provides realistic ranges for:
+	 * - Small scale: 10-50 producers, 20-100 farms, 2 years
+	 * - Medium scale: 300-700 producers, 150-250 farms, 3 years
+	 * - Large scale: 1500-2500 producers, 700-900 farms, 5 years
+	 *
+	 * @returns Record mapping SeedScale to SeedConfig
+	 *
+	 * @example
+	 * ```typescript
+	 * const datasets = this.seedUtilities.generateSeedDatasets();
+	 * console.log(datasets[SeedScale.Medium]);
+	 * // { producers: 450, farms: 200, harvestYears: 3 }
+	 * ```
+	 */
+	public generateSeedDatasets(): Record<SeedScale, SeedConfig> {
+		return {
+			[SeedScale.Small]: {
+				producers: faker.number.int({ min: 10, max: 50 }),
+				farms: faker.number.int({ min: 20, max: 100 }),
+				harvestYears: 2,
+			},
+			[SeedScale.Medium]: {
+				producers: faker.number.int({ min: 300, max: 700 }),
+				farms: faker.number.int({ min: 150, max: 250 }),
+				harvestYears: 3,
+			},
+			[SeedScale.Large]: {
+				producers: faker.number.int({ min: 1500, max: 2500 }),
+				farms: faker.number.int({ min: 700, max: 900 }),
+				harvestYears: 5,
+			},
+		};
 	}
 
 	/**
@@ -111,7 +149,7 @@ export class SeedUtilities {
 	 * // [CropType.Soy, CropType.Corn] or [CropType.Coffee]
 	 * ```
 	 */
-	getRandomCropCombination(): Array<CropType> {
+	public getRandomCropCombination(): Array<CropType> {
 		return faker.helpers.arrayElement(CROP_COMBINATIONS);
 	}
 }

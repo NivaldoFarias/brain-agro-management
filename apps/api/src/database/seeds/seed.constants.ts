@@ -141,29 +141,3 @@ export const CROP_COMBINATIONS: Array<Array<CropType>> = [
 	[CropType.Sugarcane],
 	[CropType.Soy, CropType.Corn, CropType.Cotton],
 ];
-
-/**
- * Seeding scale configurations
- *
- * Defines the number of entities to create for each scale preset.
- * - Small: Quick seeding for development/testing
- * - Medium: Balanced dataset for demos
- * - Large: Comprehensive dataset for performance testing
- */
-export const SEED_SCALE_CONFIG: Record<SeedScale, SeedConfig> = {
-	[SeedScale.Small]: {
-		producers: 50,
-		farms: 25,
-		harvestYears: 2,
-	},
-	[SeedScale.Medium]: {
-		producers: 500,
-		farms: 200,
-		harvestYears: 3,
-	},
-	[SeedScale.Large]: {
-		producers: 2000,
-		farms: 800,
-		harvestYears: 5,
-	},
-};
