@@ -2,10 +2,14 @@ import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 
+import type { BadgeVariant } from "../ui";
 import type { ReactElement } from "react";
 
 import type { Farm } from "@agro/shared/types";
 
+import { CropType } from "@agro/shared/utils";
+
+import { Badge } from "../ui";
 import { Button } from "../ui/Button";
 import { Card } from "../ui/Card";
 import { EmptyState } from "../ui/EmptyState";
@@ -109,7 +113,8 @@ export function FarmList({
 							</FarmLocation>
 							<FarmAreas>
 								<AreaBadge>
-									<strong>Total:</strong> {farm.totalArea.toFixed(2)} {t(($) => $.abbreviations.hectares)}
+									<strong>{t(($) => $.dashboard.totalArea)}:</strong> {farm.totalArea.toFixed(2)}{" "}
+									{t(($) => $.abbreviations.hectares)}
 								</AreaBadge>
 								<AreaBadge>
 									<strong>{t(($) => $.dashboard.arable)}:</strong> {farm.arableArea.toFixed(2)}{" "}
@@ -122,7 +127,25 @@ export function FarmList({
 							</FarmAreas>
 							<CropsList>
 								<strong>{t(($) => $.dashboard.crops)}:</strong>{" "}
-								{farm.crops.length > 0 ? farm.crops.join(", ") : t(($) => $.common.none)}
+								{farm.crops.length > 0 ?
+									<CropsContainer>
+										{farm.crops.map((crop, index) => {
+											const cropToVariant: Record<CropType, BadgeVariant> = {
+												[CropType.Corn]: "success",
+												[CropType.Soy]: "info",
+												[CropType.Coffee]: "warning",
+												[CropType.Sugarcane]: "default",
+												[CropType.Cotton]: "error",
+											};
+
+											return (
+												<Badge key={index} variant={cropToVariant[crop]}>
+													<strong>{t(($) => $.crops[crop])}</strong>
+												</Badge>
+											);
+										})}
+									</CropsContainer>
+								:	t(($) => $.common.none)}
 							</CropsList>
 						</FarmInfo>
 						<ActionButtons>
@@ -210,6 +233,12 @@ const AreaBadge = styled.span`
 `;
 
 const CropsList = styled.p`
+	display: flex;
+	flex-direction: row;
+	align-items: baseline;
+	flex-wrap: wrap;
+	gap: ${(props) => props.theme.spacing.xs};
+
 	margin: 0;
 	font-size: ${(props) => props.theme.typography.fontSize.sm};
 	color: ${(props) => props.theme.colors.textSecondary};
@@ -218,6 +247,14 @@ const CropsList = styled.p`
 		font-weight: ${(props) => props.theme.typography.fontWeight.medium};
 		color: ${(props) => props.theme.colors.text};
 	}
+`;
+
+const CropsContainer = styled.div`
+	display: flex;
+	flex-direction: row;
+	flex-wrap: wrap;
+	gap: ${(props) => props.theme.spacing.sm};
+	align-items: center;
 `;
 
 const ActionButtons = styled.div`

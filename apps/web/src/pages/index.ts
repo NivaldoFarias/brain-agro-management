@@ -1,9 +1,9 @@
-export { CreateFarmPage } from "./CreateFarmPage";
-export { CreateProducerPage } from "./CreateProducerPage";
-export { DashboardPage } from "./DashboardPage";
-export { EditFarmPage } from "./EditFarmPage";
-export { EditProducerPage } from "./EditProducerPage";
-export { FarmsPage } from "./FarmsPage";
-export { LoginPage } from "./LoginPage";
-export { NotFoundPage } from "./NotFoundPage";
-export { ProducersPage } from "./ProducersPage";
+export * from "./CreateFarmPage";
+export * from "./CreateProducerPage";
+export * from "./DashboardPage";
+export * from "./EditFarmPage";
+export * from "./EditProducerPage";
+export * from "./FarmsPage";
+export * from "./LoginPage";
+export * from "./NotFoundPage";
+export * from "./ProducersPage";

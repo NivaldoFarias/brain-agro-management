@@ -68,7 +68,7 @@ export class SeedService {
 	 */
 	async seed(): Promise<void> {
 		if (!env.API__SEED_DATABASE) {
-			this.logger.info("Database seeding disabled via API__SEED_DATABASE=false");
+			this.logger.warn("Database seeding disabled via API__SEED_DATABASE=false");
 			return;
 		}
 
@@ -125,11 +125,7 @@ export class SeedService {
 
 				const cities = await this.ibgeApiService.fetchMunicipalitiesByState(state);
 				const cityEntities = cities.map((city) =>
-					cityRepository.create({
-						name: city.nome,
-						state,
-						ibgeCode: city.id.toString(),
-					}),
+					cityRepository.create({ name: city.nome, state, ibgeCode: city.id.toString() }),
 				);
 
 				this.logger.debug(
@@ -140,7 +136,6 @@ export class SeedService {
 				await cityRepository.save(cityEntities);
 				totalCities += cities.length;
 
-				// Hardcoded delay to avoid IBGE API rate limiting
 				await delay(100);
 			} catch (error) {
 				this.logger.error(

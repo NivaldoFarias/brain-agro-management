@@ -20,7 +20,8 @@
         "none": "Nenhum",
         "submit": "Enviar",
         "page": "Página",
-        "of": "de"
+        "of": "de",
+        "total": "Total"
     },
     "abbreviations": {
         "hectares": "ha",
