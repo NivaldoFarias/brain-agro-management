@@ -7,7 +7,7 @@ import type { ReactElement } from "react";
 
 import { Typography } from "@/components/atoms";
 import { PageContainer } from "@/components/templates/PageContainer";
-import { Button } from "@/components/ui/";
+import { Button, ConfirmDialog } from "@/components/ui/";
 import { useToast } from "@/contexts/ToastContext";
 import { ProducerList } from "@/features";
 import { useDeleteProducerMutation, useGetProducersQuery } from "@/store/api";
@@ -25,6 +25,8 @@ export function ProducersPage(): ReactElement {
 	const toast = useToast();
 	const [page, setPage] = useState(1);
 	const [deletingId, setDeletingId] = useState<string | undefined>();
+	const [confirmOpen, setConfirmOpen] = useState(false);
+	const [producerToDelete, setProducerToDelete] = useState<string | undefined>();
 
 	const { data, isLoading, error } = useGetProducersQuery({ page, limit: 10 });
 	const [deleteProducer] = useDeleteProducerMutation();
@@ -33,14 +35,17 @@ export function ProducersPage(): ReactElement {
 		void navigate(ROUTES.producers.create);
 	};
 
-	const handleDelete = async (id: string) => {
-		if (!confirm(t(($) => $.producers.deleteConfirm))) {
-			return;
-		}
+	const handleDeleteClick = (id: string) => {
+		setProducerToDelete(id);
+		setConfirmOpen(true);
+	};
+
+	const handleDeleteConfirm = async () => {
+		if (!producerToDelete) return;
 
 		try {
-			setDeletingId(id);
-			await deleteProducer(id).unwrap();
+			setDeletingId(producerToDelete);
+			await deleteProducer(producerToDelete).unwrap();
 			toast.success(t(($) => $.producers.deleteSuccess));
 		} catch (error) {
 			console.error("Failed to delete producer:", error);
@@ -50,6 +55,7 @@ export function ProducersPage(): ReactElement {
 			);
 		} finally {
 			setDeletingId(undefined);
+			setProducerToDelete(undefined);
 		}
 	};
 
@@ -69,9 +75,7 @@ export function ProducersPage(): ReactElement {
 					producers={data?.data ?? []}
 					isLoading={isLoading}
 					error={error ? t(($) => $.producers.loadError) : undefined}
-					onDelete={(id) => {
-						void handleDelete(id);
-					}}
+					onDelete={handleDeleteClick}
 					isDeletingId={deletingId}
 				/>
 				{data && data.total > 10 && (
@@ -99,6 +103,19 @@ export function ProducersPage(): ReactElement {
 						</Button>
 					</PaginationContainer>
 				)}
+				<ConfirmDialog
+					open={confirmOpen}
+					onOpenChange={setConfirmOpen}
+					title={t(($) => $.producers.deleteProducer)}
+					description={t(($) => $.producers.deleteConfirm)}
+					confirmText={t(($) => $.common.delete)}
+					cancelText={t(($) => $.common.cancel)}
+					color="red"
+					onConfirm={() => {
+						void handleDeleteConfirm();
+					}}
+					isLoading={!!deletingId}
+				/>
 			</Container>
 		</PageContainer>
 	);

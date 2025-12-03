@@ -1,6 +1,6 @@
 {
     "common": {
-        "loading": "Loading...",
+        "loading": "Loading",
         "error": "Error",
         "retry": "Retry",
         "save": "Save",

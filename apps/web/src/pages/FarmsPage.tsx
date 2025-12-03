@@ -6,7 +6,8 @@ import styled from "styled-components";
 import type { ReactElement } from "react";
 
 import { Typography } from "@/components/atoms";
-import { Button } from "@/components/ui/";
+import { Button, ConfirmDialog } from "@/components/ui/";
+import { useToast } from "@/contexts/ToastContext";
 import { FarmList } from "@/features";
 import { useDeleteFarmMutation, useGetFarmsQuery } from "@/store/api";
 import { ROUTES } from "@/utils/";
@@ -20,8 +21,11 @@ import { ROUTES } from "@/utils/";
 export function FarmsPage(): ReactElement {
 	const { t } = useTranslation();
 	const navigate = useNavigate();
+	const toast = useToast();
 	const [page, setPage] = useState(1);
 	const [deletingId, setDeletingId] = useState<string | undefined>();
+	const [confirmOpen, setConfirmOpen] = useState(false);
+	const [farmToDelete, setFarmToDelete] = useState<string | undefined>();
 
 	const { data: farms, isLoading, error, refetch } = useGetFarmsQuery({ page, limit: 10 });
 	const [deleteFarm] = useDeleteFarmMutation();
@@ -30,17 +34,27 @@ export function FarmsPage(): ReactElement {
 		void navigate(ROUTES.farms.create);
 	};
 
-	const handleDelete = async (id: string) => {
-		if (!confirm(t(($) => $.farms.deleteConfirm))) return;
+	const handleDeleteClick = (id: string) => {
+		setFarmToDelete(id);
+		setConfirmOpen(true);
+	};
+
+	const handleDeleteConfirm = async () => {
+		if (!farmToDelete) return;
 
 		try {
-			setDeletingId(id);
-			await deleteFarm(id).unwrap();
+			setDeletingId(farmToDelete);
+			await deleteFarm(farmToDelete).unwrap();
+			toast.success(t(($) => $.farms.deleteSuccess));
 		} catch (error) {
 			console.error("Failed to delete farm:", error);
-			alert(t(($) => $.farms.deleteError));
+			toast.error(
+				t(($) => $.farms.deleteError),
+				t(($) => $.common.retry),
+			);
 		} finally {
 			setDeletingId(undefined);
+			setFarmToDelete(undefined);
 		}
 	};
 
@@ -63,37 +77,27 @@ export function FarmsPage(): ReactElement {
 				onRetry={() => {
 					void refetch();
 				}}
-				onDelete={(id) => {
-					void handleDelete(id);
-				}}
+				onDelete={handleDeleteClick}
 				isDeletingId={deletingId}
+				page={page}
+				total={farms?.total ?? 0}
+				limit={farms?.limit ?? 10}
+				onPageChange={setPage}
 			/>
 
-			{farms && farms.total > 10 && (
-				<PaginationContainer>
-					<Button
-						variant="secondary"
-						onClick={() => {
-							setPage((page) => Math.max(1, page - 1));
-						}}
-						disabled={page === 1}
-					>
-						{t(($) => $.common.previous)}
-					</Button>
-					<Typography variant="body">
-						{t(($) => $.common.page)} {page} {t(($) => $.common.of)} {Math.ceil(farms.total / 10)}
-					</Typography>
-					<Button
-						variant="secondary"
-						onClick={() => {
-							setPage((page) => page + 1);
-						}}
-						disabled={page >= Math.ceil(farms.total / 10)}
-					>
-						{t(($) => $.common.next)}
-					</Button>
-				</PaginationContainer>
-			)}
+			<ConfirmDialog
+				open={confirmOpen}
+				onOpenChange={setConfirmOpen}
+				title={t(($) => $.farms.deleteFarm)}
+				description={t(($) => $.farms.deleteConfirm)}
+				confirmText={t(($) => $.common.delete)}
+				cancelText={t(($) => $.common.cancel)}
+				color="red"
+				onConfirm={() => {
+					void handleDeleteConfirm();
+				}}
+				isLoading={!!deletingId}
+			/>
 		</Container>
 	);
 }
@@ -115,12 +119,4 @@ const Header = styled.div`
 		flex-direction: column;
 		align-items: stretch;
 	}
-`;
-
-const PaginationContainer = styled.div`
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	gap: ${(props) => props.theme.spacing.md};
-	margin-top: ${(props) => props.theme.spacing.xl};
 `;

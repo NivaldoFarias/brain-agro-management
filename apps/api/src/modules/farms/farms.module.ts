@@ -7,7 +7,7 @@ import { Producer } from "@/modules/producers/entities/";
 
 import { CitiesModule } from "../cities/cities.module";
 
-import { Farm, FarmHarvestCrop } from "./entities/";
+import { Farm, FarmHarvest, FarmHarvestCrop, Harvest } from "./entities/";
 import { FarmsController } from "./farms.controller";
 import { FarmsService } from "./farms.service";
 
@@ -30,7 +30,10 @@ import { FarmsService } from "./farms.service";
  * ```
  */
 @Module({
-	imports: [TypeOrmModule.forFeature([Farm, Producer, City, FarmHarvestCrop]), CitiesModule],
+	imports: [
+		TypeOrmModule.forFeature([Farm, Producer, City, Harvest, FarmHarvest, FarmHarvestCrop]),
+		CitiesModule,
+	],
 	controllers: [FarmsController],
 	providers: [FarmsService, IsCityInStateConstraint],
 	exports: [FarmsService],

@@ -1,3 +1,11 @@
+import {
+	BarChart3 as ChartIcon,
+	X as CloseIcon,
+	Factory as FarmIcon,
+	LogOut as LogOutIcon,
+	Menu as MenuIcon,
+	Users as UsersIcon,
+} from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { NavLink, useNavigate } from "react-router-dom";
@@ -6,7 +14,6 @@ import styled from "styled-components";
 import type { ReactElement, ReactNode } from "react";
 
 import { Button } from "@/components/ui/Button";
-import { ChartIcon, CloseIcon, FarmIcon, LogOutIcon, MenuIcon, UsersIcon } from "@/components/ui/Icon";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/contexts/ToastContext";
 import { ROUTES } from "@/utils/constants.util";

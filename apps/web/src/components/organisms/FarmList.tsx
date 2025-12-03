@@ -1,17 +1,14 @@
+import { Badge, Button, Flex, Skeleton, Table, Text } from "@radix-ui/themes";
+import { BadgeXIcon as DeleteIcon, SquarePenIcon as EditIcon } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
-import styled from "styled-components";
 
-import type { BadgeVariant } from "../ui";
 import type { ReactElement } from "react";
 
 import type { Farm } from "@agro/shared/types";
 
 import { CropType } from "@agro/shared/utils";
 
-import { Badge } from "../ui";
-import { Button } from "../ui/Button";
-import { Card } from "../ui/Card";
 import { EmptyState } from "../ui/EmptyState";
 import { ErrorMessage } from "../ui/ErrorMessage";
 
@@ -34,13 +31,25 @@ export interface FarmListProps {
 
 	/** Whether delete operation is in progress */
 	isDeletingId?: string;
+
+	/** Current page number (1-indexed) */
+	page?: number;
+
+	/** Total number of items */
+	total?: number;
+
+	/** Number of items per page */
+	limit?: number;
+
+	/** Callback when page changes */
+	onPageChange?: (page: number) => void;
 }
 
 /**
  * List component for displaying farms with actions.
  *
  * Handles loading, error, and empty states automatically.
- * Provides edit and delete actions for each farm.
+ * Provides edit and delete actions for each farm in a table format.
  *
  * @example
  * ```tsx
@@ -63,25 +72,22 @@ export function FarmList({
 	onRetry,
 	onDelete,
 	isDeletingId,
+	page = 1,
+	total = 0,
+	limit = 10,
+	onPageChange,
 }: FarmListProps): ReactElement {
 	const { t } = useTranslation();
 	const navigate = useNavigate();
 
-	if (isLoading) {
-		return (
-			<ListContainer>
-				{Array.from({ length: 5 }).map((_, index) => (
-					<SkeletonCard key={index} />
-				))}
-			</ListContainer>
-		);
-	}
+	const totalPages = Math.ceil(total / limit);
+	const showPagination = total > limit;
 
 	if (error) {
 		return <ErrorMessage message={error} onRetry={onRetry} />;
 	}
 
-	if (farms.length === 0) {
+	if (!isLoading && farms.length === 0) {
 		return (
 			<EmptyState
 				title={t(($) => $.farms.noFarms)}
@@ -89,7 +95,6 @@ export function FarmList({
 				icon="🌾"
 				action={
 					<Button
-						variant="primary"
 						onClick={() => {
 							void navigate("/farms/create");
 						}}
@@ -101,194 +106,181 @@ export function FarmList({
 		);
 	}
 
-	return (
-		<ListContainer>
-			{farms.map((farm) => (
-				<Card key={farm.id} padding="md">
-					<CardContent>
-						<FarmInfo>
-							<FarmName>{farm.name}</FarmName>
-							<FarmLocation>
-								{farm.city}, {t(($) => $.states[farm.state])}
-							</FarmLocation>
-							<FarmAreas>
-								<AreaBadge>
-									<strong>{t(($) => $.dashboard.totalArea)}:</strong> {farm.totalArea.toFixed(2)}{" "}
-									{t(($) => $.abbreviations.hectares)}
-								</AreaBadge>
-								<AreaBadge>
-									<strong>{t(($) => $.dashboard.arable)}:</strong> {farm.arableArea.toFixed(2)}{" "}
-									{t(($) => $.abbreviations.hectares)}
-								</AreaBadge>
-								<AreaBadge>
-									<strong>{t(($) => $.dashboard.vegetation)}:</strong> {farm.vegetationArea.toFixed(2)}{" "}
-									{t(($) => $.abbreviations.hectares)}
-								</AreaBadge>
-							</FarmAreas>
-							<CropsList>
-								<strong>{t(($) => $.dashboard.crops)}:</strong>{" "}
-								{farm.crops.length > 0 ?
-									<CropsContainer>
-										{farm.crops.map((crop, index) => {
-											const cropToVariant: Record<CropType, BadgeVariant> = {
-												[CropType.Corn]: "success",
-												[CropType.Soy]: "info",
-												[CropType.Coffee]: "warning",
-												[CropType.Sugarcane]: "default",
-												[CropType.Cotton]: "error",
-											};
+	const cropToColor: Record<CropType, "blue" | "green" | "orange" | "gray" | "red"> = {
+		[CropType.Corn]: "green",
+		[CropType.Soy]: "blue",
+		[CropType.Coffee]: "orange",
+		[CropType.Sugarcane]: "gray",
+		[CropType.Cotton]: "red",
+	};
 
-											return (
-												<Badge key={index} variant={cropToVariant[crop]}>
-													<strong>{t(($) => $.crops[crop])}</strong>
-												</Badge>
-											);
-										})}
-									</CropsContainer>
-								:	t(($) => $.common.none)}
-							</CropsList>
-						</FarmInfo>
-						<ActionButtons>
-							<Button
-								variant="secondary"
-								size="sm"
-								onClick={() => {
-									void navigate(`/farms/${farm.id}/edit`);
-								}}
-							>
+	return (
+		<Flex direction="column" gap="4">
+			<Table.Root variant="surface" size="2">
+				<Table.Header>
+					<Table.Row>
+						<Table.ColumnHeaderCell>{t(($) => $.farms.name)}</Table.ColumnHeaderCell>
+						<Table.ColumnHeaderCell>{t(($) => $.farms.city)}</Table.ColumnHeaderCell>
+						<Table.ColumnHeaderCell>{t(($) => $.dashboard.totalArea)}</Table.ColumnHeaderCell>
+						<Table.ColumnHeaderCell>{t(($) => $.dashboard.arable)}</Table.ColumnHeaderCell>
+						<Table.ColumnHeaderCell>{t(($) => $.dashboard.vegetation)}</Table.ColumnHeaderCell>
+						<Table.ColumnHeaderCell>{t(($) => $.dashboard.crops)}</Table.ColumnHeaderCell>
+						<Table.ColumnHeaderCell>{t(($) => $.common.actions)}</Table.ColumnHeaderCell>
+					</Table.Row>
+				</Table.Header>
+
+				<Table.Body>
+					{isLoading ?
+						<LoadingState />
+					:	farms.map((farm) => FarmDataRow(farm))}
+				</Table.Body>
+			</Table.Root>
+
+			{showPagination && (
+				<Flex justify="between" align="center" gap="4" wrap="wrap">
+					<Text size="2" color="gray">
+						{t(($) => $.common.page)} {page} {t(($) => $.common.of)} {totalPages} ({total} {t(($) => $.common.total)})
+					</Text>
+					<Flex gap="2">
+						<Button variant="soft" size="2" onClick={() => onPageChange?.(page - 1)} disabled={page === 1 || isLoading}>
+							{t(($) => $.common.previous)}
+						</Button>
+						<Button
+							variant="soft"
+							size="2"
+							onClick={() => onPageChange?.(page + 1)}
+							disabled={page >= totalPages || isLoading}
+						>
+							{t(($) => $.common.next)}
+						</Button>
+					</Flex>
+				</Flex>
+			)}
+		</Flex>
+	);
+
+	function FarmDataRow(farm: Farm) {
+		return (
+			<Table.Row key={farm.id}>
+				<Table.RowHeaderCell>
+					<Text>{farm.name}</Text>
+				</Table.RowHeaderCell>
+				<Table.Cell>
+					<Text size="2" color="gray">
+						{farm.city}, {t(($) => $.states[farm.state])}
+					</Text>
+				</Table.Cell>
+				<Table.Cell>
+					<Text size="2">
+						{farm.totalArea.toFixed(2)} {t(($) => $.abbreviations.hectares)}
+					</Text>
+				</Table.Cell>
+				<Table.Cell>
+					<Text size="2">
+						{farm.arableArea.toFixed(2)} {t(($) => $.abbreviations.hectares)}
+					</Text>
+				</Table.Cell>
+				<Table.Cell>
+					<Text size="2">
+						{farm.vegetationArea.toFixed(2)} {t(($) => $.abbreviations.hectares)}
+					</Text>
+				</Table.Cell>
+				<Table.Cell>
+					{farm.crops.length > 0 ?
+						<Flex gap="1" wrap="wrap">
+							{farm.crops.map((crop, index) => (
+								<Badge key={index} color={cropToColor[crop]} variant="soft" size="1">
+									{t(($) => $.crops[crop])}
+								</Badge>
+							))}
+						</Flex>
+					:	<Text size="2" color="gray">
+							{t(($) => $.common.none)}
+						</Text>
+					}
+				</Table.Cell>
+				<Table.Cell>
+					<Flex gap="2">
+						<Button
+							variant="soft"
+							size="1"
+							onClick={() => {
+								void navigate(`/farms/${farm.id}/edit`);
+							}}
+						>
+							<Flex>
+								<EditIcon size={16} aria-hidden="true" style={{ marginRight: 4 }} />
+								{t(($) => $.common.edit)}
+							</Flex>
+						</Button>
+						<Button
+							color="red"
+							variant="soft"
+							size="1"
+							onClick={() => onDelete?.(farm.id)}
+							disabled={isDeletingId === farm.id}
+							loading={isDeletingId === farm.id}
+						>
+							<Flex>
+								<DeleteIcon size={16} aria-hidden="true" style={{ marginRight: 4 }} />
+								{t(($) => $.common.delete)}
+							</Flex>
+						</Button>
+					</Flex>
+				</Table.Cell>
+			</Table.Row>
+		);
+	}
+
+	function LoadingState() {
+		return Array.from({ length: 20 }).map((_, index) => (
+			<Table.Row key={index}>
+				<Table.Cell>
+					<Skeleton>
+						<Text>
+							{t(($) => $.common.loading)} {t(($) => $.farms.name)}
+						</Text>
+					</Skeleton>
+				</Table.Cell>
+				<Table.Cell>
+					<Skeleton>
+						<Text>
+							{t(($) => $.common.loading)} {t(($) => $.farms.city)}
+						</Text>
+					</Skeleton>
+				</Table.Cell>
+				<Table.Cell>
+					<Skeleton>
+						<Text>000.00 {t(($) => $.abbreviations.hectares)}</Text>
+					</Skeleton>
+				</Table.Cell>
+				<Table.Cell>
+					<Skeleton>
+						<Text>000.00 {t(($) => $.abbreviations.hectares)}</Text>
+					</Skeleton>
+				</Table.Cell>
+				<Table.Cell>
+					<Skeleton>
+						<Text>000.00 {t(($) => $.abbreviations.hectares)}</Text>
+					</Skeleton>
+				</Table.Cell>
+				<Table.Cell>
+					<Skeleton>
+						<Flex gap="1">
+							<Badge>{t(($) => $.common.loading)}</Badge>
+						</Flex>
+					</Skeleton>
+				</Table.Cell>
+				<Table.Cell>
+					<Skeleton>
+						<Flex gap="2">
+							<Button disabled={true} size="1">
 								{t(($) => $.common.edit)}
 							</Button>
-							<Button
-								variant="danger"
-								size="sm"
-								onClick={() => onDelete?.(farm.id)}
-								disabled={isDeletingId === farm.id}
-								isLoading={isDeletingId === farm.id}
-							>
-								{t(($) => $.common.delete)}
-							</Button>
-						</ActionButtons>
-					</CardContent>
-				</Card>
-			))}
-		</ListContainer>
-	);
+						</Flex>
+					</Skeleton>
+				</Table.Cell>
+			</Table.Row>
+		));
+	}
 }
-
-const ListContainer = styled.div`
-	display: flex;
-	flex-direction: column;
-	gap: ${(props) => props.theme.spacing.md};
-`;
-
-const CardContent = styled.div`
-	display: flex;
-	justify-content: space-between;
-	align-items: flex-start;
-	gap: ${(props) => props.theme.spacing.lg};
-
-	@media (max-width: ${(props) => props.theme.breakpoints.md}) {
-		flex-direction: column;
-	}
-`;
-
-const FarmInfo = styled.div`
-	display: flex;
-	flex-direction: column;
-	gap: ${(props) => props.theme.spacing.sm};
-	flex: 1;
-`;
-
-const FarmName = styled.h3`
-	margin: 0;
-	font-size: ${(props) => props.theme.typography.fontSize.lg};
-	font-weight: ${(props) => props.theme.typography.fontWeight.semibold};
-	color: ${(props) => props.theme.colors.text};
-`;
-
-const FarmLocation = styled.p`
-	margin: 0;
-	font-size: ${(props) => props.theme.typography.fontSize.base};
-	color: ${(props) => props.theme.colors.textSecondary};
-`;
-
-const FarmAreas = styled.div`
-	display: flex;
-	flex-wrap: wrap;
-	gap: ${(props) => props.theme.spacing.sm};
-	margin-top: ${(props) => props.theme.spacing.xs};
-`;
-
-const AreaBadge = styled.span`
-	padding: ${(props) => props.theme.spacing.xs} ${(props) => props.theme.spacing.sm};
-	font-size: ${(props) => props.theme.typography.fontSize.xs};
-	color: ${(props) => props.theme.colors.text};
-	background-color: ${(props) => props.theme.colors.backgroundAlt};
-	border-radius: ${(props) => props.theme.borderRadius.md};
-	font-family: ${(props) => props.theme.typography.fontFamily.mono};
-
-	strong {
-		font-weight: ${(props) => props.theme.typography.fontWeight.semibold};
-	}
-`;
-
-const CropsList = styled.p`
-	display: flex;
-	flex-direction: row;
-	align-items: baseline;
-	flex-wrap: wrap;
-	gap: ${(props) => props.theme.spacing.xs};
-
-	margin: 0;
-	font-size: ${(props) => props.theme.typography.fontSize.sm};
-	color: ${(props) => props.theme.colors.textSecondary};
-
-	strong {
-		font-weight: ${(props) => props.theme.typography.fontWeight.medium};
-		color: ${(props) => props.theme.colors.text};
-	}
-`;
-
-const CropsContainer = styled.div`
-	display: flex;
-	flex-direction: row;
-	flex-wrap: wrap;
-	gap: ${(props) => props.theme.spacing.sm};
-	align-items: center;
-`;
-
-const ActionButtons = styled.div`
-	display: flex;
-	gap: ${(props) => props.theme.spacing.sm};
-
-	@media (max-width: ${(props) => props.theme.breakpoints.md}) {
-		width: 100%;
-		justify-content: flex-end;
-	}
-`;
-
-const SkeletonCard = styled.div`
-	padding: ${(props) => props.theme.spacing.md};
-	background: ${(props) => props.theme.colors.surface};
-	border: 1px solid ${(props) => props.theme.colors.border};
-	border-radius: ${(props) => props.theme.borderRadius.lg};
-	box-shadow: ${(props) => props.theme.shadows.sm};
-	min-height: 180px;
-	background: linear-gradient(
-		90deg,
-		${(props) => props.theme.colors.backgroundAlt} 25%,
-		${(props) => props.theme.colors.surface} 50%,
-		${(props) => props.theme.colors.backgroundAlt} 75%
-	);
-	background-size: 200% 100%;
-	animation: shimmer 2s infinite;
-
-	@keyframes shimmer {
-		0% {
-			background-position: 200% 0;
-		}
-		100% {
-			background-position: -200% 0;
-		}
-	}
-`;

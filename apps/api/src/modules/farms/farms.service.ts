@@ -14,7 +14,7 @@ import { assertValidFarmArea } from "@agro/shared/validators";
 import { Producer } from "@/modules/producers/entities/";
 
 import { CreateFarmDto, FarmResponseDto, UpdateFarmDto } from "./dto";
-import { Farm, FarmHarvestCrop } from "./entities/";
+import { Farm, FarmHarvest, FarmHarvestCrop, Harvest } from "./entities/";
 
 /**
  * Service responsible for farm business logic and data operations.
@@ -47,6 +47,12 @@ export class FarmsService {
 
 		@InjectRepository(Producer)
 		private readonly producerRepository: Repository<Producer>,
+
+		@InjectRepository(Harvest)
+		private readonly harvestRepository: Repository<Harvest>,
+
+		@InjectRepository(FarmHarvest)
+		private readonly farmHarvestRepository: Repository<FarmHarvest>,
 
 		@InjectRepository(FarmHarvestCrop)
 		private readonly farmHarvestCropRepository: Repository<FarmHarvestCrop>,
@@ -84,7 +90,8 @@ export class FarmsService {
 	 * ```
 	 */
 	public async create(createFarmDto: CreateFarmDto): Promise<FarmResponseDto> {
-		const { name, city, state, totalArea, arableArea, vegetationArea, producerId } = createFarmDto;
+		const { name, city, state, totalArea, arableArea, vegetationArea, producerId, crops } =
+			createFarmDto;
 
 		await this.verifyProducerExists(producerId);
 
@@ -106,27 +113,49 @@ export class FarmsService {
 
 		const savedFarm = await this.farmRepository.save(farm);
 
-		return this.mapToResponseDto(savedFarm);
+		if (crops != null && crops.length > 0) {
+			await this.associateCropsWithFarm(savedFarm.id, crops);
+		}
+
+		const farmWithRelations = await this.farmRepository.findOne({
+			where: { id: savedFarm.id },
+			relations: { farmHarvests: { crops: true } },
+		});
+
+		return this.mapToResponseDto(farmWithRelations ?? savedFarm);
 	}
 
 	/**
-	 * Retrieves all farms from the database.
+	 * Retrieves paginated farms from the database.
 	 *
-	 * @returns Array of all farms ordered by name
+	 * @param page Page number (1-indexed)
+	 * @param limit Number of items per page
+	 *
+	 * @returns Object containing paginated farms and total count
 	 *
 	 * @example
 	 * ```typescript
-	 * const farms = await service.findAll();
-	 * console.log(`Found ${farms.length} farms`);
+	 * const { data, total } = await service.findAll(1, 10);
+	 * console.log(`Page 1: ${data.length} farms of ${total} total`);
 	 * ```
 	 */
-	public async findAll(): Promise<Array<FarmResponseDto>> {
-		const farms = await this.farmRepository.find({
+	public async findAll(
+		page = 1,
+		limit = 10,
+	): Promise<{ data: Array<FarmResponseDto>; total: number }> {
+		const skip = (page - 1) * limit;
+
+		const [farms, total] = await this.farmRepository.findAndCount({
 			relations: { farmHarvests: { crops: true } },
 			order: { name: OrderBy.Ascending },
+			skip,
+			take: limit,
 		});
 
-		return farms.map((farm) => this.mapToResponseDto(farm));
+		return {
+			data: farms.map((farm) => this.mapToResponseDto(farm)),
+			total,
+		};
 	}
 
 	/**
@@ -194,18 +223,29 @@ export class FarmsService {
 
 		try {
 			assertValidFarmArea(
-				(farm.totalArea || updateFarmDto.totalArea) ?? 0,
-				(farm.arableArea || updateFarmDto.arableArea) ?? 0,
-				(farm.vegetationArea || updateFarmDto.vegetationArea) ?? 0,
+				updateFarmDto.totalArea ?? farm.totalArea,
+				updateFarmDto.arableArea ?? farm.arableArea,
+				updateFarmDto.vegetationArea ?? farm.vegetationArea,
 			);
 		} catch (error) {
 			throw new BadRequestException(error instanceof Error ? error.message : String(error));
 		}
 
-		Object.assign(farm, updateFarmDto);
+		const { crops, ...farmData } = updateFarmDto;
+
+		Object.assign(farm, farmData);
 		const updatedFarm = await this.farmRepository.save(farm);
 
-		return this.mapToResponseDto(updatedFarm);
+		if (crops !== undefined) {
+			await this.updateFarmCrops(id, crops);
+		}
+
+		const farmWithRelations = await this.farmRepository.findOne({
+			where: { id },
+			relations: { farmHarvests: { crops: true } },
+		});
+
+		return this.mapToResponseDto(farmWithRelations ?? updatedFarm);
 	}
 
 	/**
@@ -419,6 +459,116 @@ export class FarmsService {
 		if (!producerExists) {
 			throw new NotFoundException(`Producer with ID ${producerId} not found`);
 		}
+	}
+
+	/**
+	 * Gets or creates the current harvest year.
+	 *
+	 * Creates a harvest record for the current year if it doesn't exist.
+	 * This is used as the default harvest for new farms.
+	 *
+	 * @returns The current harvest entity
+	 */
+	private async getCurrentHarvest(): Promise<Harvest> {
+		const currentYear = new Date().getFullYear();
+		const yearStr = String(currentYear);
+
+		let harvest = await this.harvestRepository.findOne({ where: { year: yearStr } });
+
+		if (!harvest) {
+			this.logger.info({ year: yearStr }, "Creating harvest for current year");
+
+			harvest = this.harvestRepository.create({
+				year: yearStr,
+				description: `Safra ${yearStr}/${String(currentYear + 1)}`,
+			});
+
+			await this.harvestRepository.save(harvest);
+		}
+
+		return harvest;
+	}
+
+	/**
+	 * Associates crops with a farm through the current harvest.
+	 *
+	 * Creates FarmHarvest and FarmHarvestCrop records to link the farm
+	 * with the specified crop types.
+	 *
+	 * @param farmId The UUID of the farm
+	 * @param crops Array of crop types to associate
+	 */
+	private async associateCropsWithFarm(farmId: string, crops: Array<CropType>): Promise<void> {
+		const harvest = await this.getCurrentHarvest();
+
+		let farmHarvest = await this.farmHarvestRepository.findOne({
+			where: { farmId, harvestId: harvest.id },
+		});
+
+		if (!farmHarvest) {
+			farmHarvest = this.farmHarvestRepository.create({
+				farmId,
+				harvestId: harvest.id,
+			});
+
+			await this.farmHarvestRepository.save(farmHarvest);
+		}
+
+		const cropEntities = crops.map((cropType) =>
+			this.farmHarvestCropRepository.create({
+				farmHarvestId: farmHarvest.id,
+				cropType,
+			}),
+		);
+
+		await this.farmHarvestCropRepository.save(cropEntities);
+
+		this.logger.info(
+			{ farmId, harvestId: harvest.id, cropCount: crops.length },
+			"Associated crops with farm",
+		);
+	}
+
+	/**
+	 * Updates crops for a farm in the current harvest.
+	 *
+	 * Removes existing crop associations for the current harvest and creates
+	 * new ones based on the provided crop types.
+	 *
+	 * @param farmId The UUID of the farm
+	 * @param crops Array of crop types (empty array removes all crops)
+	 */
+	private async updateFarmCrops(farmId: string, crops: Array<CropType>): Promise<void> {
+		const harvest = await this.getCurrentHarvest();
+
+		const farmHarvest = await this.farmHarvestRepository.findOne({
+			where: { farmId, harvestId: harvest.id },
+			relations: { crops: true },
+		});
+
+		if (farmHarvest) {
+			if (farmHarvest.crops.length > 0) {
+				await this.farmHarvestCropRepository.remove(farmHarvest.crops);
+			}
+
+			if (crops.length > 0) {
+				const cropEntities = crops.map((cropType) =>
+					this.farmHarvestCropRepository.create({
+						farmHarvestId: farmHarvest.id,
+						cropType,
+					}),
+				);
+
+				await this.farmHarvestCropRepository.save(cropEntities);
+			}
+		} else if (crops.length > 0) {
+			await this.associateCropsWithFarm(farmId, crops);
+		}
+
+		this.logger.info(
+			{ farmId, harvestId: harvest.id, cropCount: crops.length },
+			"Updated farm crops",
+		);
 	}
 
 	/**

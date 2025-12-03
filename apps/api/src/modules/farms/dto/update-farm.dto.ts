@@ -1,8 +1,17 @@
 import { faker } from "@faker-js/faker/locale/pt_BR";
 import { ApiPropertyOptional } from "@nestjs/swagger";
-import { IsEnum, IsNumber, IsOptional, IsString, IsUUID, Length, Min } from "class-validator";
+import {
+	IsArray,
+	IsEnum,
+	IsNumber,
+	IsOptional,
+	IsString,
+	IsUUID,
+	Length,
+	Min,
+} from "class-validator";
 
-import { BrazilianState } from "@/common";
+import { BrazilianState, CropType } from "@/common";
 
 /**
  * Data Transfer Object for updating an existing farm.
@@ -131,4 +140,23 @@ export class UpdateFarmDto {
 	@IsOptional()
 	@IsUUID("4", { message: "Producer ID must be a valid UUID" })
 	producerId?: string;
+
+	/**
+	 * Updated array of crops to be planted on this farm.
+	 *
+	 * Replaces existing crop associations for the current harvest.
+	 * Pass an empty array to remove all crops.
+	 *
+	 * @example [CropType.Soy, CropType.Corn]
+	 */
+	@ApiPropertyOptional({
+		description: "Updated array of crops planted on this farm",
+		example: [CropType.Soy, CropType.Corn],
+		enum: CropType,
+		isArray: true,
+	})
+	@IsOptional()
+	@IsArray({ message: "Crops must be an array" })
+	@IsEnum(CropType, { each: true, message: "Each crop must be a valid crop type" })
+	crops?: Array<CropType>;
 }

@@ -1,3 +1,4 @@
+import { Layers as AreaIcon, Factory as FarmIcon, TrendingUpIcon, UsersIcon } from "lucide-react";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import styled from "styled-components";
@@ -11,7 +12,6 @@ import { DashboardGrid } from "@/components/organisms/DashboardGrid";
 import { DashboardPieChart } from "@/components/organisms/DashboardPieChart";
 import { DashboardStatCard } from "@/components/organisms/DashboardStatCard";
 import { PageContainer } from "@/components/templates/PageContainer";
-import { AreaIcon, FarmIcon, TrendingUpIcon, UsersIcon } from "@/components/ui/Icon";
 import { useGetDashboardStatsQuery } from "@/store/api/dashboardApi";
 
 /**

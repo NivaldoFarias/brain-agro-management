@@ -1,6 +1,7 @@
 export * from "./Badge";
 export * from "./Button";
 export * from "./Card";
+export * from "./ConfirmDialog";
 export * from "./Dialog";
 export * from "./EmptyState";
 export * from "./ErrorMessage";
@@ -13,4 +14,3 @@ export * from "./Select";
 export * from "./Spinner";
 export * from "./Table";
 export * from "./Toast";
-export * from "./Icon";

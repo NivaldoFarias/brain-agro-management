@@ -1,9 +1,8 @@
+import { SearchIcon } from "lucide-react";
 import { useState } from "react";
 import styled from "styled-components";
 
 import type { ChangeEvent, FormEvent, ReactElement } from "react";
-
-import { SearchIcon } from "./Icon";
 
 /** Props for the SearchBar component */
 export interface SearchBarProps {

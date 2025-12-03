@@ -1,6 +1,23 @@
 import { faker } from "@faker-js/faker";
-import { Body, Controller, Delete, Get, HttpStatus, Param, Patch, Post } from "@nestjs/common";
-import { ApiBearerAuth, ApiOperation, ApiParam, ApiResponse, ApiTags } from "@nestjs/swagger";
+import {
+	Body,
+	Controller,
+	Delete,
+	Get,
+	HttpStatus,
+	Param,
+	Patch,
+	Post,
+	Query,
+} from "@nestjs/common";
+import {
+	ApiBearerAuth,
+	ApiOperation,
+	ApiParam,
+	ApiQuery,
+	ApiResponse,
+	ApiTags,
+} from "@nestjs/swagger";
 
 import type {
 	CropDistribution,
@@ -72,26 +89,42 @@ export class FarmsController {
 	/**
 	 * Retrieves all farms with pagination.
 	 *
-	 * Returns farms ordered alphabetically by name.
-	 * For now, ignores pagination params and returns all farms (assessment requirement).
+	 * Returns farms ordered alphabetically by name with pagination support.
+	 *
+	 * @param page Page number (1-indexed)
+	 * @param limit Number of items per page
 	 *
 	 * @returns Paginated farm response
 	 */
 	@Get()
-	@ApiOperation({ summary: "Get all farms" })
+	@ApiOperation({ summary: "Get all farms with pagination" })
+	@ApiQuery({
+		name: "page",
+		required: false,
+		type: Number,
+		description: "Page number (default: 1)",
+	})
+	@ApiQuery({
+		name: "limit",
+		required: false,
+		type: Number,
+		description: "Items per page (default: 10)",
+	})
 	@ApiResponse({
 		status: HttpStatus.OK,
-		description: "List of farms",
+		description: "Paginated list of farms",
 		type: [FarmResponseDto],
 	})
-	public async findAll(): Promise<ListAllData<FarmResponseDto>> {
-		const farms = await this.farmsService.findAll();
-		return {
-			data: farms,
-			total: farms.length,
-			page: 1,
-			limit: farms.length,
-		};
+	public async findAll(
+		@Query("page") page?: string,
+		@Query("limit") limit?: string,
+	): Promise<ListAllData<FarmResponseDto>> {
+		const pageNum = page ? Number.parseInt(page, 10) : 1;
+		const limitNum = limit ? Number.parseInt(limit, 10) : 10;
+
+		const { data, total } = await this.farmsService.findAll(pageNum, limitNum);
+
+		return { data, total, page: pageNum, limit: limitNum };
 	}
 
 	/**
