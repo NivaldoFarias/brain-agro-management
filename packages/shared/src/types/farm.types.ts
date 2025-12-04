@@ -1,3 +1,5 @@
+import type { PaginatedResponse } from "./api";
+
 import { BrazilianState, CropType, FarmSortField, SortOrder } from "../enums";
 
 /**
@@ -253,23 +255,12 @@ export interface UpdateFarmRequest {
  *   data: [farm1, farm2],
  *   total: 50,
  *   page: 1,
- *   limit: 10
+ *   limit: 10,
+ *   totalPages: 5
  * };
  * ```
  */
-export interface FarmsListResponse {
-	/** Array of farm entities */
-	data: Array<Farm>;
-
-	/** Total count of farms matching the query */
-	total: number;
-
-	/** Current page number */
-	page: number;
-
-	/** Number of items per page */
-	limit: number;
-}
+export type FarmsListResponse = PaginatedResponse<Farm>;
 
 /**
  * Query parameters for listing farms with pagination, sorting, filtering, and search.

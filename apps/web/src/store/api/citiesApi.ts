@@ -42,7 +42,7 @@ export const citiesApi = api.injectEndpoints({
 		 * ```
 		 */
 		getAllCitiesByState: builder.query<CitiesByState, undefined>({
-			query: () => "/cities/all/grouped-by-state",
+			query: () => ROUTE_PATHS.citiesGroupedByState,
 			transformResponse: (response: ApiResponse<CitiesByState>) => response.data,
 			providesTags: [{ type: "Cities", id: "ALL_BY_STATE" }],
 		}),

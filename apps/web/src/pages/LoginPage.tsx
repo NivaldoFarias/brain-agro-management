@@ -60,8 +60,6 @@ export function LoginPage(): ReactElement {
 				t(($) => $.auth.welcomeBack),
 			);
 
-			await new Promise((resolve) => setTimeout(resolve, 100));
-
 			console.log("[LoginPage] Navigating to dashboard...");
 			await navigate(ROUTES.dashboard, { replace: true });
 		} catch (error) {

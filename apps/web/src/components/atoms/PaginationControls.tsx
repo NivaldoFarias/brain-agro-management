@@ -1,5 +1,10 @@
 import { Button, Flex, Text } from "@radix-ui/themes";
-import { SquareChevronRightIcon as NextPageIcon, SquareChevronLeftIcon as PreviousPageIcon } from "lucide-react";
+import {
+	SquareChevronRightIcon as NextPageIcon,
+	SquareChevronLeftIcon as PreviousPageIcon,
+	ChevronsRightIcon as LastPageIcon,
+	ChevronsLeftIcon as FirstPageIcon,
+} from "lucide-react";
 import { useTranslation } from "react-i18next";
 
 /** Props for the {@link PaginationControls} component */
@@ -35,6 +40,12 @@ export function PaginationControls({
 				</i>
 			</Text>
 			<Flex gap="2">
+				<Button variant="soft" size="2" onClick={() => onPageChange?.(1)} disabled={page === 1 || isLoading}>
+					<Flex align="center" gap="2">
+						<FirstPageIcon size={18} aria-hidden="true" />
+						{t(($) => $.common.first)}
+					</Flex>
+				</Button>
 				<Button variant="soft" size="2" onClick={() => onPageChange?.(page - 1)} disabled={page === 1 || isLoading}>
 					<Flex align="center" gap="2">
 						{t(($) => $.common.previous)}
@@ -50,6 +61,12 @@ export function PaginationControls({
 					<Flex align="center" gap="2">
 						<NextPageIcon size={18} aria-hidden="true" />
 						{t(($) => $.common.next)}
+					</Flex>
+				</Button>
+				<Button variant="soft" size="2" onClick={() => onPageChange?.(totalPages)} disabled={page >= totalPages || isLoading}>
+					<Flex align="center" gap="2">
+						{t(($) => $.common.last)}
+						<LastPageIcon size={18} aria-hidden="true" />
 					</Flex>
 				</Button>
 			</Flex>

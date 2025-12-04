@@ -188,7 +188,7 @@ export function ProducerList({
 	}
 
 	function LoadingState() {
-		return Array.from({ length: 20 }).map((_, index) => (
+		return Array.from({ length: 10 }).map((_, index) => (
 			<Table.Row key={index}>
 				<Table.Cell>
 					<Skeleton>

@@ -19,6 +19,7 @@ export const ROUTE_PATHS = {
 	cities: "/cities",
 	citiesCount: "/cities/count",
 	citiesByIbgeCode: "/cities/by-ibge-code",
+	citiesGroupedByState: "/cities/all/grouped-by-state",
 	docs: "/docs",
 	reference: "/reference",
 	dashboardStats: "/dashboard/stats",

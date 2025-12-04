@@ -10,6 +10,7 @@ import type {
 import { HttpMethod } from "@agro/shared/enums";
 
 import { api } from "./baseApi";
+import { ROUTE_PATHS } from "@agro/shared/constants";
 
 /**
  * Producers API endpoints using RTK Query.
@@ -35,7 +36,7 @@ export const producersApi = api.injectEndpoints({
 		 */
 		getProducers: builder.query<ProducersListResponse, ProducersListQuery>({
 			query: ({ page = 1, limit = 10, sortBy, sortOrder, search } = {}) => ({
-				url: "/producers",
+				url: ROUTE_PATHS.producers,
 				params: {
 					page,
 					limit,
@@ -63,7 +64,7 @@ export const producersApi = api.injectEndpoints({
 		 * ```
 		 */
 		getProducer: builder.query<Producer, string>({
-			query: (id) => `/producers/${id}`,
+			query: (id) => `${ROUTE_PATHS.producers}/${id}`,
 			transformResponse: (response: ApiResponse<Producer>) => response.data,
 			providesTags: (result, error, id) => [{ type: "Producer", id }],
 		}),
@@ -79,7 +80,7 @@ export const producersApi = api.injectEndpoints({
 		 */
 		createProducer: builder.mutation<Producer, CreateProducerRequest>({
 			query: (body) => ({
-				url: "/producers",
+				url: ROUTE_PATHS.producers,
 				method: HttpMethod.POST,
 				body,
 			}),
@@ -101,8 +102,8 @@ export const producersApi = api.injectEndpoints({
 		 */
 		updateProducer: builder.mutation<Producer, { id: string } & UpdateProducerRequest>({
 			query: ({ id, ...body }) => ({
-				url: `/producers/${id}`,
-				method: "PATCH",
+				url: `${ROUTE_PATHS.producers}/${id}`,
+				method: HttpMethod.PATCH,
 				body,
 			}),
 			transformResponse: (response: ApiResponse<Producer>) => response.data,
@@ -124,8 +125,8 @@ export const producersApi = api.injectEndpoints({
 		 */
 		deleteProducer: builder.mutation<unknown, string>({
 			query: (id) => ({
-				url: `/producers/${id}`,
-				method: "DELETE",
+				url: `${ROUTE_PATHS.producers}/${id}`,
+				method: HttpMethod.DELETE,
 			}),
 			transformResponse: (response: ApiResponse<unknown>) => response.data,
 			invalidatesTags: (result, error, id) => [

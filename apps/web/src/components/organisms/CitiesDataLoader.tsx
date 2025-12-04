@@ -30,11 +30,11 @@ interface CitiesDataLoaderProps {
 export function CitiesDataLoader({ children }: CitiesDataLoaderProps): ReactElement {
 	const storage = useLocalStorageContext();
 	const { data: citiesByState, isSuccess } = useGetAllCitiesByStateQuery(undefined, {
-		skip: storage.getItem(STORAGE_KEYS.citiesByState) !== null,
+		skip: storage.getItem(STORAGE_KEYS.citiesByState) != null,
 	});
 
 	useEffect(() => {
-		if (isSuccess && citiesByState) {
+		if (isSuccess) {
 			console.log("[CitiesDataLoader] Caching cities data in localStorage");
 			storage.setItem(STORAGE_KEYS.citiesByState, citiesByState);
 		}

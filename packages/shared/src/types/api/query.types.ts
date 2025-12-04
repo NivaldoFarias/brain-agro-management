@@ -26,11 +26,7 @@ export interface SearchParams {
 
 /** Paginated response metadata */
 export interface PaginationMeta {
-	/**
-	 * Current page number
-	 *
-	 * @default 1
-	 */
+	/** Current page number */
 	page: number;
 
 	/** Number of items per page */
@@ -44,19 +40,7 @@ export interface PaginationMeta {
 }
 
 /** Paginated API response */
-export interface PaginatedResponse<T> {
+export interface PaginatedResponse<T> extends PaginationMeta {
 	/** Array of data items for current page */
 	data: Array<T>;
-
-	/** Current page number (1-indexed) */
-	page: number;
-
-	/** Number of items per page */
-	limit: number;
-
-	/** Total number of items across all pages */
-	total: number;
-
-	/** Total number of pages */
-	totalPages: number;
 }

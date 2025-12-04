@@ -105,12 +105,16 @@ export class CitiesService {
 			order: { state: SortOrder.Ascending, name: SortOrder.Ascending },
 		});
 
-		return cities.reduce<CitiesByState>((acc, city) => {
+		const grouppedCities = cities.reduce<CitiesByState>((acc, city) => {
 			const state = city.state as BrazilianState;
+
 			acc[state] ??= [];
 			acc[state].push(city.name);
+
 			return acc;
 		}, {} as CitiesByState);
+
+		return grouppedCities;
 	}
 
 	/**

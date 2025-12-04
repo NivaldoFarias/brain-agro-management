@@ -7,6 +7,9 @@ import type {
 	UpdateFarmRequest,
 } from "@agro/shared/types";
 
+import { ROUTE_PATHS } from "@agro/shared/constants";
+import { HttpMethod } from "@agro/shared/enums";
+
 import { api } from "./baseApi";
 
 /**
@@ -43,7 +46,7 @@ export const farmsApi = api.injectEndpoints({
 				city,
 				producerId,
 			} = {}) => ({
-				url: "/farms",
+				url: ROUTE_PATHS.farms,
 				params: {
 					page,
 					limit,
@@ -74,7 +77,7 @@ export const farmsApi = api.injectEndpoints({
 		 * ```
 		 */
 		getFarm: builder.query<Farm, string>({
-			query: (id) => `/farms/${id}`,
+			query: (id) => `${ROUTE_PATHS.farms}/${id}`,
 			transformResponse: (response: ApiResponse<Farm>) => response.data,
 			providesTags: (result, error, id) => [{ type: "Farm", id }],
 		}),
@@ -90,8 +93,8 @@ export const farmsApi = api.injectEndpoints({
 		 */
 		createFarm: builder.mutation<Farm, CreateFarmRequest>({
 			query: (body) => ({
-				url: "/farms",
-				method: "POST",
+				url: ROUTE_PATHS.farms,
+				method: HttpMethod.POST,
 				body,
 			}),
 			transformResponse: (response: ApiResponse<Farm>) => response.data,
@@ -112,8 +115,8 @@ export const farmsApi = api.injectEndpoints({
 		 */
 		updateFarm: builder.mutation<Farm, { id: string } & UpdateFarmRequest>({
 			query: ({ id, ...body }) => ({
-				url: `/farms/${id}`,
-				method: "PATCH",
+				url: `${ROUTE_PATHS.farms}/${id}`,
+				method: HttpMethod.PATCH,
 				body,
 			}),
 			transformResponse: (response: ApiResponse<Farm>) => response.data,
@@ -135,8 +138,8 @@ export const farmsApi = api.injectEndpoints({
 		 */
 		deleteFarm: builder.mutation<unknown, string>({
 			query: (id) => ({
-				url: `/farms/${id}`,
-				method: "DELETE",
+				url: `${ROUTE_PATHS.farms}/${id}`,
+				method: HttpMethod.DELETE,
 			}),
 			transformResponse: (response: ApiResponse<unknown>) => response.data,
 			invalidatesTags: (result, error, id) => [

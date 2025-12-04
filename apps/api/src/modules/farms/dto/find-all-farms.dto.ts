@@ -35,7 +35,7 @@ export class FindAllFarmsDto {
 	@Type(() => Number)
 	@IsInt({ message: "Page must be an integer" })
 	@Min(1, { message: "Page must be at least 1" })
-	page?: number = 1;
+	page? = 1;
 
 	/** Number of items per page. Defaults to 10, max 100 */
 	@ApiPropertyOptional({
@@ -50,7 +50,7 @@ export class FindAllFarmsDto {
 	@IsInt({ message: "Limit must be an integer" })
 	@Min(1, { message: "Limit must be at least 1" })
 	@Max(100, { message: "Limit cannot exceed 100" })
-	limit?: number = 10;
+	limit? = 10;
 
 	/** Field to sort by */
 	@ApiPropertyOptional({
