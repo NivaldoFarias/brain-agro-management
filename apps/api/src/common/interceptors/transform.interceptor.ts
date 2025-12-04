@@ -140,9 +140,9 @@ export class TransformInterceptor<T> implements NestInterceptor<T, TransformedRe
 	/**
 	 * Type guard to check if data is a paginated response.
 	 *
-	 * @param data - Response data to check
+	 * @param data Response data to check
 	 *
-	 * @returns True if data is paginated, false otherwise
+	 * @returns `true` if data is paginated, `false` otherwise
 	 */
 	private isPaginatedData(data: unknown): data is PaginatedData<unknown> {
 		return (

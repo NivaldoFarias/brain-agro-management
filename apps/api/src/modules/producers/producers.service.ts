@@ -40,7 +40,7 @@ export class ProducersService {
 	/**
 	 * Creates an instance of ProducersService.
 	 *
-	 * @param producerRepository - TypeORM repository for Producer entity
+	 * @param producerRepository TypeORM repository for Producer entity
 	 */
 	constructor(
 		@InjectRepository(Producer)
@@ -53,7 +53,7 @@ export class ProducersService {
 	 * Validates the document (CPF or CNPJ) using Brazilian government algorithms
 	 * and checks for duplicate documents before creating the producer.
 	 *
-	 * @param createProducerDto - The producer data to create
+	 * @param createProducerDto The producer data to create
 	 *
 	 * @returns The created producer
 	 *
@@ -88,6 +88,9 @@ export class ProducersService {
 	/**
 	 * Retrieves all producers from the database.
 	 *
+	 * @param page Page number (1-indexed)
+	 * @param limit Number of items per page
+	 *
 	 * @returns Array of all producers
 	 *
 	 * @example
@@ -96,18 +99,26 @@ export class ProducersService {
 	 * console.log(`Found ${producers.length} producers`);
 	 * ```
 	 */
-	public async findAll(): Promise<Array<ProducerResponseDto>> {
-		const producers = await this.producerRepository.find({
+	public async findAll(
+		page = 1,
+		limit = 10,
+	): Promise<{ data: Array<ProducerResponseDto>; total: number }> {
+		const skip = (page - 1) * limit;
+
+		const [producers, total] = await this.producerRepository.findAndCount({
+			relations: { farms: true },
 			order: { name: OrderBy.Ascending },
+			skip,
+			take: limit,
 		});
 
-		return producers.map((producer) => this.mapToResponseDto(producer));
+		return { data: producers.map((producer) => this.mapToResponseDto(producer)), total };
 	}
 
 	/**
 	 * Retrieves a single producer by ID.
 	 *
-	 * @param id - The UUID of the producer to retrieve
+	 * @param id The UUID of the producer to retrieve
 	 *
 	 * @returns The producer with the specified ID
 	 *
@@ -138,8 +149,8 @@ export class ProducersService {
 	 * If document is being updated, validates the new document and checks
 	 * for duplicates.
 	 *
-	 * @param id - The UUID of the producer to update
-	 * @param updateProducerDto - The fields to update
+	 * @param id The UUID of the producer to update
+	 * @param updateProducerDto The fields to update
 	 *
 	 * @returns The updated producer
 	 *
@@ -186,7 +197,7 @@ export class ProducersService {
 	 * Note: This will also cascade delete all associated farms due to
 	 * the database foreign key constraint with ON DELETE CASCADE.
 	 *
-	 * @param id - The UUID of the producer to delete
+	 * @param id The UUID of the producer to delete
 	 *
 	 * @throws {NotFoundException} If the producer does not exist
 	 *
@@ -218,13 +229,12 @@ export class ProducersService {
 	 * Determines whether the document is CPF (11 digits) or CNPJ (14 digits)
 	 * and validates using the appropriate algorithm.
 	 *
-	 * @param document - The document to validate (formatted or unformatted)
+	 * @param document The document to validate (formatted or unformatted)
 	 *
 	 * @returns The document without formatting (digits only)
 	 *
 	 * @throws {BadRequestException} If the document format is invalid
 	 *
-	 * @private
 	 */
 	private validateAndStripDocument(document: string): string {
 		const digitsOnly = document.replaceAll(/\D/g, "");
@@ -247,12 +257,11 @@ export class ProducersService {
 	/**
 	 * Checks if a document is already registered in the database.
 	 *
-	 * @param document - The document to check (already stripped of formatting)
-	 * @param excludeId - Optional producer ID to exclude from the check (for updates)
+	 * @param document The document to check (already stripped of formatting)
+	 * @param excludeId Optional producer ID to exclude from the check (for updates)
 	 *
 	 * @throws {ConflictException} If the document is already in use
 	 *
-	 * @private
 	 */
 	private async checkDuplicateDocument(document: string, excludeId?: string): Promise<void> {
 		const existingProducer = await this.producerRepository.findOne({
@@ -267,16 +276,15 @@ export class ProducersService {
 	/**
 	 * Maps a Producer entity to a ProducerResponseDto.
 	 *
-	 * @param producer - The producer entity to map
+	 * @param producer The producer entity to map
 	 *
 	 * @returns The mapped response DTO
-	 *
-	 * @private
 	 */
 	private mapToResponseDto(producer: Producer): ProducerResponseDto {
 		return {
 			id: producer.id,
 			name: producer.name,
+			farms: producer.farms,
 			document: producer.document,
 			createdAt: producer.createdAt,
 			updatedAt: producer.updatedAt,

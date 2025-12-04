@@ -3,3 +3,4 @@ export * from "./authApi";
 export * from "./dashboardApi";
 export * from "./farmsApi";
 export * from "./producersApi";
+export * from "./citiesApi";

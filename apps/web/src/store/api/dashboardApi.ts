@@ -1,4 +1,6 @@
-import type { ApiResponse, CitiesByState, DashboardStats } from "@agro/shared/types";
+import type { ApiResponse, DashboardStats } from "@agro/shared/types";
+
+import { ROUTE_PATHS } from "@agro/shared/constants";
 
 import { api } from "./baseApi";
 
@@ -56,41 +58,11 @@ export const dashboardApi = api.injectEndpoints({
 		 * ```
 		 */
 		getDashboardStats: builder.query<DashboardStats, undefined>({
-			query: () => "/dashboard/stats",
+			query: () => ROUTE_PATHS.dashboardStats,
 			transformResponse: (response: ApiResponse<DashboardStats>) => response.data,
 			providesTags: [{ type: "DashboardStats", id: "ALL" }],
-		}),
-
-		/**
-		 * Fetches all unique cities grouped by Brazilian state.
-		 *
-		 * Returns a map of state codes to city arrays for cascading
-		 * selection in farm forms. Should be called once on app init
-		 * and cached in localStorage.
-		 *
-		 * @example
-		 * ```tsx
-		 * function FarmForm() {
-		 *   const { data: cities } = useGetCitiesByStateQuery();
-		 *
-		 *   const citiesForState = cities?.[selectedState] ?? [];
-		 *
-		 *   return (
-		 *     <Select>
-		 *       {citiesForState.map(city => (
-		 *         <option key={city.name}>{city.name}</option>
-		 *       ))}
-		 *     </Select>
-		 *   );
-		 * }
-		 * ```
-		 */
-		getCitiesByState: builder.query<CitiesByState, undefined>({
-			query: () => "/dashboard/cities",
-			transformResponse: (response: ApiResponse<CitiesByState>) => response.data,
-			providesTags: [{ type: "Cities", id: "ALL" }],
 		}),
 	}),
 });
 
-export const { useGetDashboardStatsQuery, useGetCitiesByStateQuery } = dashboardApi;
+export const { useGetDashboardStatsQuery } = dashboardApi;

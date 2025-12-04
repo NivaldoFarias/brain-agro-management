@@ -9,6 +9,7 @@ import type { Farm } from "@agro/shared/types";
 
 import { CropType } from "@agro/shared/utils";
 
+import { PaginationControls } from "../atoms/";
 import { EmptyState } from "../ui/EmptyState";
 import { ErrorMessage } from "../ui/ErrorMessage";
 
@@ -136,26 +137,15 @@ export function FarmList({
 				</Table.Body>
 			</Table.Root>
 
-			{showPagination && (
-				<Flex justify="between" align="center" gap="4" wrap="wrap">
-					<Text size="2" color="gray">
-						{t(($) => $.common.page)} {page} {t(($) => $.common.of)} {totalPages} ({total} {t(($) => $.common.total)})
-					</Text>
-					<Flex gap="2">
-						<Button variant="soft" size="2" onClick={() => onPageChange?.(page - 1)} disabled={page === 1 || isLoading}>
-							{t(($) => $.common.previous)}
-						</Button>
-						<Button
-							variant="soft"
-							size="2"
-							onClick={() => onPageChange?.(page + 1)}
-							disabled={page >= totalPages || isLoading}
-						>
-							{t(($) => $.common.next)}
-						</Button>
-					</Flex>
-				</Flex>
-			)}
+			{showPagination ?
+				<PaginationControls
+					page={page}
+					total={total}
+					isLoading={isLoading}
+					totalPages={totalPages}
+					onPageChange={onPageChange}
+				/>
+			:	null}
 		</Flex>
 	);
 

@@ -10,12 +10,8 @@ import type {
 	ProducerSummaryDto,
 } from "./dto";
 import type { PinoLogger } from "nestjs-pino";
-import type {
-	CropDistribution,
-	StateDistribution,
-} from "node_modules/@agro/shared/src/types/dashboard.types";
 
-import type { CitiesByState } from "@agro/shared/types";
+import type { CropDistribution, StateDistribution } from "@agro/shared/types";
 
 import { BrazilianState, CropType, OrderBy } from "@agro/shared/utils";
 
@@ -320,43 +316,5 @@ export class DashboardService {
 			farmCount: Number.parseInt(result.farmCount, 10),
 			totalArea: Number.parseFloat(result.totalArea) || 0,
 		}));
-	}
-
-	/**
-	 * Gets all unique cities grouped by Brazilian state.
-	 *
-	 * Queries all cities from the database (seeded from IBGE) and organizes
-	 * them into a map structure for efficient client-side filtering.
-	 *
-	 * @returns Object mapping state codes to arrays of cities
-	 *
-	 * @example
-	 * ```typescript
-	 * const cities = await service.getCitiesByState();
-	 * console.log(cities.SP); // [{ name: "São Paulo", state: "SP" }, ...]
-	 * ```
-	 */
-	async getCitiesByState(): Promise<CitiesByState> {
-		this.logger.debug("Fetching cities grouped by state");
-
-		const cities = await this.cityRepository.find({
-			select: ["name", "state"],
-			order: {
-				state: OrderBy.Ascending,
-				name: OrderBy.Ascending,
-			},
-		});
-
-		const citiesByState: CitiesByState = {} as CitiesByState;
-
-		for (const city of cities) {
-			citiesByState[city.state as BrazilianState] ??= [];
-
-			citiesByState[city.state as BrazilianState].push(city.name);
-		}
-
-		this.logger.debug({ totalCities: cities.length }, "Cities grouped successfully");
-
-		return citiesByState;
 	}
 }

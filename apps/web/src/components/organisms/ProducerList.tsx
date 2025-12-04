@@ -1,17 +1,17 @@
+import { Button, Flex, Skeleton, Table, Text } from "@radix-ui/themes";
+import { BadgeXIcon as DeleteIcon, SquarePenIcon as EditIcon } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
-import styled from "styled-components";
 
 import type { ReactElement } from "react";
 
 import type { Producer } from "@agro/shared/types";
 
-import { Button } from "../ui/Button";
-import { Card } from "../ui/Card";
+import { PaginationControls } from "../atoms/";
 import { EmptyState } from "../ui/EmptyState";
 import { ErrorMessage } from "../ui/ErrorMessage";
 
-/** Props for the ProducerList component */
+/** Props for the {@link ProducerList} component */
 export interface ProducerListProps {
 	/** Array of producers to display */
 	producers?: Producer[];
@@ -30,6 +30,18 @@ export interface ProducerListProps {
 
 	/** Whether delete operation is in progress */
 	isDeletingId?: string;
+
+	/** Current page number (1-indexed) */
+	page?: number;
+
+	/** Total number of items */
+	total?: number;
+
+	/** Number of items per page */
+	limit?: number;
+
+	/** Callback when page changes */
+	onPageChange?: (page: number) => void;
 }
 
 /**
@@ -59,25 +71,22 @@ export function ProducerList({
 	onRetry,
 	onDelete,
 	isDeletingId,
+	page = 1,
+	total = 0,
+	limit = 10,
+	onPageChange,
 }: ProducerListProps): ReactElement {
 	const { t } = useTranslation();
 	const navigate = useNavigate();
 
-	if (isLoading) {
-		return (
-			<ListContainer>
-				{Array.from({ length: 5 }).map((_, index) => (
-					<SkeletonCard key={index} />
-				))}
-			</ListContainer>
-		);
-	}
+	const totalPages = Math.ceil(total / limit);
+	const showPagination = total > limit;
 
 	if (error) {
 		return <ErrorMessage message={error} onRetry={onRetry} />;
 	}
 
-	if (producers.length === 0) {
+	if (!isLoading && producers.length === 0) {
 		return (
 			<EmptyState
 				title={t(($) => $.producers.noProducers)}
@@ -85,7 +94,6 @@ export function ProducerList({
 				icon="👤"
 				action={
 					<Button
-						variant="primary"
 						onClick={() => {
 							void navigate("/producers/create");
 						}}
@@ -98,121 +106,115 @@ export function ProducerList({
 	}
 
 	return (
-		<ListContainer>
-			{producers.map((producer) => (
-				<Card key={producer.id} padding="md">
-					<CardContent>
-						<ProducerInfo>
-							<ProducerName>{producer.name}</ProducerName>
-							<ProducerDocument>{producer.document}</ProducerDocument>
-							<ProducerMeta>
-								{t(($) => $.form.createdAt)}: {new Date(producer.createdAt).toLocaleDateString()}
-							</ProducerMeta>
-						</ProducerInfo>
-						<ActionButtons>
-							<Button
-								variant="secondary"
-								size="sm"
-								onClick={() => {
-									void navigate(`/producers/${producer.id}/edit`);
-								}}
-							>
+		<Flex direction="column" gap="4">
+			<Table.Root variant="surface" size="2">
+				<Table.Header>
+					<Table.Row>
+						<Table.ColumnHeaderCell>{t(($) => $.producers.name)}</Table.ColumnHeaderCell>
+						<Table.ColumnHeaderCell>{t(($) => $.producers.document)}</Table.ColumnHeaderCell>
+						<Table.ColumnHeaderCell>{t(($) => $.form.createdAt)}</Table.ColumnHeaderCell>
+						<Table.ColumnHeaderCell>{t(($) => $.common.actions)}</Table.ColumnHeaderCell>
+					</Table.Row>
+				</Table.Header>
+
+				<Table.Body>
+					{isLoading ?
+						<LoadingState />
+					:	producers.map((producer) => ProducerDataRow(producer))}
+				</Table.Body>
+			</Table.Root>
+
+			{showPagination ?
+				<PaginationControls
+					page={page}
+					total={total}
+					isLoading={isLoading}
+					totalPages={totalPages}
+					onPageChange={onPageChange}
+				/>
+			:	null}
+		</Flex>
+	);
+
+	function ProducerDataRow(producer: Producer) {
+		return (
+			<Table.Row key={producer.id}>
+				<Table.RowHeaderCell>
+					<Text>{producer.name}</Text>
+				</Table.RowHeaderCell>
+				<Table.Cell>
+					<Text size="2" color="gray">
+						{producer.document}
+					</Text>
+				</Table.Cell>
+				<Table.Cell>
+					<Text size="2">{new Date(producer.createdAt).toLocaleDateString()}</Text>
+				</Table.Cell>
+				<Table.Cell>
+					<Flex gap="2">
+						<Button
+							variant="soft"
+							size="1"
+							onClick={() => {
+								void navigate(`/producers/${producer.id}/edit`);
+							}}
+						>
+							<Flex>
+								<EditIcon size={16} aria-hidden="true" style={{ marginRight: 4 }} />
+								{t(($) => $.common.edit)}
+							</Flex>
+						</Button>
+						<Button
+							color="red"
+							variant="soft"
+							size="1"
+							onClick={() => onDelete?.(producer.id)}
+							disabled={isDeletingId === producer.id}
+							loading={isDeletingId === producer.id}
+						>
+							<Flex>
+								<DeleteIcon size={16} aria-hidden="true" style={{ marginRight: 4 }} />
+								{t(($) => $.common.delete)}
+							</Flex>
+						</Button>
+					</Flex>
+				</Table.Cell>
+			</Table.Row>
+		);
+	}
+
+	function LoadingState() {
+		return Array.from({ length: 20 }).map((_, index) => (
+			<Table.Row key={index}>
+				<Table.Cell>
+					<Skeleton>
+						<Text>
+							{t(($) => $.common.loading)} {t(($) => $.producers.name)}
+						</Text>
+					</Skeleton>
+				</Table.Cell>
+				<Table.Cell>
+					<Skeleton>
+						<Text>
+							{t(($) => $.common.loading)} {t(($) => $.producers.document)}
+						</Text>
+					</Skeleton>
+				</Table.Cell>
+				<Table.Cell>
+					<Skeleton>
+						<Text>--/--/----</Text>
+					</Skeleton>
+				</Table.Cell>
+				<Table.Cell>
+					<Skeleton>
+						<Flex gap="2">
+							<Button disabled={true} size="1">
 								{t(($) => $.common.edit)}
 							</Button>
-							<Button
-								variant="danger"
-								size="sm"
-								onClick={() => onDelete?.(producer.id)}
-								disabled={isDeletingId === producer.id}
-								isLoading={isDeletingId === producer.id}
-							>
-								{t(($) => $.common.delete)}
-							</Button>
-						</ActionButtons>
-					</CardContent>
-				</Card>
-			))}
-		</ListContainer>
-	);
+						</Flex>
+					</Skeleton>
+				</Table.Cell>
+			</Table.Row>
+		));
+	}
 }
-
-const ListContainer = styled.div`
-	display: flex;
-	flex-direction: column;
-	gap: ${(props) => props.theme.spacing.md};
-`;
-
-const CardContent = styled.div`
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
-	gap: ${(props) => props.theme.spacing.lg};
-
-	@media (max-width: ${(props) => props.theme.breakpoints.sm}) {
-		flex-direction: column;
-		align-items: flex-start;
-	}
-`;
-
-const ProducerInfo = styled.div`
-	display: flex;
-	flex-direction: column;
-	gap: ${(props) => props.theme.spacing.xs};
-	flex: 1;
-`;
-
-const ProducerName = styled.h3`
-	margin: 0;
-	font-size: ${(props) => props.theme.typography.fontSize.lg};
-	font-weight: ${(props) => props.theme.typography.fontWeight.semibold};
-	color: ${(props) => props.theme.colors.text};
-`;
-
-const ProducerDocument = styled.p`
-	margin: 0;
-	font-size: ${(props) => props.theme.typography.fontSize.base};
-	color: ${(props) => props.theme.colors.textSecondary};
-	font-family: ${(props) => props.theme.typography.fontFamily.mono};
-`;
-
-const ProducerMeta = styled.p`
-	margin: 0;
-	font-size: ${(props) => props.theme.typography.fontSize.sm};
-	color: ${(props) => props.theme.colors.textSecondary};
-`;
-
-const ActionButtons = styled.div`
-	display: flex;
-	gap: ${(props) => props.theme.spacing.sm};
-
-	@media (max-width: ${(props) => props.theme.breakpoints.sm}) {
-		width: 100%;
-		justify-content: flex-end;
-	}
-`;
-
-const SkeletonCard = styled.div`
-	padding: ${(props) => props.theme.spacing.md};
-	background: ${(props) => props.theme.colors.surface};
-	border: 1px solid ${(props) => props.theme.colors.border};
-	border-radius: ${(props) => props.theme.borderRadius.lg};
-	box-shadow: ${(props) => props.theme.shadows.sm};
-	min-height: 120px;
-	background: linear-gradient(
-		90deg,
-		${(props) => props.theme.colors.backgroundAlt} 25%,
-		${(props) => props.theme.colors.surface} 50%,
-		${(props) => props.theme.colors.backgroundAlt} 75%
-	);
-	background-size: 200% 100%;
-	animation: shimmer 2s infinite;
-
-	@keyframes shimmer {
-		0% {
-			background-position: 200% 0;
-		}
-		100% {
-			background-position: -200% 0;
-		}
-	}
-`;

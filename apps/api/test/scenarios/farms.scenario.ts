@@ -76,7 +76,8 @@ export class FarmsScenario extends BaseScenario {
 	/**
 	 * Creates a new farm.
 	 *
-	 * @param data - Farm creation data
+	 * @param data Farm creation data
+	 *
 	 * @returns Promise resolving to typed response with created farm
 	 *
 	 * @example
@@ -116,7 +117,8 @@ export class FarmsScenario extends BaseScenario {
 	/**
 	 * Retrieves a single farm by ID.
 	 *
-	 * @param id - Farm UUID
+	 * @param id Farm UUID
+	 *
 	 * @returns Promise resolving to typed response with farm data
 	 *
 	 * @example
@@ -133,8 +135,9 @@ export class FarmsScenario extends BaseScenario {
 	/**
 	 * Updates an existing farm.
 	 *
-	 * @param id - Farm UUID
-	 * @param data - Partial farm data to update
+	 * @param id Farm UUID
+	 * @param data Partial farm data to update
+	 *
 	 * @returns Promise resolving to typed response with updated farm
 	 *
 	 * @example
@@ -152,7 +155,8 @@ export class FarmsScenario extends BaseScenario {
 	/**
 	 * Deletes a farm.
 	 *
-	 * @param id - Farm UUID
+	 * @param id Farm UUID
+	 *
 	 * @returns Promise resolving to supertest response
 	 *
 	 * @example

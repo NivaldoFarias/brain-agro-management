@@ -40,7 +40,7 @@ import { FarmsService } from "./farms.service";
  *
  * ## Authentication
  * All endpoints will require JWT authentication in production.
- * Currently documented with @ApiBearerAuth for API specification.
+ * Currently documented with {@link ApiBearerAuth} for API specification.
  *
  * @example
  * ```typescript
@@ -52,7 +52,7 @@ import { FarmsService } from "./farms.service";
  * ```
  */
 @ApiTags("Farms")
-@ApiBearerAuth("JWT-auth")
+@ApiBearerAuth("JWT")
 @Controller("farms")
 export class FarmsController {
 	constructor(private readonly farmsService: FarmsService) {}
@@ -63,7 +63,7 @@ export class FarmsController {
 	 * Validates that the producer exists and that area constraints are met
 	 * (arableArea + vegetationArea ≤ totalArea).
 	 *
-	 * @param createFarmDto - Farm data including name, location, areas, and producer ID
+	 * @param createFarmDto Farm data including name, location, areas, and producer ID
 	 *
 	 * @returns The created farm with generated ID and timestamps
 	 *
@@ -102,13 +102,15 @@ export class FarmsController {
 		name: "page",
 		required: false,
 		type: Number,
-		description: "Page number (default: 1)",
+		description: "Page number",
+		default: 1,
 	})
 	@ApiQuery({
 		name: "limit",
 		required: false,
 		type: Number,
-		description: "Items per page (default: 10)",
+		description: "Items per page",
+		default: 10,
 	})
 	@ApiResponse({
 		status: HttpStatus.OK,

@@ -28,7 +28,7 @@ export function ProducersPage(): ReactElement {
 	const [confirmOpen, setConfirmOpen] = useState(false);
 	const [producerToDelete, setProducerToDelete] = useState<string | undefined>();
 
-	const { data, isLoading, error } = useGetProducersQuery({ page, limit: 10 });
+	const { data: producers, isLoading, error } = useGetProducersQuery({ page, limit: 10 });
 	const [deleteProducer] = useDeleteProducerMutation();
 
 	const handleCreate = () => {
@@ -72,37 +72,16 @@ export function ProducersPage(): ReactElement {
 					</Button>
 				</Header>{" "}
 				<ProducerList
-					producers={data?.data ?? []}
+					producers={producers?.data ?? []}
 					isLoading={isLoading}
 					error={error ? t(($) => $.producers.loadError) : undefined}
 					onDelete={handleDeleteClick}
 					isDeletingId={deletingId}
+					page={page}
+					total={producers?.total ?? 0}
+					limit={producers?.limit ?? 10}
+					onPageChange={setPage}
 				/>
-				{data && data.total > 10 && (
-					<PaginationContainer>
-						<Button
-							variant="secondary"
-							onClick={() => {
-								setPage((page) => Math.max(1, page - 1));
-							}}
-							disabled={page === 1}
-						>
-							{t(($) => $.common.previous)}
-						</Button>
-						<Typography variant="body">
-							{t(($) => $.common.page)} {page} {t(($) => $.common.of)} {Math.ceil(data.total / 10)}
-						</Typography>
-						<Button
-							variant="secondary"
-							onClick={() => {
-								setPage((page) => page + 1);
-							}}
-							disabled={page >= Math.ceil(data.total / 10)}
-						>
-							{t(($) => $.common.next)}
-						</Button>
-					</PaginationContainer>
-				)}
 				<ConfirmDialog
 					open={confirmOpen}
 					onOpenChange={setConfirmOpen}

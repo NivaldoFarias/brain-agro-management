@@ -51,8 +51,8 @@ export class HttpExceptionFilter implements ExceptionFilter {
 	/**
 	 * Catches and processes all exceptions thrown during request handling.
 	 *
-	 * @param exception - Exception that was thrown
-	 * @param host - ArgumentsHost providing access to request/response
+	 * @param exception Exception that was thrown
+	 * @param host ArgumentsHost providing access to request/response
 	 */
 	catch(exception: unknown, host: ArgumentsHost): void {
 		const ctx = host.switchToHttp();
@@ -80,7 +80,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
 	/**
 	 * Parses exception to extract status code, message, and error type.
 	 *
-	 * @param exception - Exception to parse
+	 * @param exception Exception to parse
 	 *
 	 * @returns Parsed exception details
 	 */
@@ -122,14 +122,14 @@ export class HttpExceptionFilter implements ExceptionFilter {
 	 * Logs exception with full context for debugging.
 	 *
 	 * Logging strategy:
-	 * - 404 errors: Debug level (common, not actionable)
-	 * - 4xx errors: Warn level without stack trace (client errors)
-	 * - 5xx errors: Error level with full stack trace (server errors)
+	 * - `404` errors: Debug level (common, not actionable)
+	 * - `4xx` errors: Warn level without stack trace (client errors)
+	 * - `5xx` errors: Error level with full stack trace (server errors)
 	 *
-	 * @param exception - Exception that was thrown
-	 * @param request - Express request object
-	 * @param correlationId - Correlation ID for request tracking
-	 * @param statusCode - HTTP status code
+	 * @param exception Exception that was thrown
+	 * @param request Express request object
+	 * @param correlationId Correlation ID for request tracking
+	 * @param statusCode HTTP status code
 	 */
 	private logException(
 		exception: unknown,
@@ -139,7 +139,6 @@ export class HttpExceptionFilter implements ExceptionFilter {
 	): void {
 		const { method, url, headers, query } = request;
 
-		// Skip verbose logging for common 404 errors (routes not found)
 		if (statusCode === HttpStatus.NOT_FOUND) {
 			this.logger.debug({
 				msg: "Route not found",

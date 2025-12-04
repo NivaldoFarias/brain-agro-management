@@ -152,10 +152,7 @@ export class FarmsService {
 			take: limit,
 		});
 
-		return {
-			data: farms.map((farm) => this.mapToResponseDto(farm)),
-			total,
-		};
+		return { data: farms.map((farm) => this.mapToResponseDto(farm)), total };
 	}
 
 	/**
@@ -254,7 +251,7 @@ export class FarmsService {
 	 * Note: This will also cascade delete all associated farm-harvest and
 	 * farm-harvest-crop records due to database foreign key constraints.
 	 *
-	 * @param id - The UUID of the farm to delete
+	 * @param id The UUID of the farm to delete
 	 *
 	 * @throws {NotFoundException} If the farm does not exist
 	 *
@@ -572,7 +569,7 @@ export class FarmsService {
 	}
 
 	/**
-	 * Maps a Farm entity to a FarmResponseDto.
+	 * Maps a {@link Farm} entity to a {@link FarmResponseDto}.
 	 *
 	 * Extracts unique crop types from all farm harvests and flattens them
 	 * into a single array of crop types for the response.
@@ -588,16 +585,14 @@ export class FarmsService {
 					farmHarvests?: Array<{ crops?: Array<{ cropType?: CropType }> }>;
 			  }),
 	): FarmResponseDto {
-		const crops: Array<string> = [];
+		const cropSet = new Set<string>();
 
-		if (Array.isArray(farm.farmHarvests)) {
+		if (Array.isArray(farm.farmHarvests) && farm.farmHarvests.length > 0) {
 			for (const farmHarvest of farm.farmHarvests) {
 				const harvestCrops = Array.isArray(farmHarvest.crops) ? farmHarvest.crops : [];
 
 				for (const crop of harvestCrops) {
-					if (!crop.cropType || crops.includes(crop.cropType)) continue;
-
-					crops.push(crop.cropType);
+					if (crop.cropType) cropSet.add(crop.cropType);
 				}
 			}
 		}
@@ -611,7 +606,7 @@ export class FarmsService {
 			arableArea: farm.arableArea,
 			vegetationArea: farm.vegetationArea,
 			producerId: farm.producerId,
-			crops,
+			crops: Array.from(cropSet),
 			createdAt: farm.createdAt,
 			updatedAt: farm.updatedAt,
 		};

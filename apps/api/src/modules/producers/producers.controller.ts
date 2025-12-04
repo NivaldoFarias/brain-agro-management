@@ -1,8 +1,18 @@
 import { faker } from "@faker-js/faker";
-import { Body, Controller, Delete, Get, HttpStatus, Param, Patch, Post } from "@nestjs/common";
-import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
+import {
+	Body,
+	Controller,
+	Delete,
+	Get,
+	HttpStatus,
+	Param,
+	Patch,
+	Post,
+	Query,
+} from "@nestjs/common";
+import { ApiBearerAuth, ApiOperation, ApiQuery, ApiResponse, ApiTags } from "@nestjs/swagger";
 
-import type { ListAllData } from "node_modules/@agro/shared/src/types/dashboard.types";
+import type { ListAllData } from "@agro/shared/types";
 
 import { ParseUUIDPipe } from "@/common";
 
@@ -30,7 +40,7 @@ import { ProducersService } from "./producers.service";
  * ```
  */
 @ApiTags("Producers")
-@ApiBearerAuth("JWT-auth")
+@ApiBearerAuth("JWT")
 @Controller("producers")
 export class ProducersController {
 	constructor(private readonly producersService: ProducersService) {}
@@ -41,7 +51,7 @@ export class ProducersController {
 	 * Validates CPF/CNPJ format and checks for duplicate documents before
 	 * creating the producer record.
 	 *
-	 * @param createProducerDto - Producer data including name and document
+	 * @param createProducerDto Producer data including name and document
 	 *
 	 * @returns The created producer with generated ID and timestamps
 	 *
@@ -71,20 +81,35 @@ export class ProducersController {
 	 */
 	@Get()
 	@ApiOperation({ summary: "Get all producers" })
+	@ApiQuery({
+		name: "page",
+		required: false,
+		type: Number,
+		description: "Page number",
+		default: 1,
+	})
+	@ApiQuery({
+		name: "limit",
+		required: false,
+		type: Number,
+		description: "Items per page",
+		default: 10,
+	})
 	@ApiResponse({
 		status: HttpStatus.OK,
 		description: "List of producers",
 		type: [ProducerResponseDto],
 	})
-	public async findAll(): Promise<ListAllData<ProducerResponseDto>> {
-		const producers = await this.producersService.findAll();
+	public async findAll(
+		@Query("page") page?: string,
+		@Query("limit") limit?: string,
+	): Promise<ListAllData<ProducerResponseDto>> {
+		const pageNum = page ? Number.parseInt(page, 10) : 1;
+		const limitNum = limit ? Number.parseInt(limit, 10) : 10;
 
-		return {
-			data: producers,
-			total: producers.length,
-			page: 1,
-			limit: producers.length,
-		};
+		const { data, total } = await this.producersService.findAll(pageNum, limitNum);
+
+		return { data, total, page: pageNum, limit: limitNum };
 	}
 
 	/**
@@ -92,7 +117,7 @@ export class ProducersController {
 	 *
 	 * Includes the producer's associated farms when using the relations query.
 	 *
-	 * @param id - UUID of the producer to retrieve
+	 * @param id UUID of the producer to retrieve
 	 *
 	 * @returns The producer with the specified ID
 	 *
@@ -117,8 +142,8 @@ export class ProducersController {
 	 * If document is being updated, validates the new document and checks
 	 * for duplicates.
 	 *
-	 * @param id - UUID of the producer to update
-	 * @param updateProducerDto - Fields to update
+	 * @param id UUID of the producer to update
+	 * @param updateProducerDto Fields to update
 	 *
 	 * @returns The updated producer
 	 *
@@ -148,7 +173,7 @@ export class ProducersController {
 	 *
 	 * Also deletes all associated farms due to CASCADE constraint.
 	 *
-	 * @param id - UUID of the producer to delete
+	 * @param id UUID of the producer to delete
 	 *
 	 * @returns Void on successful deletion
 	 *

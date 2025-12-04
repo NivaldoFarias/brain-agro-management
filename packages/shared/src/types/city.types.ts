@@ -21,3 +21,24 @@ import type { BrazilianState } from "../utils/constants.util";
  * ```
  */
 export type CitiesByState = Record<BrazilianState, Array<string>>;
+
+/** City entity type for API responses */
+export interface CityData {
+	/** Unique identifier (UUID) */
+	id: string;
+
+	/** Name of the city */
+	name: string;
+
+	/** Brazilian state (UF) where the city is located */
+	state: string;
+
+	/** IBGE municipality code (7 digits) */
+	ibgeCode: string;
+
+	/** Timestamp when the city was created */
+	createdAt: string;
+
+	/** Timestamp when the city was last updated */
+	updatedAt: string;
+}

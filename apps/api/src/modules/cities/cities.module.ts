@@ -2,6 +2,7 @@ import { HttpModule } from "@nestjs/axios";
 import { Module } from "@nestjs/common";
 import { TypeOrmModule } from "@nestjs/typeorm";
 
+import { CitiesController } from "./cities.controller";
 import { CitiesService } from "./cities.service";
 import { City } from "./entities/city.entity";
 import { IbgeApiService } from "./ibge-api.service";
@@ -17,6 +18,7 @@ import { IbgeApiService } from "./ibge-api.service";
  */
 @Module({
 	imports: [TypeOrmModule.forFeature([City]), HttpModule],
+	controllers: [CitiesController],
 	providers: [CitiesService, IbgeApiService],
 	exports: [CitiesService, IbgeApiService],
 })

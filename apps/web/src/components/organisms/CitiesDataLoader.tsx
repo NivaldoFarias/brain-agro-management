@@ -3,7 +3,7 @@ import { useEffect } from "react";
 import type { ReactElement, ReactNode } from "react";
 
 import { useLocalStorageContext } from "@/contexts/LocalStorageContext";
-import { useGetCitiesByStateQuery } from "@/store/api/dashboardApi";
+import { useGetCitiesQuery } from "@/store/api/citiesApi";
 import { STORAGE_KEYS } from "@/utils/constants.util";
 
 /**
@@ -29,7 +29,12 @@ interface CitiesDataLoaderProps {
  */
 export function CitiesDataLoader({ children }: CitiesDataLoaderProps): ReactElement {
 	const storage = useLocalStorageContext();
-	const { data: cities, isSuccess } = useGetCitiesByStateQuery(undefined);
+	const { data: cities, isSuccess } = useGetCitiesQuery(
+		{ page: 1, limit: 10_000 },
+		{
+			skip: storage.getItem(STORAGE_KEYS.citiesByState) !== null,
+		},
+	);
 
 	useEffect(() => {
 		if (isSuccess && cities) {

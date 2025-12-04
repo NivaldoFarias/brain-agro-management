@@ -198,7 +198,7 @@ function setupOpenApiDocumentation(app: INestApplication): OpenAPIObject {
 				description: "Enter JWT token",
 				in: "header",
 			},
-			"JWT-auth",
+			"JWT",
 		)
 		.build();
 

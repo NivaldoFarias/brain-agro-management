@@ -26,7 +26,7 @@ import { DashboardStatsDto } from "./dto";
  * ```
  */
 @ApiTags("Dashboard")
-@ApiBearerAuth("JWT-auth")
+@ApiBearerAuth("JWT")
 @Controller("dashboard")
 export class DashboardController {
 	constructor(private readonly dashboardService: DashboardService) {}
@@ -65,38 +65,5 @@ export class DashboardController {
 	})
 	getStats(): Promise<DashboardStatsDto> {
 		return this.dashboardService.getStats();
-	}
-
-	/**
-	 * Retrieves all unique cities grouped by Brazilian state.
-	 *
-	 * Provides a map of state codes to city arrays for cascading
-	 * selection in farm creation/editing forms.
-	 *
-	 * ## Use Case
-	 * - Populate city dropdown based on selected state
-	 * - Cache in localStorage for offline form support
-	 * - Ensure data consistency with actual farm records
-	 *
-	 * @returns Object mapping state codes to city arrays
-	 *
-	 * @example
-	 * ```typescript
-	 * const cities = await fetch('/dashboard/cities');
-	 * const spCities = cities.SP; // Cities in São Paulo state
-	 * ```
-	 */
-	@Get("cities")
-	@ApiOperation({
-		summary: "Get cities grouped by state",
-		description:
-			"Returns all unique cities organized by Brazilian state for form cascading selection",
-	})
-	@ApiResponse({
-		status: HttpStatus.OK,
-		description: "Cities retrieved successfully",
-	})
-	getCitiesByState(): Promise<CitiesByState> {
-		return this.dashboardService.getCitiesByState();
 	}
 }

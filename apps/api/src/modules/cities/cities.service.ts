@@ -4,6 +4,10 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { InjectPinoLogger, PinoLogger } from "nestjs-pino";
 import { Repository } from "typeorm";
 
+import type { CityResponseDto } from "./dto";
+
+import type { CitiesByState } from "@agro/shared/types";
+
 import { OrderBy } from "@agro/shared/utils";
 
 import { BrazilianState } from "@/common";
@@ -33,6 +37,35 @@ export class CitiesService {
 	) {}
 
 	/**
+	 * Retrieves paginated cities from the database.
+	 *
+	 * @param page Page number (1-indexed)
+	 * @param limit Number of items per page
+	 *
+	 * @returns Object containing paginated cities and total count
+	 *
+	 * @example
+	 * ```typescript
+	 * const { data, total } = await service.findAll(1, 10);
+	 * console.log(`Page 1: ${data.length} cities of ${total} total`);
+	 * ```
+	 */
+	public async findAll(
+		page = 1,
+		limit = 10,
+	): Promise<{ data: Array<CityResponseDto>; total: number }> {
+		const skip = (page - 1) * limit;
+
+		const [cities, total] = await this.cityRepository.findAndCount({
+			order: { name: OrderBy.Ascending },
+			skip,
+			take: limit,
+		});
+
+		return { data: cities.map((city) => this.mapToResponseDto(city)), total };
+	}
+
+	/**
 	 * Finds all cities in a specific Brazilian state
 	 *
 	 * @param state Brazilian state code (UF)
@@ -45,7 +78,7 @@ export class CitiesService {
 	 * console.log(spCities.length); // 645 cities in São Paulo
 	 * ```
 	 */
-	async findByState(state: string): Promise<Array<City>> {
+	public async findByState(state: BrazilianState): Promise<Array<City>> {
 		try {
 			return await this.cityRepository.find({
 				where: { state },
@@ -72,7 +105,7 @@ export class CitiesService {
 	 * // Returns: { id: "...", name: "Belo Horizonte", state: "MG", ... }
 	 * ```
 	 */
-	async findRandomByState(state: BrazilianState): Promise<City | null> {
+	public async findRandomByState(state: BrazilianState): Promise<City | null> {
 		try {
 			const cities = await this.cityRepository.find({ where: { state } });
 
@@ -101,7 +134,7 @@ export class CitiesService {
 	 * await citiesService.exists("Campinas", BrazilianState.RJ); // false
 	 * ```
 	 */
-	async exists(cityName: string, state: BrazilianState): Promise<boolean> {
+	public async exists(cityName: string, state: BrazilianState): Promise<boolean> {
 		try {
 			const count = await this.cityRepository
 				.createQueryBuilder("city")
@@ -127,7 +160,7 @@ export class CitiesService {
 	 * console.log(total); // ~5570 cities
 	 * ```
 	 */
-	async count(): Promise<number> {
+	public async count(): Promise<number> {
 		try {
 			return await this.cityRepository.count();
 		} catch (error) {
@@ -148,12 +181,30 @@ export class CitiesService {
 	 * const saoPaulo = await citiesService.findByIbgeCode("3550308");
 	 * ```
 	 */
-	async findByIbgeCode(ibgeCode: string): Promise<City | null> {
+	public async findByIbgeCode(ibgeCode: string): Promise<City | null> {
 		try {
 			return await this.cityRepository.findOne({ where: { ibgeCode } });
 		} catch (error) {
 			this.logger.error({ error, ibgeCode }, "Failed to fetch city by IBGE code");
 			return null;
 		}
+	}
+
+	/**
+	 * Maps a {@link City} entity to a {@link CityResponseDto}
+	 *
+	 * @param city City entity to map
+	 *
+	 * @returns Mapped CityResponseDto
+	 */
+	private mapToResponseDto(city: City): CityResponseDto {
+		return {
+			id: city.id,
+			name: city.name,
+			state: city.state,
+			ibgeCode: city.ibgeCode,
+			createdAt: city.createdAt,
+			updatedAt: city.updatedAt,
+		};
 	}
 }
