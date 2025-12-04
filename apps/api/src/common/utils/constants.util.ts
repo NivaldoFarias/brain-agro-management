@@ -4,8 +4,7 @@
  * Contains configuration values unique to the API application.
  */
 
-import { SupportedLocale } from "@agro/shared/constants";
-import { LogLevel, RuntimeEnvironment } from "@agro/shared/utils";
+import { LogLevel, RuntimeEnvironment, SupportedLocale } from "@agro/shared/enums";
 
 import { SeedScale } from "@/database/seeds/seed.constants";
 

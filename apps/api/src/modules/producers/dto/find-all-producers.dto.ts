@@ -2,7 +2,7 @@ import { ApiPropertyOptional } from "@nestjs/swagger";
 import { Type } from "class-transformer";
 import { IsEnum, IsInt, IsOptional, IsString, Max, Min } from "class-validator";
 
-import { ProducerSortField, SortOrder } from "@agro/shared/types";
+import { ProducerSortField, SortOrder } from "@agro/shared/enums";
 
 /**
  * Query parameters for finding all producers with pagination, sorting, and search.
@@ -23,9 +23,9 @@ import { ProducerSortField, SortOrder } from "@agro/shared/types";
  * ```
  */
 export class FindAllProducersDto {
-	/** Page number (1-indexed). Defaults to 1 */
+	/** Page number */
 	@ApiPropertyOptional({
-		description: "Page number (1-indexed)",
+		description: "Page number",
 		example: 1,
 		minimum: 1,
 		default: 1,

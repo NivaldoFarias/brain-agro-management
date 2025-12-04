@@ -19,7 +19,7 @@ import type {
 	StateDistribution,
 } from "@agro/shared/types";
 
-import { BrazilianState, CropType } from "@agro/shared/utils";
+import { BrazilianState, CropType } from "@agro/shared/enums";
 
 import { ParseUUIDPipe } from "@/common";
 

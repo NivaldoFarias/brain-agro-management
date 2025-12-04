@@ -9,7 +9,7 @@ import { Repository } from "typeorm";
 
 import type { PaginatedResponse } from "@agro/shared/types";
 
-import { ProducerSortField, SortOrder } from "@agro/shared/types";
+import { ProducerSortField, SortOrder } from "@agro/shared/enums";
 import {
 	stripCNPJFormatting,
 	stripCPFFormatting,
@@ -115,7 +115,7 @@ export class ProducersService {
 	 * ```
 	 */
 	public async findAll(
-		query: FindAllProducersDto,
+		query: FindAllProducersDto = {},
 	): Promise<PaginatedResponse<ProducerResponseDto>> {
 		const {
 			page = 1,

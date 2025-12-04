@@ -6,10 +6,10 @@ import { Repository } from "typeorm";
 
 import type { CityResponseDto, FindAllCitiesDto } from "./dto";
 
+import type { BrazilianState } from "@agro/shared/enums";
 import type { CitiesByState, PaginatedResponse } from "@agro/shared/types";
-import type { BrazilianState } from "@agro/shared/utils";
 
-import { CitySortField, SortOrder } from "@agro/shared/types";
+import { CitySortField, SortOrder } from "@agro/shared/enums";
 
 import { City } from "./entities/city.entity";
 

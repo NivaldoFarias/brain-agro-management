@@ -11,7 +11,7 @@ import {
 	Min,
 } from "class-validator";
 
-import { BrazilianState, CropType } from "@agro/shared/utils";
+import { BrazilianState, CropType } from "@agro/shared/enums";
 
 /**
  * Data Transfer Object for updating an existing farm.

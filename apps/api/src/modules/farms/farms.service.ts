@@ -5,10 +5,10 @@ import { Repository } from "typeorm";
 
 import type { PinoLogger } from "nestjs-pino";
 
+import type { BrazilianState, CropType } from "@agro/shared/enums";
 import type { CropDistribution, PaginatedResponse, StateDistribution } from "@agro/shared/types";
-import type { BrazilianState, CropType } from "@agro/shared/utils";
 
-import { FarmSortField, SortOrder } from "@agro/shared/types";
+import { FarmSortField, SortOrder } from "@agro/shared/enums";
 import { assertValidFarmArea } from "@agro/shared/validators";
 
 import { Producer } from "@/modules/producers/entities/";

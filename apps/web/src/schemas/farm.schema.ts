@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-import { BrazilianState, CropType } from "@agro/shared/utils";
+import { BrazilianState, CropType } from "@agro/shared/enums";
 import { validateFarmArea } from "@agro/shared/validators";
 
 /**

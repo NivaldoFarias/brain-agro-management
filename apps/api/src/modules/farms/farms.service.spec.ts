@@ -11,7 +11,7 @@ import { getRepositoryToken } from "@nestjs/typeorm";
 import { fixtures, TestConstants } from "test/fixtures";
 import { Repository } from "typeorm";
 
-import { BrazilianState, CropType, OrderBy } from "@agro/shared/utils";
+import { BrazilianState, CropType, SortOrder } from "@agro/shared/enums";
 
 import { Producer } from "@/modules/producers/entities/";
 
@@ -182,7 +182,7 @@ describe("FarmsService", () => {
 			expect(result.data).toHaveLength(1);
 			expect(result.data[0]?.name).toBe("Fazenda Boa Vista");
 			expect(mockFarmRepository.find).toHaveBeenCalledWith({
-				order: { name: OrderBy.Ascending },
+				order: { name: SortOrder.Ascending },
 			});
 		});
 
@@ -348,7 +348,7 @@ describe("FarmsService", () => {
 			expect(result[0]?.producerId).toBe(producerId);
 			expect(mockFarmRepository.find).toHaveBeenCalledWith({
 				where: { producerId },
-				order: { name: OrderBy.Ascending },
+				order: { name: SortOrder.Ascending },
 			});
 		});
 	});

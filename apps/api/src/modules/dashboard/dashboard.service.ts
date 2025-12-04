@@ -13,11 +13,11 @@ import type { PinoLogger } from "nestjs-pino";
 
 import type { CropDistribution, StateDistribution } from "@agro/shared/types";
 
-import { BrazilianState, CropType, OrderBy } from "@agro/shared/utils";
+import { BrazilianState, CropType, SortOrder } from "@agro/shared/enums";
 
-import { City } from "@/modules/cities/entities/city.entity";
-import { Farm } from "@/modules/farms/entities/farm.entity";
-import { Producer } from "@/modules/producers/entities/producer.entity";
+import { City } from "@/modules/cities/entities";
+import { Farm } from "@/modules/farms/entities";
+import { Producer } from "@/modules/producers/entities";
 
 /**
  * Service responsible for aggregating dashboard statistics.
@@ -175,7 +175,7 @@ export class DashboardService {
 			.select("fhc.cropType", "cropType")
 			.addSelect("COUNT(DISTINCT farm.id)", "count")
 			.groupBy("fhc.cropType")
-			.orderBy("count", OrderBy.Descending)
+			.orderBy("count", SortOrder.Descending)
 			.getRawMany();
 
 		return {
@@ -200,7 +200,7 @@ export class DashboardService {
 			.select("farm.state", "state")
 			.addSelect("COUNT(farm.id)", "count")
 			.groupBy("farm.state")
-			.orderBy("count", OrderBy.Descending)
+			.orderBy("count", SortOrder.Descending)
 			.getRawMany();
 
 		return results.map((result) => ({
@@ -222,7 +222,7 @@ export class DashboardService {
 			.select("farm.state", "state")
 			.addSelect("COUNT(DISTINCT farm.producerId)", "count")
 			.groupBy("farm.state")
-			.orderBy("count", OrderBy.Descending)
+			.orderBy("count", SortOrder.Descending)
 			.getRawMany();
 
 		return results.map((result) => ({
@@ -246,7 +246,7 @@ export class DashboardService {
 			.addSelect("COUNT(farm.id)", "count")
 			.groupBy("farm.city")
 			.addGroupBy("farm.state")
-			.orderBy("count", OrderBy.Descending)
+			.orderBy("count", SortOrder.Descending)
 			.limit(limit)
 			.getRawMany();
 
@@ -267,7 +267,7 @@ export class DashboardService {
 	private async getLargestFarms(limit: number): Promise<Array<FarmSummaryDto>> {
 		const farms = await this.farmRepository.find({
 			relations: ["producer"],
-			order: { totalArea: OrderBy.Descending },
+			order: { totalArea: SortOrder.Descending },
 			take: limit,
 		});
 
@@ -305,8 +305,8 @@ export class DashboardService {
 			.addSelect("SUM(farm.totalArea)", "totalArea")
 			.groupBy("producer.id")
 			.addGroupBy("producer.name")
-			.orderBy("farmCount", OrderBy.Descending)
-			.addOrderBy("totalArea", OrderBy.Descending)
+			.orderBy("farmCount", SortOrder.Descending)
+			.addOrderBy("totalArea", SortOrder.Descending)
 			.limit(limit)
 			.getRawMany();
 

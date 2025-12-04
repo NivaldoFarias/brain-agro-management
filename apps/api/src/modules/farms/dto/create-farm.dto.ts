@@ -12,7 +12,7 @@ import {
 	Min,
 } from "class-validator";
 
-import { BrazilianState, CropType } from "@agro/shared/utils";
+import { BrazilianState, CropType } from "@agro/shared/enums";
 
 import { IsCityInState } from "@/common/decorators/city-in-state.decorator";
 

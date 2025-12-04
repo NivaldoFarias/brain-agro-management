@@ -5,17 +5,15 @@ import { DataSource } from "typeorm";
 
 import type { SeedConfig } from "./seed.constants";
 
-import { BrazilianState, generateDocument } from "@agro/shared/utils";
+import { BrazilianState } from "@agro/shared/enums";
+import { generateDocument } from "@agro/shared/utils";
 
 import { delay } from "@/common";
 import { createPinoConfig, env } from "@/config/";
-import { City } from "@/modules/cities/entities/city.entity";
+import { City } from "@/modules/cities/entities";
 import { IbgeApiService } from "@/modules/cities/ibge-api.service";
-import { FarmHarvestCrop } from "@/modules/farms/entities/farm-harvest-crop.entity";
-import { FarmHarvest } from "@/modules/farms/entities/farm-harvest.entity";
-import { Farm } from "@/modules/farms/entities/farm.entity";
-import { Harvest } from "@/modules/farms/entities/harvest.entity";
-import { Producer } from "@/modules/producers/entities/producer.entity";
+import { Farm, FarmHarvest, FarmHarvestCrop, Harvest } from "@/modules/farms/entities";
+import { Producer } from "@/modules/producers/entities";
 
 import { FARM_NAME_PREFIXES } from "./seed.constants";
 import { SeedUtilities } from "./seed.utilities";

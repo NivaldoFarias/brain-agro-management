@@ -3,7 +3,7 @@ import { Injectable } from "@nestjs/common";
 
 import type { SeedConfig } from "./seed.constants";
 
-import { BrazilianState, CropType } from "@agro/shared/utils";
+import { BrazilianState, CropType } from "@agro/shared/enums";
 
 import { CROP_COMBINATIONS, SeedScale, STATE_WEIGHTS } from "./seed.constants";
 

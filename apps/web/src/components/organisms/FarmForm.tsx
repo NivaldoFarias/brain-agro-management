@@ -8,7 +8,7 @@ import type { ReactElement } from "react";
 
 import type { CreateFarmFormData } from "@/schemas";
 
-import { BrazilianState, CropType } from "@agro/shared/utils";
+import { BrazilianState, CropType } from "@agro/shared/enums";
 
 import { useLocalStorageContext } from "@/contexts/LocalStorageContext";
 import { createFarmSchema } from "@/schemas";

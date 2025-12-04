@@ -3,7 +3,7 @@ import { ApiOperation, ApiParam, ApiResponse, ApiTags } from "@nestjs/swagger";
 
 import type { CitiesByState, PaginatedResponse } from "@agro/shared/types";
 
-import { BrazilianState } from "@agro/shared/utils";
+import { BrazilianState } from "@agro/shared/enums";
 
 import { CitiesService } from "./cities.service";
 import { CityResponseDto, FindAllCitiesDto } from "./dto";

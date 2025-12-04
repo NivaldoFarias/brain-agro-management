@@ -31,7 +31,11 @@ export interface ProducerListProps {
 	/** Whether delete operation is in progress */
 	isDeletingId?: string;
 
-	/** Current page number (1-indexed) */
+	/**
+	 * Current page number
+	 *
+	 * @default 1
+	 */
 	page?: number;
 
 	/** Total number of items */

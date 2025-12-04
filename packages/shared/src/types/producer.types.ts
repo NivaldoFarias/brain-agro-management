@@ -148,7 +148,7 @@ export interface ProducersListResponse {
  */
 export interface ProducersListQuery {
 	/**
-	 * Page number (1-indexed).
+	 * Page number
 	 *
 	 * @default 1
 	 * @minimum `1`

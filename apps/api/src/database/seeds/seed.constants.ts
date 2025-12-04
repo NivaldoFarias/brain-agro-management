@@ -5,8 +5,7 @@
  * seeding process, including state weights, crop combinations, and scale configurations.
  */
 
-import { SupportedLocale } from "@agro/shared/constants";
-import { BrazilianState, CropType } from "@agro/shared/utils";
+import { BrazilianState, CropType, SupportedLocale } from "@agro/shared/enums";
 
 /** Supported database seeding scales */
 export enum SeedScale {

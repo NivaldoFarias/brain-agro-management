@@ -7,7 +7,7 @@ import type {
 	UpdateProducerRequest,
 } from "@agro/shared/types";
 
-import { HttpMethod } from "@agro/shared/utils";
+import { HttpMethod } from "@agro/shared/enums";
 
 import { api } from "./baseApi";
 

@@ -1,2 +1,2 @@
-export * from "./locale.constants.js";
-export * from "./routes.js";
+export * from "./locale.constants";
+export * from "./routes.constants";

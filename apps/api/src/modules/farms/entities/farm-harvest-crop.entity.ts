@@ -8,7 +8,7 @@ import {
 	UpdateDateColumn,
 } from "typeorm";
 
-import { CropType } from "@agro/shared/utils";
+import { CropType } from "@agro/shared/enums";
 
 import { FarmHarvest } from "./farm-harvest.entity";
 

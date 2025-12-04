@@ -1,6 +1,4 @@
-import type { BrazilianState, CropType } from "../utils/constants.util";
-
-import { FarmSortField, SortOrder } from "./api";
+import { BrazilianState, CropType, FarmSortField, SortOrder } from "../enums";
 
 /**
  * Farm entity type representing agricultural properties.
@@ -266,7 +264,7 @@ export interface FarmsListResponse {
 	/** Total count of farms matching the query */
 	total: number;
 
-	/** Current page number (1-indexed) */
+	/** Current page number */
 	page: number;
 
 	/** Number of items per page */
@@ -290,7 +288,7 @@ export interface FarmsListResponse {
  */
 export interface FarmsListQuery {
 	/**
-	 * Page number (1-indexed).
+	 * Page number
 	 *
 	 * @default 1
 	 * @minimum `1`

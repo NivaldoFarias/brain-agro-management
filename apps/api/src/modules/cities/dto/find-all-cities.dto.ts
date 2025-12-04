@@ -2,8 +2,7 @@ import { ApiPropertyOptional } from "@nestjs/swagger";
 import { Type } from "class-transformer";
 import { IsEnum, IsInt, IsOptional, Max, Min } from "class-validator";
 
-import { CitySortField, SortOrder } from "@agro/shared/types";
-import { BrazilianState } from "@agro/shared/utils";
+import { BrazilianState, CitySortField, SortOrder } from "@agro/shared/enums";
 
 /**
  * Query parameters for finding all cities with pagination, sorting, and filtering.
@@ -24,9 +23,9 @@ import { BrazilianState } from "@agro/shared/utils";
  * ```
  */
 export class FindAllCitiesDto {
-	/** Page number (1-indexed). Defaults to 1 */
+	/** Page number */
 	@ApiPropertyOptional({
-		description: "Page number (1-indexed)",
+		description: "Page number",
 		example: 1,
 		minimum: 1,
 		default: 1,

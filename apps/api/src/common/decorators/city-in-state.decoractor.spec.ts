@@ -4,7 +4,7 @@ import { PinoLogger } from "nestjs-pino";
 
 import type { Repository } from "typeorm";
 
-import { BrazilianState } from "@agro/shared/utils";
+import { BrazilianState } from "@agro/shared/enums";
 
 import { City } from "@/modules/cities/entities/city.entity";
 

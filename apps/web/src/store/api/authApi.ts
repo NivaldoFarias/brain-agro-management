@@ -1,7 +1,7 @@
 import type { ApiResponse, AuthResponseDto, LoginDto } from "@agro/shared/types";
 
 import { ROUTE_PATHS } from "@agro/shared/constants";
-import { HttpMethod } from "@agro/shared/utils";
+import { HttpMethod } from "@agro/shared/enums";
 
 import { api } from "./baseApi";
 

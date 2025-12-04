@@ -1,6 +1,6 @@
 import type { Response } from "supertest";
 
-import type { BrazilianState } from "@agro/shared/utils";
+import type { BrazilianState } from "@agro/shared/enums";
 
 import type { CreateFarmDto, FarmResponseDto, UpdateFarmDto } from "@/modules/farms/dto";
 

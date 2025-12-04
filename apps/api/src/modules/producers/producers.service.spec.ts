@@ -11,7 +11,7 @@ import { getRepositoryToken } from "@nestjs/typeorm";
 import { fixtures, TestConstants } from "test/fixtures";
 import { Repository } from "typeorm";
 
-import { OrderBy } from "@agro/shared/utils";
+import { SortOrder } from "@agro/shared/enums";
 
 import { UpdateProducerDto } from "./dto";
 import { Producer } from "./entities/producer.entity";
@@ -64,7 +64,7 @@ describe("ProducersService", () => {
 				id: TestConstants.NON_EXISTENT_UUID,
 				name: createDto.name,
 				document: createDto.document.replaceAll(/\D/g, ""),
-				farms: Promise.resolve([]),
+				farms: [],
 				createdAt: new Date("2025-11-24T10:00:00Z"),
 				updatedAt: new Date("2025-11-24T10:00:00Z"),
 			};
@@ -135,7 +135,7 @@ describe("ProducersService", () => {
 					id: "550e8400-e29b-41d4-a716-446655440000",
 					name: "João da Silva",
 					document: "11144477735",
-					farms: Promise.resolve([]),
+					farms: [],
 					createdAt: new Date(),
 					updatedAt: new Date(),
 				},
@@ -143,7 +143,7 @@ describe("ProducersService", () => {
 					id: "660e9500-f30c-52e5-b827-557766551111",
 					name: "Maria Santos",
 					document: "22255588846",
-					farms: Promise.resolve([]),
+					farms: [],
 					createdAt: new Date(),
 					updatedAt: new Date(),
 				},
@@ -153,10 +153,10 @@ describe("ProducersService", () => {
 
 			const result = await service.findAll();
 
-			expect(result).toHaveLength(2);
+			expect(result.data).toHaveLength(2);
 
-			const first = result[0];
-			const second = result[1];
+			const first = result.data[0];
+			const second = result.data[1];
 
 			expect(first).toBeDefined();
 
@@ -166,7 +166,7 @@ describe("ProducersService", () => {
 
 			if (second) expect(second.name).toBe("Maria Santos");
 
-			expect(mockRepository.find).toHaveBeenCalledWith({ order: { name: OrderBy.Ascending } });
+			expect(mockRepository.find).toHaveBeenCalledWith({ order: { name: SortOrder.Ascending } });
 		});
 
 		it("should return an empty array when no producers exist", async () => {
@@ -183,7 +183,7 @@ describe("ProducersService", () => {
 			id: "550e8400-e29b-41d4-a716-446655440000",
 			name: "João da Silva",
 			document: "11144477735",
-			farms: Promise.resolve([]),
+			farms: [],
 			createdAt: new Date(),
 			updatedAt: new Date(),
 		};
@@ -213,7 +213,7 @@ describe("ProducersService", () => {
 			id: "550e8400-e29b-41d4-a716-446655440000",
 			name: "João da Silva",
 			document: "11144477735",
-			farms: Promise.resolve([]),
+			farms: [],
 			createdAt: new Date(),
 			updatedAt: new Date(),
 		};

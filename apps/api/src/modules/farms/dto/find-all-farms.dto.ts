@@ -2,8 +2,7 @@ import { ApiPropertyOptional } from "@nestjs/swagger";
 import { Type } from "class-transformer";
 import { IsEnum, IsInt, IsOptional, IsString, IsUUID, Max, Min } from "class-validator";
 
-import { FarmSortField, SortOrder } from "@agro/shared/types";
-import { BrazilianState } from "@agro/shared/utils";
+import { BrazilianState, FarmSortField, SortOrder } from "@agro/shared/enums";
 
 /**
  * Query parameters for finding all farms with pagination, sorting, filtering, and search.
@@ -25,9 +24,9 @@ import { BrazilianState } from "@agro/shared/utils";
  * ```
  */
 export class FindAllFarmsDto {
-	/** Page number (1-indexed). Defaults to 1 */
+	/** Page number */
 	@ApiPropertyOptional({
-		description: "Page number (1-indexed)",
+		description: "Page number",
 		example: 1,
 		minimum: 1,
 		default: 1,

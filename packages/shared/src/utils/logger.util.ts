@@ -2,7 +2,7 @@ import process from "node:process";
 
 import pino from "pino";
 
-import { LogLevel, RuntimeEnvironment } from "./constants.util";
+import { LogLevel, RuntimeEnvironment } from "../enums";
 
 /** Configuration options for creating a logger instance */
 export interface LoggerConfig {
@@ -64,7 +64,7 @@ export interface LoggerConfig {
  *
  * @example
  * ```typescript
- * import { createLogger, LogLevel, RuntimeEnvironment } from "@agro/shared/utils";
+ * import { createLogger } from "@agro/shared/utils";
  *
  * const logger = createLogger({
  *   name: "api",

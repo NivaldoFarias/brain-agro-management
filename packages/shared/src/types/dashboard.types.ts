@@ -1,4 +1,4 @@
-import type { BrazilianState, CropType } from "../utils/constants.util";
+import type { BrazilianState, CropType } from "../enums";
 
 /**
  * Farm distribution by Brazilian state.

@@ -13,7 +13,8 @@ import path from "node:path";
 
 import Bun from "bun";
 
-import { createLogger, LogLevel, RuntimeEnvironment } from "@agro/shared/utils";
+import { LogLevel, RuntimeEnvironment } from "@agro/shared/enums";
+import { createLogger } from "@agro/shared/utils";
 
 const ROOT_DIR = import.meta.dir;
 const DIST_DIR = path.join(ROOT_DIR, "dist");

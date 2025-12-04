@@ -1,4 +1,4 @@
-import type { BrazilianState } from "../utils/constants.util";
+import type { BrazilianState } from "../enums";
 
 /**
  * Cities grouped by Brazilian state.

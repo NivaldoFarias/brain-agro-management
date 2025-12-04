@@ -7,7 +7,7 @@ import type { ReactElement } from "react";
 
 import type { Farm } from "@agro/shared/types";
 
-import { CropType } from "@agro/shared/utils";
+import { CropType } from "@agro/shared/enums";
 
 import { PaginationControls } from "../atoms/";
 import { EmptyState } from "../ui/EmptyState";
@@ -33,7 +33,11 @@ export interface FarmListProps {
 	/** Whether delete operation is in progress */
 	isDeletingId?: string;
 
-	/** Current page number (1-indexed) */
+	/**
+	 * Current page number
+	 *
+	 * @default 1
+	 */
 	page?: number;
 
 	/** Total number of items */
