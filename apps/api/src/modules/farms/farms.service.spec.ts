@@ -11,9 +11,8 @@ import { getRepositoryToken } from "@nestjs/typeorm";
 import { fixtures, TestConstants } from "test/fixtures";
 import { Repository } from "typeorm";
 
-import { CropType, OrderBy } from "@agro/shared/utils";
+import { BrazilianState, CropType, OrderBy } from "@agro/shared/utils";
 
-import { BrazilianState } from "@/common";
 import { Producer } from "@/modules/producers/entities/";
 
 import { CreateFarmDto, UpdateFarmDto } from "./dto";
@@ -92,8 +91,8 @@ describe("FarmsService", () => {
 				arableArea: createDto.arableArea,
 				vegetationArea: createDto.vegetationArea,
 				producerId: createDto.producerId,
-				producer: Promise.resolve({} as Producer),
-				farmHarvests: Promise.resolve([]),
+				producer: {} as Producer,
+				farmHarvests: [],
 				createdAt: new Date("2025-11-24T10:00:00Z"),
 				updatedAt: new Date("2025-11-24T10:00:00Z"),
 			};
@@ -169,8 +168,8 @@ describe("FarmsService", () => {
 					arableArea: 70,
 					vegetationArea: 25,
 					producerId: "550e8400-e29b-41d4-a716-446655440000",
-					producer: Promise.resolve({} as Producer),
-					farmHarvests: Promise.resolve([]),
+					producer: {} as Producer,
+					farmHarvests: [],
 					createdAt: new Date(),
 					updatedAt: new Date(),
 				},
@@ -180,8 +179,8 @@ describe("FarmsService", () => {
 
 			const result = await service.findAll();
 
-			expect(result).toHaveLength(1);
-			expect(result[0]?.name).toBe("Fazenda Boa Vista");
+			expect(result.data).toHaveLength(1);
+			expect(result.data[0]?.name).toBe("Fazenda Boa Vista");
 			expect(mockFarmRepository.find).toHaveBeenCalledWith({
 				order: { name: OrderBy.Ascending },
 			});
@@ -192,7 +191,7 @@ describe("FarmsService", () => {
 
 			const result = await service.findAll();
 
-			expect(result).toEqual([]);
+			expect(result.data).toEqual([]);
 		});
 	});
 
@@ -206,8 +205,8 @@ describe("FarmsService", () => {
 			arableArea: 70,
 			vegetationArea: 25,
 			producerId: "550e8400-e29b-41d4-a716-446655440000",
-			producer: Promise.resolve({} as Producer),
-			farmHarvests: Promise.resolve([]),
+			producer: {} as Producer,
+			farmHarvests: [],
 			createdAt: new Date(),
 			updatedAt: new Date(),
 		};
@@ -242,8 +241,8 @@ describe("FarmsService", () => {
 			arableArea: 70,
 			vegetationArea: 25,
 			producerId: "550e8400-e29b-41d4-a716-446655440000",
-			producer: Promise.resolve({} as Producer),
-			farmHarvests: Promise.resolve([]),
+			producer: {} as Producer,
+			farmHarvests: [],
 			createdAt: new Date(),
 			updatedAt: new Date(),
 		};
@@ -334,8 +333,8 @@ describe("FarmsService", () => {
 					arableArea: 70,
 					vegetationArea: 25,
 					producerId,
-					producer: Promise.resolve({} as Producer),
-					farmHarvests: Promise.resolve([]),
+					producer: {} as Producer,
+					farmHarvests: [],
 					createdAt: new Date(),
 					updatedAt: new Date(),
 				},
@@ -366,8 +365,8 @@ describe("FarmsService", () => {
 					arableArea: 70,
 					vegetationArea: 25,
 					producerId: "550e8400-e29b-41d4-a716-446655440000",
-					producer: Promise.resolve({} as Producer),
-					farmHarvests: Promise.resolve([]),
+					producer: {} as Producer,
+					farmHarvests: [],
 					createdAt: new Date(),
 					updatedAt: new Date(),
 				},

@@ -11,7 +11,7 @@ import {
 	Min,
 } from "class-validator";
 
-import { BrazilianState, CropType } from "@/common";
+import { BrazilianState, CropType } from "@agro/shared/utils";
 
 /**
  * Data Transfer Object for updating an existing farm.
@@ -75,12 +75,13 @@ export class UpdateFarmDto {
 	 */
 	@ApiPropertyOptional({
 		description: "Updated Brazilian state (UF)",
-		example: "RJ",
+		example: BrazilianState.RJ,
 		enum: BrazilianState,
+		enumName: "BrazilianState",
 	})
 	@IsOptional()
 	@IsEnum(BrazilianState, { message: "State must be a valid Brazilian state code" })
-	state?: BrazilianState;
+	state?: string;
 
 	/**
 	 * Updated total area of the farm in hectares.
@@ -153,6 +154,7 @@ export class UpdateFarmDto {
 		description: "Updated array of crops planted on this farm",
 		example: [CropType.Soy, CropType.Corn],
 		enum: CropType,
+		enumName: "CropType",
 		isArray: true,
 	})
 	@IsOptional()

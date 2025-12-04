@@ -5,5 +5,6 @@
  */
 
 export * from "./create-producer.dto";
+export * from "./find-all-producers.dto";
 export * from "./producer-response.dto";
 export * from "./update-producer.dto";

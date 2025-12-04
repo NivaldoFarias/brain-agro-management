@@ -1,12 +1,12 @@
 import { Controller, Get, HttpStatus, Param, Query } from "@nestjs/common";
-import { ApiOperation, ApiParam, ApiQuery, ApiResponse, ApiTags } from "@nestjs/swagger";
+import { ApiOperation, ApiParam, ApiResponse, ApiTags } from "@nestjs/swagger";
 
-import type { ListAllData } from "@agro/shared/types";
+import type { CitiesByState, PaginatedResponse } from "@agro/shared/types";
 
-import { BrazilianState } from "@/common";
+import { BrazilianState } from "@agro/shared/utils";
 
 import { CitiesService } from "./cities.service";
-import { CityResponseDto } from "./dto";
+import { CityResponseDto, FindAllCitiesDto } from "./dto";
 import { City } from "./entities/city.entity";
 
 /**
@@ -30,46 +30,62 @@ export class CitiesController {
 	constructor(private readonly citiesService: CitiesService) {}
 
 	/**
-	 * Retrieves all cities with pagination.
+	 * Retrieves all cities with pagination, sorting, and filtering.
 	 *
-	 * Returns cities ordered alphabetically by name with pagination support.
+	 * Supports filtering by state with configurable sorting and pagination.
+	 * All query parameters are optional.
 	 *
-	 * @param page Page number (1-indexed)
-	 * @param limit Number of items per page
+	 * @param query Query parameters for pagination, sorting, and filtering
 	 *
-	 * @returns Paginated farm response
+	 * @returns Paginated city response with metadata
 	 */
 	@Get()
-	@ApiOperation({ summary: "Get all cities with pagination" })
-	@ApiQuery({
-		name: "page",
-		required: false,
-		type: Number,
-		description: "Page number",
-		default: 1,
-	})
-	@ApiQuery({
-		name: "limit",
-		required: false,
-		type: Number,
-		description: "Items per page",
-		default: 100,
+	@ApiOperation({
+		summary: "Get all cities with pagination, sorting, and filtering",
+		description:
+			"Retrieves a paginated list of cities. Supports filtering by state, customizable sorting, and pagination.",
 	})
 	@ApiResponse({
 		status: HttpStatus.OK,
 		description: "Paginated list of cities",
 		type: [CityResponseDto],
 	})
-	public async findAll(
-		@Query("page") page?: string,
-		@Query("limit") limit?: string,
-	): Promise<ListAllData<CityResponseDto>> {
-		const pageNum = page ? Number.parseInt(page, 10) : 1;
-		const limitNum = limit ? Number.parseInt(limit, 10) : 100;
+	public findAll(@Query() query: FindAllCitiesDto): Promise<PaginatedResponse<CityResponseDto>> {
+		return this.citiesService.findAll(query);
+	}
 
-		const { data, total } = await this.citiesService.findAll(pageNum, limitNum);
-
-		return { data, total, page: pageNum, limit: limitNum };
+	/**
+	 * Retrieves all cities grouped by state for form dropdowns.
+	 *
+	 * Returns all 5,570 Brazilian cities organized by state without pagination.
+	 * Optimized for client-side caching to support offline form functionality.
+	 * This endpoint is specifically designed for loading city options in form selects.
+	 *
+	 * @returns Object mapping state codes to arrays of city names
+	 */
+	@Get("all/grouped-by-state")
+	@ApiOperation({
+		summary: "Get all cities grouped by state for form dropdowns",
+		description:
+			"Returns all Brazilian cities grouped by state. Intended for client-side caching to populate city dropdowns in forms. Returns ~5,570 cities.",
+	})
+	@ApiResponse({
+		status: HttpStatus.OK,
+		description: "Cities grouped by state",
+		schema: {
+			type: "object",
+			properties: {
+				SP: { type: "array", items: { type: "string" } },
+				MG: { type: "array", items: { type: "string" } },
+			},
+			example: {
+				SP: ["São Paulo", "Campinas", "Santos"],
+				MG: ["Belo Horizonte", "Uberlândia"],
+			},
+		},
+	})
+	public getAllGroupedByState(): Promise<CitiesByState> {
+		return this.citiesService.getAllGroupedByState();
 	}
 
 	/**
@@ -83,13 +99,14 @@ export class CitiesController {
 	 *
 	 * @throws {BadRequestException} If state code is invalid
 	 */
-	@Get(":state")
+	@Get("by-state/:state")
 	@ApiOperation({ summary: "Get all cities in a state" })
 	@ApiParam({
 		name: "state",
 		description: "Brazilian state code (UF)",
-		enum: Object.values(BrazilianState),
+		enum: BrazilianState,
 		example: BrazilianState.SP,
+		enumName: "BrazilianState",
 	})
 	@ApiResponse({
 		status: HttpStatus.OK,
@@ -97,8 +114,8 @@ export class CitiesController {
 		type: [City],
 	})
 	@ApiResponse({ status: HttpStatus.BAD_REQUEST, description: "Invalid state code" })
-	public async findByState(@Param("state") state: string): Promise<Array<City>> {
-		return this.citiesService.findByState(state as BrazilianState);
+	public async findByState(@Param("state") state: BrazilianState): Promise<Array<City>> {
+		return this.citiesService.findByState(state);
 	}
 
 	/**

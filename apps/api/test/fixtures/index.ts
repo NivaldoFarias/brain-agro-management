@@ -1,3 +1,6 @@
+import { farmFixtures } from "./farm.fixtures";
+import { producerFixtures } from "./producer.fixtures";
+
 /**
  * Test fixtures and mock data factories.
  *
@@ -16,5 +19,8 @@
  */
 
 export * from "./constants";
-export * from "./farm.fixtures";
-export * from "./producer.fixtures";
+
+export const fixtures = {
+	farm: farmFixtures,
+	producer: producerFixtures,
+};

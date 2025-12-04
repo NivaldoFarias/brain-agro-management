@@ -11,5 +11,4 @@ export * from "./interceptors/transform.interceptor";
 export * from "./filters/http-exception.filter";
 export * from "./pipes/parse-uuid.pipe";
 export * from "./decorators/city-in-state.decorator";
-export * from "@agro/shared/utils";
 export * from "./utils";

@@ -4,9 +4,9 @@
  * @module types
  */
 
-export * from "./api/index.js";
-export * from "./auth.types.js";
-export * from "./city.types.js";
-export * from "./dashboard.types.js";
-export * from "./farm.types.js";
-export * from "./producer.types.js";
+export * from "./api/";
+export * from "./auth.types";
+export * from "./city.types";
+export * from "./dashboard.types";
+export * from "./farm.types";
+export * from "./producer.types";

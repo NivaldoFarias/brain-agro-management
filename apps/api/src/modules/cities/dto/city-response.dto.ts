@@ -2,7 +2,7 @@ import { faker } from "@faker-js/faker/locale/pt_BR";
 import { ApiProperty } from "@nestjs/swagger";
 import { Exclude, Expose } from "class-transformer";
 
-import { BrazilianState } from "@/common";
+import { BrazilianState } from "@agro/shared/utils";
 
 /**
  * Data Transfer Object for city responses.

@@ -5,15 +5,15 @@ import { Repository } from "typeorm";
 
 import type { PinoLogger } from "nestjs-pino";
 
-import type { CropDistribution, StateDistribution } from "@agro/shared/types";
+import type { CropDistribution, PaginatedResponse, StateDistribution } from "@agro/shared/types";
 import type { BrazilianState, CropType } from "@agro/shared/utils";
 
-import { OrderBy } from "@agro/shared/utils";
+import { FarmSortField, SortOrder } from "@agro/shared/types";
 import { assertValidFarmArea } from "@agro/shared/validators";
 
 import { Producer } from "@/modules/producers/entities/";
 
-import { CreateFarmDto, FarmResponseDto, UpdateFarmDto } from "./dto";
+import { CreateFarmDto, FarmResponseDto, FindAllFarmsDto, UpdateFarmDto } from "./dto";
 import { Farm, FarmHarvest, FarmHarvestCrop, Harvest } from "./entities/";
 
 /**
@@ -126,33 +126,65 @@ export class FarmsService {
 	}
 
 	/**
-	 * Retrieves paginated farms from the database.
+	 * Retrieves all farms with pagination, sorting, filtering, and search.
 	 *
-	 * @param page Page number (1-indexed)
-	 * @param limit Number of items per page
+	 * Supports filtering by state, city, producer, and name search with
+	 * configurable sorting and pagination. Uses TypeORM QueryBuilder
+	 * for efficient database queries.
 	 *
-	 * @returns Object containing paginated farms and total count
+	 * @param query Query parameters for pagination, sorting, filtering, and search
+	 *
+	 * @returns Paginated response with farms and metadata
 	 *
 	 * @example
 	 * ```typescript
-	 * const { data, total } = await service.findAll(1, 10);
-	 * console.log(`Page 1: ${data.length} farms of ${total} total`);
+	 * const result = await service.findAll({
+	 *   page: 1,
+	 *   limit: 10,
+	 *   sortBy: FarmSortField.TotalArea,
+	 *   sortOrder: SortOrder.Descending,
+	 *   state: BrazilianState.SP,
+	 *   search: "Fazenda"
+	 * });
+	 * console.log(`Found ${result.total} farms`);
 	 * ```
 	 */
-	public async findAll(
-		page = 1,
-		limit = 10,
-	): Promise<{ data: Array<FarmResponseDto>; total: number }> {
+	public async findAll(query: FindAllFarmsDto = {}): Promise<PaginatedResponse<FarmResponseDto>> {
+		const {
+			page = 1,
+			limit = 10,
+			sortBy = FarmSortField.Name,
+			sortOrder = SortOrder.Ascending,
+			search,
+			state,
+			city,
+			producerId,
+		} = query;
+
+		const qb = this.farmRepository
+			.createQueryBuilder("farm")
+			.leftJoinAndSelect("farm.farmHarvests", "farmHarvest")
+			.leftJoinAndSelect("farmHarvest.crops", "crop");
+
+		if (search) qb.andWhere("farm.name ILIKE :search", { search: `%${search}%` });
+		if (state) qb.andWhere("farm.state = :state", { state });
+		if (city) qb.andWhere("farm.city = :city", { city });
+		if (producerId) qb.andWhere("farm.producerId = :producerId", { producerId });
+
+		qb.orderBy(`farm.${sortBy}`, sortOrder as SortOrder);
+
 		const skip = (page - 1) * limit;
+		qb.skip(skip).take(limit);
 
-		const [farms, total] = await this.farmRepository.findAndCount({
-			relations: { farmHarvests: { crops: true } },
-			order: { name: OrderBy.Ascending },
-			skip,
-			take: limit,
-		});
+		const [farms, total] = await qb.getManyAndCount();
 
-		return { data: farms.map((farm) => this.mapToResponseDto(farm)), total };
+		return {
+			data: farms.map((farm) => this.mapToResponseDto(farm)),
+			page,
+			limit,
+			total,
+			totalPages: Math.ceil(total / limit),
+		};
 	}
 
 	/**
@@ -286,7 +318,7 @@ export class FarmsService {
 			.leftJoinAndSelect("farm.farmHarvests", "farmHarvest")
 			.leftJoinAndSelect("farmHarvest.crops", "crop")
 			.where("farm.producerId = :producerId", { producerId })
-			.orderBy("farm.name", OrderBy.Ascending)
+			.orderBy("farm.name", "ASC")
 			.getMany();
 
 		return farms.map((farm) => this.mapToResponseDto(farm));
@@ -310,7 +342,7 @@ export class FarmsService {
 			.leftJoinAndSelect("farm.farmHarvests", "farmHarvest")
 			.leftJoinAndSelect("farmHarvest.crops", "crop")
 			.where("farm.state = :state", { state })
-			.orderBy("farm.name", OrderBy.Ascending)
+			.orderBy("farm.name", "ASC")
 			.getMany();
 
 		return farms.map((farm) => this.mapToResponseDto(farm));
@@ -367,7 +399,7 @@ export class FarmsService {
 			.select("farm.state", "state")
 			.addSelect("COUNT(farm.id)", "count")
 			.groupBy("farm.state")
-			.orderBy("count", OrderBy.Descending)
+			.orderBy("count", "DESC")
 			.getRawMany();
 
 		return results.map((result) => ({
@@ -432,7 +464,7 @@ export class FarmsService {
 			.select("fhc.cropType", "cropType")
 			.addSelect("COUNT(DISTINCT fh.farmId)", "count")
 			.groupBy("fhc.cropType")
-			.orderBy("count", OrderBy.Descending)
+			.orderBy("count", "DESC")
 			.getRawMany();
 
 		return results.map((result) => {

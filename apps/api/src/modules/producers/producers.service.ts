@@ -7,7 +7,9 @@ import {
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 
-import { OrderBy } from "@agro/shared/utils";
+import type { PaginatedResponse } from "@agro/shared/types";
+
+import { ProducerSortField, SortOrder } from "@agro/shared/types";
 import {
 	stripCNPJFormatting,
 	stripCPFFormatting,
@@ -15,7 +17,12 @@ import {
 	validateCPF,
 } from "@agro/shared/validators";
 
-import { CreateProducerDto, ProducerResponseDto, UpdateProducerDto } from "./dto";
+import {
+	CreateProducerDto,
+	FindAllProducersDto,
+	ProducerResponseDto,
+	UpdateProducerDto,
+} from "./dto";
 import { Producer } from "./entities/producer.entity";
 
 /**
@@ -86,33 +93,58 @@ export class ProducersService {
 	}
 
 	/**
-	 * Retrieves all producers from the database.
+	 * Retrieves all producers with pagination, sorting, and search.
 	 *
-	 * @param page Page number (1-indexed)
-	 * @param limit Number of items per page
+	 * Supports filtering by name search with configurable sorting and pagination.
+	 * Uses TypeORM QueryBuilder for efficient database queries.
 	 *
-	 * @returns Array of all producers
+	 * @param query Query parameters for pagination, sorting, and search
+	 *
+	 * @returns Paginated response with producers and metadata
 	 *
 	 * @example
 	 * ```typescript
-	 * const producers = await service.findAll();
-	 * console.log(`Found ${producers.length} producers`);
+	 * const result = await service.findAll({
+	 *   page: 1,
+	 *   limit: 10,
+	 *   sortBy: ProducerSortField.Name,
+	 *   sortOrder: SortOrder.Ascending,
+	 *   search: "Silva"
+	 * });
+	 * console.log(`Found ${result.total} producers`);
 	 * ```
 	 */
 	public async findAll(
-		page = 1,
-		limit = 10,
-	): Promise<{ data: Array<ProducerResponseDto>; total: number }> {
+		query: FindAllProducersDto,
+	): Promise<PaginatedResponse<ProducerResponseDto>> {
+		const {
+			page = 1,
+			limit = 10,
+			sortBy = ProducerSortField.Name,
+			sortOrder = SortOrder.Ascending,
+			search,
+		} = query;
+
+		const qb = this.producerRepository
+			.createQueryBuilder("producer")
+			.leftJoinAndSelect("producer.farms", "farms");
+
+		if (search) qb.andWhere("producer.name ILIKE :search", { search: `%${search}%` });
+
+		qb.orderBy(`producer.${sortBy}`, sortOrder as SortOrder);
+
 		const skip = (page - 1) * limit;
+		qb.skip(skip).take(limit);
 
-		const [producers, total] = await this.producerRepository.findAndCount({
-			relations: { farms: true },
-			order: { name: OrderBy.Ascending },
-			skip,
-			take: limit,
-		});
+		const [producers, total] = await qb.getManyAndCount();
 
-		return { data: producers.map((producer) => this.mapToResponseDto(producer)), total };
+		return {
+			data: producers.map((producer) => this.mapToResponseDto(producer)),
+			page,
+			limit,
+			total,
+			totalPages: Math.ceil(total / limit),
+		};
 	}
 
 	/**
@@ -132,7 +164,7 @@ export class ProducersService {
 	public async findOne(id: string): Promise<ProducerResponseDto> {
 		const producer = await this.producerRepository.findOne({
 			where: { id },
-			relations: ["farms"],
+			relations: { farms: true },
 		});
 
 		if (!producer) {

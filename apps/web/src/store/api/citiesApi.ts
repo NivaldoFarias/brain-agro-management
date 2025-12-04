@@ -1,4 +1,4 @@
-import type { ApiResponse, CityData, ListAllData } from "@agro/shared/types";
+import type { ApiResponse, CitiesByState, CityData, ListAllData } from "@agro/shared/types";
 
 import { ROUTE_PATHS } from "@agro/shared/constants";
 
@@ -27,6 +27,24 @@ export const citiesApi = api.injectEndpoints({
 			}),
 			transformResponse: (response: ApiResponse<ListAllData<CityData>>) => response.data,
 			providesTags: [{ type: "Cities", id: "LIST" }],
+		}),
+
+		/**
+		 * Retrieves all cities grouped by state for form dropdowns.
+		 *
+		 * Returns all ~5,570 Brazilian cities organized by state.
+		 * Intended for client-side caching to populate city dropdowns.
+		 *
+		 * @example
+		 * ```tsx
+		 * const { data, isLoading } = useGetAllCitiesByStateQuery();
+		 * // data.SP = ["São Paulo", "Campinas", ...]
+		 * ```
+		 */
+		getAllCitiesByState: builder.query<CitiesByState, undefined>({
+			query: () => "/cities/all/grouped-by-state",
+			transformResponse: (response: ApiResponse<CitiesByState>) => response.data,
+			providesTags: [{ type: "Cities", id: "ALL_BY_STATE" }],
 		}),
 
 		/**
@@ -62,4 +80,9 @@ export const citiesApi = api.injectEndpoints({
 	}),
 });
 
-export const { useGetCitiesQuery, useGetCitiesCountQuery, useGetCityByIbgeCodeQuery } = citiesApi;
+export const {
+	useGetCitiesQuery,
+	useGetAllCitiesByStateQuery,
+	useGetCitiesCountQuery,
+	useGetCityByIbgeCodeQuery,
+} = citiesApi;

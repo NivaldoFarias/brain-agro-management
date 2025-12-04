@@ -1,5 +1,7 @@
 import type { BrazilianState, CropType } from "../utils/constants.util";
 
+import { FarmSortField, SortOrder } from "./api";
+
 /**
  * Farm entity type representing agricultural properties.
  *
@@ -272,13 +274,17 @@ export interface FarmsListResponse {
 }
 
 /**
- * Query parameters for listing farms.
+ * Query parameters for listing farms with pagination, sorting, filtering, and search.
  *
  * @example
  * ```typescript
  * const params: FarmsListQuery = {
  *   page: 1,
- *   limit: 10
+ *   limit: 10,
+ *   sortBy: "totalArea",
+ *   sortOrder: "DESC",
+ *   state: "SP",
+ *   search: "Fazenda"
  * };
  * ```
  */
@@ -299,4 +305,38 @@ export interface FarmsListQuery {
 	 * @maximum `100`
 	 */
 	limit?: number;
+
+	/**
+	 * Field to sort by.
+	 *
+	 * @default "name"
+	 */
+	sortBy?: FarmSortField;
+
+	/**
+	 * Sort order direction.
+	 *
+	 * @default "ASC"
+	 */
+	sortOrder?: SortOrder;
+
+	/**
+	 * Search query for farm name (case-insensitive).
+	 */
+	search?: string;
+
+	/**
+	 * Filter by Brazilian state.
+	 */
+	state?: string;
+
+	/**
+	 * Filter by city name (exact match).
+	 */
+	city?: string;
+
+	/**
+	 * Filter by producer ID.
+	 */
+	producerId?: string;
 }

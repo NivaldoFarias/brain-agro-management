@@ -10,25 +10,20 @@ import {
 	Post,
 	Query,
 } from "@nestjs/common";
-import {
-	ApiBearerAuth,
-	ApiOperation,
-	ApiParam,
-	ApiQuery,
-	ApiResponse,
-	ApiTags,
-} from "@nestjs/swagger";
+import { ApiBearerAuth, ApiOperation, ApiParam, ApiResponse, ApiTags } from "@nestjs/swagger";
 
 import type {
 	CropDistribution,
 	LandUseStats,
-	ListAllData,
+	PaginatedResponse,
 	StateDistribution,
 } from "@agro/shared/types";
 
-import { BrazilianState, CropType, ParseUUIDPipe } from "@/common";
+import { BrazilianState, CropType } from "@agro/shared/utils";
 
-import { CreateFarmDto, FarmResponseDto, UpdateFarmDto } from "./dto";
+import { ParseUUIDPipe } from "@/common";
+
+import { CreateFarmDto, FarmResponseDto, FindAllFarmsDto, UpdateFarmDto } from "./dto";
 import { FarmsService } from "./farms.service";
 
 /**
@@ -87,46 +82,28 @@ export class FarmsController {
 	}
 
 	/**
-	 * Retrieves all farms with pagination.
+	 * Retrieves all farms with pagination, sorting, filtering, and search.
 	 *
-	 * Returns farms ordered alphabetically by name with pagination support.
+	 * Supports filtering by state, city, producer, and name search with
+	 * configurable sorting and pagination. All query parameters are optional.
 	 *
-	 * @param page Page number (1-indexed)
-	 * @param limit Number of items per page
+	 * @param query Query parameters for pagination, sorting, filtering, and search
 	 *
-	 * @returns Paginated farm response
+	 * @returns Paginated farm response with metadata
 	 */
 	@Get()
-	@ApiOperation({ summary: "Get all farms with pagination" })
-	@ApiQuery({
-		name: "page",
-		required: false,
-		type: Number,
-		description: "Page number",
-		default: 1,
-	})
-	@ApiQuery({
-		name: "limit",
-		required: false,
-		type: Number,
-		description: "Items per page",
-		default: 10,
+	@ApiOperation({
+		summary: "Get all farms with pagination, sorting, filtering, and search",
+		description:
+			"Retrieves a paginated list of farms. Supports filtering by state, city, producer, name search, customizable sorting, and pagination.",
 	})
 	@ApiResponse({
 		status: HttpStatus.OK,
 		description: "Paginated list of farms",
 		type: [FarmResponseDto],
 	})
-	public async findAll(
-		@Query("page") page?: string,
-		@Query("limit") limit?: string,
-	): Promise<ListAllData<FarmResponseDto>> {
-		const pageNum = page ? Number.parseInt(page, 10) : 1;
-		const limitNum = limit ? Number.parseInt(limit, 10) : 10;
-
-		const { data, total } = await this.farmsService.findAll(pageNum, limitNum);
-
-		return { data, total, page: pageNum, limit: limitNum };
+	public findAll(@Query() query: FindAllFarmsDto): Promise<PaginatedResponse<FarmResponseDto>> {
+		return this.farmsService.findAll(query);
 	}
 
 	/**
@@ -189,6 +166,8 @@ export class FarmsController {
 		name: "state",
 		description: "Brazilian state code (UF)",
 		example: BrazilianState.SP,
+		enum: BrazilianState,
+		enumName: "BrazilianState",
 	})
 	@ApiResponse({
 		status: HttpStatus.OK,

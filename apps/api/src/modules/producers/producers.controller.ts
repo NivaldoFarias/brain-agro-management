@@ -10,13 +10,18 @@ import {
 	Post,
 	Query,
 } from "@nestjs/common";
-import { ApiBearerAuth, ApiOperation, ApiQuery, ApiResponse, ApiTags } from "@nestjs/swagger";
+import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 
-import type { ListAllData } from "@agro/shared/types";
+import type { PaginatedResponse } from "@agro/shared/types";
 
 import { ParseUUIDPipe } from "@/common";
 
-import { CreateProducerDto, ProducerResponseDto, UpdateProducerDto } from "./dto";
+import {
+	CreateProducerDto,
+	FindAllProducersDto,
+	ProducerResponseDto,
+	UpdateProducerDto,
+} from "./dto";
 import { ProducersService } from "./producers.service";
 
 /**
@@ -72,44 +77,30 @@ export class ProducersController {
 	}
 
 	/**
-	 * Retrieves all producers with pagination.
+	 * Retrieves all producers with pagination, sorting, and search.
 	 *
-	 * Returns producers ordered alphabetically by name.
-	 * For now, ignores pagination params and returns all producers (assessment requirement).
+	 * Supports filtering by name search with configurable sorting and pagination.
+	 * All query parameters are optional with sensible defaults.
 	 *
-	 * @returns Paginated producer response
+	 * @param query Query parameters for pagination, sorting, and search
+	 *
+	 * @returns Paginated producer response with metadata
 	 */
 	@Get()
-	@ApiOperation({ summary: "Get all producers" })
-	@ApiQuery({
-		name: "page",
-		required: false,
-		type: Number,
-		description: "Page number",
-		default: 1,
-	})
-	@ApiQuery({
-		name: "limit",
-		required: false,
-		type: Number,
-		description: "Items per page",
-		default: 10,
+	@ApiOperation({
+		summary: "Get all producers with pagination, sorting, and search",
+		description:
+			"Retrieves a paginated list of producers. Supports name search, customizable sorting, and pagination.",
 	})
 	@ApiResponse({
 		status: HttpStatus.OK,
-		description: "List of producers",
+		description: "Paginated list of producers",
 		type: [ProducerResponseDto],
 	})
-	public async findAll(
-		@Query("page") page?: string,
-		@Query("limit") limit?: string,
-	): Promise<ListAllData<ProducerResponseDto>> {
-		const pageNum = page ? Number.parseInt(page, 10) : 1;
-		const limitNum = limit ? Number.parseInt(limit, 10) : 10;
-
-		const { data, total } = await this.producersService.findAll(pageNum, limitNum);
-
-		return { data, total, page: pageNum, limit: limitNum };
+	public findAll(
+		@Query() query: FindAllProducersDto,
+	): Promise<PaginatedResponse<ProducerResponseDto>> {
+		return this.producersService.findAll(query);
 	}
 
 	/**

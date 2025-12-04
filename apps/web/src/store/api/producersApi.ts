@@ -20,17 +20,29 @@ import { api } from "./baseApi";
 export const producersApi = api.injectEndpoints({
 	endpoints: (builder) => ({
 		/**
-		 * Fetches paginated list of producers.
+		 * Fetches paginated list of producers with sorting and search.
 		 *
 		 * @example
 		 * ```tsx
-		 * const { data, isLoading } = useGetProducersQuery({ page: 1, limit: 10 });
+		 * const { data, isLoading } = useGetProducersQuery({
+		 *   page: 1,
+		 *   limit: 10,
+		 *   sortBy: "name",
+		 *   sortOrder: "ASC",
+		 *   search: "Silva"
+		 * });
 		 * ```
 		 */
 		getProducers: builder.query<ProducersListResponse, ProducersListQuery>({
-			query: ({ page = 1, limit = 10 } = {}) => ({
+			query: ({ page = 1, limit = 10, sortBy, sortOrder, search } = {}) => ({
 				url: "/producers",
-				params: { page, limit },
+				params: {
+					page,
+					limit,
+					...(sortBy && { sortBy }),
+					...(sortOrder && { sortOrder }),
+					...(search && { search }),
+				},
 			}),
 			transformResponse: (response: ApiResponse<ProducersListResponse>) => response.data,
 			providesTags: (result) =>

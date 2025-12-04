@@ -4,13 +4,12 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { InjectPinoLogger, PinoLogger } from "nestjs-pino";
 import { Repository } from "typeorm";
 
-import type { CityResponseDto } from "./dto";
+import type { CityResponseDto, FindAllCitiesDto } from "./dto";
 
-import type { CitiesByState } from "@agro/shared/types";
+import type { CitiesByState, PaginatedResponse } from "@agro/shared/types";
+import type { BrazilianState } from "@agro/shared/utils";
 
-import { OrderBy } from "@agro/shared/utils";
-
-import { BrazilianState } from "@/common";
+import { CitySortField, SortOrder } from "@agro/shared/types";
 
 import { City } from "./entities/city.entity";
 
@@ -37,32 +36,81 @@ export class CitiesService {
 	) {}
 
 	/**
-	 * Retrieves paginated cities from the database.
+	 * Retrieves all cities with pagination, sorting, and filtering.
 	 *
-	 * @param page Page number (1-indexed)
-	 * @param limit Number of items per page
+	 * Supports filtering by state with configurable sorting and pagination.
+	 * Uses TypeORM QueryBuilder for efficient database queries.
 	 *
-	 * @returns Object containing paginated cities and total count
+	 * @param query Query parameters for pagination, sorting, and filtering
+	 *
+	 * @returns Paginated response with cities and metadata
 	 *
 	 * @example
 	 * ```typescript
-	 * const { data, total } = await service.findAll(1, 10);
-	 * console.log(`Page 1: ${data.length} cities of ${total} total`);
+	 * const result = await service.findAll({
+	 *   page: 1,
+	 *   limit: 50,
+	 *   sortBy: CitySortField.Name,
+	 *   sortOrder: SortOrder.Ascending,
+	 *   state: BrazilianState.SP
+	 * });
+	 * console.log(`Found ${result.total} cities`);
 	 * ```
 	 */
-	public async findAll(
-		page = 1,
-		limit = 10,
-	): Promise<{ data: Array<CityResponseDto>; total: number }> {
-		const skip = (page - 1) * limit;
+	public async findAll(query: FindAllCitiesDto): Promise<PaginatedResponse<CityResponseDto>> {
+		const {
+			page = 1,
+			limit = 10,
+			sortBy = CitySortField.Name,
+			sortOrder = SortOrder.Ascending,
+			state,
+		} = query;
 
-		const [cities, total] = await this.cityRepository.findAndCount({
-			order: { name: OrderBy.Ascending },
-			skip,
-			take: limit,
+		const qb = this.cityRepository.createQueryBuilder("city");
+
+		if (state) qb.andWhere("city.state = :state", { state });
+
+		qb.orderBy(`city.${sortBy}`, sortOrder as SortOrder);
+
+		const skip = (page - 1) * limit;
+		qb.skip(skip).take(limit);
+
+		const [cities, total] = await qb.getManyAndCount();
+
+		return {
+			data: cities.map((city) => this.mapToResponseDto(city)),
+			page,
+			limit,
+			total,
+			totalPages: Math.ceil(total / limit),
+		};
+	}
+
+	/**
+	 * Retrieves all cities grouped by state for form dropdowns.
+	 *
+	 * Returns all 5,570 Brazilian cities organized by state without pagination.
+	 * Optimized for client-side caching to support offline form functionality.
+	 *
+	 * @returns Object mapping state codes to arrays of city names
+	 *
+	 * @example
+	 * ```typescript
+	 * const citiesByState = await service.getAllGroupedByState();
+	 * console.log(citiesByState.SP); // ["São Paulo", "Campinas", ...]
+	 * ```
+	 */
+	public async getAllGroupedByState(): Promise<CitiesByState> {
+		const cities = await this.cityRepository.find({
+			order: { state: SortOrder.Ascending, name: SortOrder.Ascending },
 		});
 
-		return { data: cities.map((city) => this.mapToResponseDto(city)), total };
+		return cities.reduce<CitiesByState>((acc, city) => {
+			const state = city.state as BrazilianState;
+			acc[state] ??= [];
+			acc[state].push(city.name);
+			return acc;
+		}, {} as CitiesByState);
 	}
 
 	/**
@@ -82,7 +130,7 @@ export class CitiesService {
 		try {
 			return await this.cityRepository.find({
 				where: { state },
-				order: { name: OrderBy.Ascending },
+				order: { name: SortOrder.Ascending },
 			});
 		} catch (error) {
 			this.logger.error({ error, state }, "Failed to fetch cities by state");

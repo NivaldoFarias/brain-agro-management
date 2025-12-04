@@ -2,6 +2,7 @@ import type {
 	ApiResponse,
 	CreateFarmRequest,
 	Farm,
+	FarmsListQuery,
 	FarmsListResponse,
 	UpdateFarmRequest,
 } from "@agro/shared/types";
@@ -17,17 +18,42 @@ import { api } from "./baseApi";
 export const farmsApi = api.injectEndpoints({
 	endpoints: (builder) => ({
 		/**
-		 * Fetches paginated list of farms.
+		 * Fetches paginated list of farms with sorting, filtering, and search.
 		 *
 		 * @example
 		 * ```tsx
-		 * const { data, isLoading } = useGetFarmsQuery({ page: 1, limit: 10 });
+		 * const { data, isLoading } = useGetFarmsQuery({
+		 *   page: 1,
+		 *   limit: 10,
+		 *   sortBy: "totalArea",
+		 *   sortOrder: "DESC",
+		 *   state: "SP",
+		 *   search: "Fazenda"
+		 * });
 		 * ```
 		 */
-		getFarms: builder.query<FarmsListResponse, { page?: number; limit?: number }>({
-			query: ({ page = 1, limit = 10 }) => ({
+		getFarms: builder.query<FarmsListResponse, FarmsListQuery>({
+			query: ({
+				page = 1,
+				limit = 10,
+				sortBy,
+				sortOrder,
+				search,
+				state,
+				city,
+				producerId,
+			} = {}) => ({
 				url: "/farms",
-				params: { page, limit },
+				params: {
+					page,
+					limit,
+					...(sortBy && { sortBy }),
+					...(sortOrder && { sortOrder }),
+					...(search && { search }),
+					...(state && { state }),
+					...(city && { city }),
+					...(producerId && { producerId }),
+				},
 			}),
 			transformResponse: (response: ApiResponse<FarmsListResponse>) => response.data,
 			providesTags: (result) =>

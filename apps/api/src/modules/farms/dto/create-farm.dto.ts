@@ -1,5 +1,5 @@
 import { faker } from "@faker-js/faker/locale/pt_BR";
-import { ApiProperty } from "@nestjs/swagger";
+import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 import {
 	IsArray,
 	IsEnum,
@@ -167,12 +167,12 @@ export class CreateFarmDto {
 	 *
 	 * @example [CropType.Soy, CropType.Corn]
 	 */
-	@ApiProperty({
+	@ApiPropertyOptional({
 		description: "Array of crops planted on this farm",
 		example: [CropType.Soy, CropType.Corn],
 		enum: CropType,
+		enumName: "CropType",
 		isArray: true,
-		required: false,
 	})
 	@IsOptional()
 	@IsArray({ message: "Crops must be an array" })

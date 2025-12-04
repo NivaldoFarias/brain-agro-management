@@ -133,13 +133,16 @@ export interface ProducersListResponse {
 }
 
 /**
- * Query parameters for listing producers.
+ * Query parameters for listing producers with pagination, sorting, and search.
  *
  * @example
  * ```typescript
  * const params: ProducersListQuery = {
  *   page: 1,
- *   limit: 10
+ *   limit: 10,
+ *   sortBy: "name",
+ *   sortOrder: "ASC",
+ *   search: "Silva"
  * };
  * ```
  */
@@ -160,4 +163,23 @@ export interface ProducersListQuery {
 	 * @maximum `100`
 	 */
 	limit?: number;
+
+	/**
+	 * Field to sort by.
+	 *
+	 * @default "name"
+	 */
+	sortBy?: "name" | "document" | "createdAt";
+
+	/**
+	 * Sort order direction.
+	 *
+	 * @default "ASC"
+	 */
+	sortOrder?: "ASC" | "DESC";
+
+	/**
+	 * Search query for producer name (case-insensitive).
+	 */
+	search?: string;
 }
