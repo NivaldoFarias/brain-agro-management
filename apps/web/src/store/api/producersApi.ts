@@ -2,15 +2,15 @@ import type {
 	ApiResponse,
 	CreateProducerRequest,
 	Producer,
-	ProducersListQuery,
+	ProducersFilterOptions,
 	ProducersListResponse,
 	UpdateProducerRequest,
 } from "@agro/shared/types";
 
+import { ROUTE_PATHS } from "@agro/shared/constants";
 import { HttpMethod } from "@agro/shared/enums";
 
 import { api } from "./baseApi";
-import { ROUTE_PATHS } from "@agro/shared/constants";
 
 /**
  * Producers API endpoints using RTK Query.
@@ -34,7 +34,7 @@ export const producersApi = api.injectEndpoints({
 		 * });
 		 * ```
 		 */
-		getProducers: builder.query<ProducersListResponse, ProducersListQuery>({
+		getProducers: builder.query<ProducersListResponse, ProducersFilterOptions>({
 			query: ({ page = 1, limit = 10, sortBy, sortOrder, search } = {}) => ({
 				url: ROUTE_PATHS.producers,
 				params: {

@@ -159,6 +159,7 @@ export class FarmsService {
 			state,
 			city,
 			producerId,
+			crops,
 		} = query;
 
 		const qb = this.farmRepository
@@ -166,10 +167,13 @@ export class FarmsService {
 			.leftJoinAndSelect("farm.farmHarvests", "farmHarvest")
 			.leftJoinAndSelect("farmHarvest.crops", "crop");
 
-		if (search) qb.andWhere("farm.name ILIKE :search", { search: `%${search}%` });
+		if (search) qb.andWhere("farm.name LIKE :search", { search: `%${search}%` });
 		if (state) qb.andWhere("farm.state = :state", { state });
 		if (city) qb.andWhere("farm.city = :city", { city });
 		if (producerId) qb.andWhere("farm.producerId = :producerId", { producerId });
+		if (crops && crops.length > 0) {
+			qb.andWhere("crop.cropType IN (:...crops)", { crops });
+		}
 
 		qb.orderBy(`farm.${sortBy}`, sortOrder as SortOrder);
 

@@ -129,7 +129,7 @@ export class ProducersService {
 			.createQueryBuilder("producer")
 			.leftJoinAndSelect("producer.farms", "farms");
 
-		if (search) qb.andWhere("producer.name ILIKE :search", { search: `%${search}%` });
+		if (search) qb.andWhere("producer.name LIKE :search", { search: `%${search}%` });
 
 		qb.orderBy(`producer.${sortBy}`, sortOrder as SortOrder);
 

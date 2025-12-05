@@ -1,3 +1,4 @@
+import { Flex, Heading } from "@radix-ui/themes";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
@@ -5,7 +6,11 @@ import styled from "styled-components";
 
 import type { ReactElement } from "react";
 
-import { Typography } from "@/components/atoms";
+import type { ProducersFilterOptions } from "@agro/shared/types";
+
+import { ProducerSortField, SortOrder } from "@agro/shared/enums";
+
+import { FilterControls, Typography } from "@/components/atoms";
 import { PageContainer } from "@/components/templates/PageContainer";
 import { Button, ConfirmDialog } from "@/components/ui/";
 import { useToast } from "@/contexts/ToastContext";
@@ -24,15 +29,32 @@ export function ProducersPage(): ReactElement {
 	const navigate = useNavigate();
 	const toast = useToast();
 	const [page, setPage] = useState(1);
+	const [filters, setFilters] = useState<ProducersFilterOptions>({
+		sortBy: ProducerSortField.Name,
+		sortOrder: SortOrder.Ascending,
+	});
 	const [deletingId, setDeletingId] = useState<string | undefined>();
 	const [confirmOpen, setConfirmOpen] = useState(false);
 	const [producerToDelete, setProducerToDelete] = useState<string | undefined>();
 
-	const { data: producers, isLoading, error } = useGetProducersQuery({ page, limit: 10 });
+	const {
+		data: producers,
+		isLoading,
+		error,
+	} = useGetProducersQuery({
+		page,
+		limit: 10,
+		...filters,
+	});
 	const [deleteProducer] = useDeleteProducerMutation();
 
 	const handleCreate = () => {
 		void navigate(ROUTES.producers.create);
+	};
+
+	const handleFiltersChange = (newFilters: ProducersFilterOptions) => {
+		setFilters(newFilters);
+		setPage(1);
 	};
 
 	const handleDeleteClick = (id: string) => {
@@ -61,16 +83,28 @@ export function ProducersPage(): ReactElement {
 
 	return (
 		<PageContainer>
-			<Container>
-				<Header>
-					<div>
-						<Typography variant="h1">{t(($) => $.producers.title)}</Typography>
-						<Typography variant="body">{t(($) => $.producers.subtitle)}</Typography>
-					</div>
+			<Flex direction="column" gap="2">
+				<Flex justify="between" align="start" mb="4" gap="2">
+					<Flex direction="column" gap="2">
+						<Heading as="h1" size="8">
+							{t(($) => $.producers.title)}
+						</Heading>
+						<Heading as="h2" size="2" weight="regular">
+							{t(($) => $.producers.subtitle)}
+						</Heading>
+					</Flex>
 					<Button variant="primary" onClick={handleCreate}>
 						{t(($) => $.producers.createProducer)}
 					</Button>
-				</Header>{" "}
+				</Flex>
+
+				<FilterControls
+					type="producers"
+					filters={filters}
+					onFiltersChange={handleFiltersChange}
+					isLoading={isLoading}
+				/>
+
 				<ProducerList
 					producers={producers?.data ?? []}
 					isLoading={isLoading}
@@ -82,6 +116,7 @@ export function ProducersPage(): ReactElement {
 					limit={producers?.limit ?? 10}
 					onPageChange={setPage}
 				/>
+
 				<ConfirmDialog
 					open={confirmOpen}
 					onOpenChange={setConfirmOpen}
@@ -95,33 +130,7 @@ export function ProducersPage(): ReactElement {
 					}}
 					isLoading={!!deletingId}
 				/>
-			</Container>
+			</Flex>
 		</PageContainer>
 	);
 }
-
-const Container = styled.div`
-	display: flex;
-	flex-direction: column;
-	gap: ${(props) => props.theme.spacing.xl};
-`;
-
-const Header = styled.div`
-	display: flex;
-	justify-content: space-between;
-	align-items: flex-start;
-	gap: ${(props) => props.theme.spacing.md};
-
-	@media (max-width: ${(props) => props.theme.breakpoints.md}) {
-		flex-direction: column;
-		align-items: stretch;
-	}
-`;
-
-const PaginationContainer = styled.div`
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	gap: ${(props) => props.theme.spacing.md};
-	margin-top: ${(props) => props.theme.spacing.xl};
-`;

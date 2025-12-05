@@ -17,7 +17,7 @@ import { GlobalStyles, theme } from "./theme";
 /**
  * Inner app component that conditionally loads cities data.
  *
- * Wraps AppRouter with CitiesDataLoader only when user is authenticated
+ * Wraps AppRouter with {@link CitiesDataLoader} only when user is authenticated
  * to avoid unnecessary API calls on the login page.
  */
 function AppContent(): ReactElement {
@@ -38,8 +38,8 @@ function AppContent(): ReactElement {
 /**
  * Root application component for Brain Agriculture.
  *
- * Wraps the application with Redux Provider, LocalStorageProvider, AuthProvider,
- * ToastProvider, ThemeProvider (styled-components), Radix UI Theme, and global styles.
+ * Wraps the application with Redux Provider, {@link LocalStorageProvider}, {@link AuthProvider},
+ * {@link ToastProvider}, {@link ThemeProvider} (styled-components), Radix UI Theme, and global styles.
  * Conditionally loads cities data when authenticated for form support.
  */
 export function App(): ReactElement {

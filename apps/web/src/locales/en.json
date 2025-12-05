@@ -25,6 +25,17 @@
         "of": "of",
         "total": "Total"
     },
+    "filters": {
+        "sortBy": "Sort by",
+        "order": "Order",
+        "ascending": "Ascending (A-Z)",
+        "descending": "Descending (Z-A)",
+        "clear": "Clear Filters",
+        "activeFilters": "Active filters applied",
+        "allStates": "All States",
+        "allCities": "All Cities",
+        "allProducers": "All Producers"
+    },
     "abbreviations": {
         "hectares": "ha",
         "kilometers": "km",
@@ -80,9 +91,9 @@
         "updateError": "Failed to update producer",
         "loadError": "Failed to load producers",
         "noProducers": "No producers found",
-        "searchPlaceholder": "Search producers...",
+        "searchPlaceholder": "Search by name",
         "submitLabel": "Save Producer",
-        "loadingProducers": "Loading producers...",
+        "loadingProducers": "Loading producers",
         "registerNewProducer": "Register a new rural producer to start managing agricultural properties"
     },
     "farms": {
@@ -99,7 +110,7 @@
         "state": "State",
         "stateHint": "Brazilian state (UF)",
         "selectState": "Select a state",
-        "selectCity": "Select a city",
+        "selectCity": "Search city",
         "selectStateFirst": "Select a state first",
         "noCitiesAvailable": "No cities available",
         "totalArea": "Total Area (ha)",
@@ -111,7 +122,7 @@
         "crops": "Crops",
         "cropsHint": "Select one or more crops cultivated on this farm",
         "producer": "Producer",
-        "selectProducer": "Select a producer",
+        "selectProducer": "Search producer",
         "selectCrops": "Select crops",
         "deleteConfirm": "Are you sure you want to delete this farm?",
         "deleteSuccess": "Farm deleted successfully",
@@ -123,9 +134,9 @@
         "loadError": "Failed to load farms",
         "noFarms": "No farms found",
         "areaValidation": "The sum of arable and vegetation areas cannot exceed total area",
-        "loadingFarms": "Loading farms...",
+        "loadingFarms": "Loading farms",
         "createFirstFarm": "Create your first farm to start tracking agricultural properties",
-        "searchPlaceholder": "Search by name, city or producer...",
+        "searchPlaceholder": "Search by name",
         "submitLabel": "Save Farm",
         "registerNewProperty": "Register a new agricultural property",
         "farmAdded": "The farm has been added successfully"

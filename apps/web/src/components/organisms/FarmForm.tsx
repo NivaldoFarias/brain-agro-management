@@ -1,5 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Button, Checkbox, Flex, Grid, Select, Text, TextField } from "@radix-ui/themes";
+import { Badge, Button, Checkbox, Flex, Grid, Select, Text, TextField } from "@radix-ui/themes";
 import { useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
@@ -95,7 +95,6 @@ export function FarmForm({ onSubmit, isLoading = false, defaultValues, producerI
 		setSelectedState(state);
 		setValue("state", state as BrazilianState, { shouldValidate: true });
 
-		// Reset city when state changes
 		setSelectedCity("");
 		setValue("city", "", { shouldValidate: false });
 	};
@@ -274,21 +273,35 @@ export function FarmForm({ onSubmit, isLoading = false, defaultValues, producerI
 					<Text as="div" size="1" color="gray" mb="1">
 						{t(($) => $.farms.cropsHint)}
 					</Text>
-					<Flex wrap="wrap" gap="3" mt="2" justify="between">
-						{Object.values(CropType).map((crop, index) => (
-							<Text as="label" key={index} size="2">
-								<Flex gap="2" align="center" justify="between">
-									<Checkbox
-										checked={selectedCrops.includes(crop)}
-										onCheckedChange={() => {
-											handleCropToggle(crop);
-										}}
-										disabled={isLoading}
-									/>
-									{t(($) => $.crops[crop])}
-								</Flex>
-							</Text>
-						))}
+					<Flex wrap="wrap" gap="2" mt="2">
+						{Object.values(CropType).map((crop) => {
+							const isSelected = selectedCrops.includes(crop);
+							const cropToColor: Record<CropType, "blue" | "green" | "orange" | "gray" | "red"> = {
+								[CropType.Corn]: "green",
+								[CropType.Soy]: "blue",
+								[CropType.Coffee]: "orange",
+								[CropType.Sugarcane]: "gray",
+								[CropType.Cotton]: "red",
+							};
+
+							return (
+								<Badge
+									key={crop}
+									color={cropToColor[crop]}
+									variant={isSelected ? "solid" : "soft"}
+									size="2"
+									style={{ cursor: "pointer" }}
+									onClick={() => {
+										handleCropToggle(crop);
+									}}
+								>
+									<Flex gap="1" align="center">
+										<Checkbox checked={isSelected} disabled={isLoading} style={{ pointerEvents: "none" }} />
+										{t(($) => $.crops[crop])}
+									</Flex>
+								</Badge>
+							);
+						})}
 					</Flex>
 					{errors.crops && (
 						<Text size="1" color="red" mt="1">

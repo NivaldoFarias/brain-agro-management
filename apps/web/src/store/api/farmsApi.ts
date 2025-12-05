@@ -2,7 +2,7 @@ import type {
 	ApiResponse,
 	CreateFarmRequest,
 	Farm,
-	FarmsListQuery,
+	FarmFilterOptions,
 	FarmsListResponse,
 	UpdateFarmRequest,
 } from "@agro/shared/types";
@@ -35,7 +35,7 @@ export const farmsApi = api.injectEndpoints({
 		 * });
 		 * ```
 		 */
-		getFarms: builder.query<FarmsListResponse, FarmsListQuery>({
+		getFarms: builder.query<FarmsListResponse, FarmFilterOptions>({
 			query: ({
 				page = 1,
 				limit = 10,
@@ -45,19 +45,23 @@ export const farmsApi = api.injectEndpoints({
 				state,
 				city,
 				producerId,
-			} = {}) => ({
-				url: ROUTE_PATHS.farms,
-				params: {
-					page,
-					limit,
-					...(sortBy && { sortBy }),
-					...(sortOrder && { sortOrder }),
-					...(search && { search }),
-					...(state && { state }),
-					...(city && { city }),
-					...(producerId && { producerId }),
-				},
-			}),
+				crops,
+			} = {}) => {
+				return {
+					url: ROUTE_PATHS.farms,
+					params: {
+						page,
+						limit,
+						...(sortBy && { sortBy }),
+						...(sortOrder && { sortOrder }),
+						...(search && { search }),
+						...(state && { state }),
+						...(city && { city }),
+						...(producerId && { producerId }),
+						...(crops && crops.length > 0 && { crops: crops.join(",") }),
+					},
+				};
+			},
 			transformResponse: (response: ApiResponse<FarmsListResponse>) => response.data,
 			providesTags: (result) =>
 				result ?

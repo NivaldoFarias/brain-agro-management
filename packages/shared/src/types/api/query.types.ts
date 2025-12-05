@@ -44,3 +44,8 @@ export interface PaginatedResponse<T> extends PaginationMeta {
 	/** Array of data items for current page */
 	data: Array<T>;
 }
+
+export interface BaseListFilterOptions<T extends string>
+	extends PaginationParams,
+		SortParams<T>,
+		SearchParams {}

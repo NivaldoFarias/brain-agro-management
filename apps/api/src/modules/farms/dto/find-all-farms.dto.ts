@@ -1,8 +1,8 @@
 import { ApiPropertyOptional } from "@nestjs/swagger";
-import { Type } from "class-transformer";
-import { IsEnum, IsInt, IsOptional, IsString, IsUUID, Max, Min } from "class-validator";
+import { Transform, Type } from "class-transformer";
+import { IsArray, IsEnum, IsInt, IsOptional, IsString, IsUUID, Max, Min } from "class-validator";
 
-import { BrazilianState, FarmSortField, SortOrder } from "@agro/shared/enums";
+import { BrazilianState, CropType, FarmSortField, SortOrder } from "@agro/shared/enums";
 
 /**
  * Query parameters for finding all farms with pagination, sorting, filtering, and search.
@@ -113,4 +113,24 @@ export class FindAllFarmsDto {
 	@IsOptional()
 	@IsUUID("4", { message: "Producer ID must be a valid UUID" })
 	producerId?: string;
+
+	/** Filter by crop types */
+	@ApiPropertyOptional({
+		description: "Filter farms by crop types (farms with at least one of the specified crops)",
+		enum: CropType,
+		isArray: true,
+		example: [CropType.Soy, CropType.Corn],
+		enumName: "CropType",
+	})
+	@IsOptional()
+	@Transform(({ value }) => {
+		if (typeof value === "string") {
+			return value.split(",").map((cropType) => cropType.trim());
+		}
+
+		return value as unknown;
+	})
+	@IsArray({ message: "Crops must be an array" })
+	@IsEnum(CropType, { each: true, message: "Each crop must be a valid CropType" })
+	crops?: Array<CropType>;
 }

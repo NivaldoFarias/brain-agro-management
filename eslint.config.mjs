@@ -37,13 +37,11 @@ export default defineConfig(
 			"@typescript-eslint": tseslint.plugin,
 		},
 		languageOptions: {
-			globals: {
-				...globals.node,
-				NodeJS: "readonly",
-			},
+			globals: { ...globals.node },
 			parser: tseslint.parser,
 			parserOptions: {
 				project: [
+					"./tsconfig.json",
 					"./apps/web/tsconfig.json",
 					"./apps/api/tsconfig.json",
 					"./packages/shared/tsconfig.json",
@@ -93,21 +91,17 @@ export default defineConfig(
 		},
 	},
 	{
-		files: ["apps/web/**/*.{js,jsx,ts,tsx,mts,cts}"],
+		files: ["apps/web/**/*.{js,jsx,ts,tsx}"],
 		plugins: {
 			"react": eslintPluginReact,
 			"react-hooks": eslintPluginReactHooks,
 			"jsx-a11y": eslintPluginJsxA11y,
 		},
 		languageOptions: {
-			globals: {
-				...globals.browser,
-			},
+			globals: { ...globals.browser },
 			parser: tseslint.parser,
 			parserOptions: {
-				ecmaFeatures: {
-					jsx: true,
-				},
+				ecmaFeatures: { jsx: true },
 				project: ["./apps/web/tsconfig.json"],
 				tsconfigRootDir: import.meta.dirname,
 			},

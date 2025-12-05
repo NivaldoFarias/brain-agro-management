@@ -1,3 +1,7 @@
+import type { BaseListFilterOptions } from "./api";
+
+import type { ProducerSortField, SortOrder } from "@/enums";
+
 /**
  * Producer entity type representing rural producers and agricultural companies.
  *
@@ -132,54 +136,4 @@ export interface ProducersListResponse {
 	limit: number;
 }
 
-/**
- * Query parameters for listing producers with pagination, sorting, and search.
- *
- * @example
- * ```typescript
- * const params: ProducersListQuery = {
- *   page: 1,
- *   limit: 10,
- *   sortBy: "name",
- *   sortOrder: "ASC",
- *   search: "Silva"
- * };
- * ```
- */
-export interface ProducersListQuery {
-	/**
-	 * Page number
-	 *
-	 * @default 1
-	 * @minimum `1`
-	 */
-	page?: number;
-
-	/**
-	 * Number of items per page.
-	 *
-	 * @default 10
-	 * @minimum `1`
-	 * @maximum `100`
-	 */
-	limit?: number;
-
-	/**
-	 * Field to sort by.
-	 *
-	 * @default "name"
-	 */
-	sortBy?: "name" | "document" | "createdAt";
-
-	/**
-	 * Sort order direction.
-	 *
-	 * @default "ASC"
-	 */
-	sortOrder?: "ASC" | "DESC";
-
-	/**
-	 * Search query for producer name (case-insensitive).
-	 */
-	search?: string;
-}
+export interface ProducersFilterOptions extends BaseListFilterOptions<ProducerSortField> {}

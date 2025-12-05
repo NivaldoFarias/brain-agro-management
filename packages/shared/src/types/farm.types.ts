@@ -1,4 +1,4 @@
-import type { PaginatedResponse } from "./api";
+import type { BaseListFilterOptions, PaginatedResponse } from "./api";
 
 import { BrazilianState, CropType, FarmSortField, SortOrder } from "../enums";
 
@@ -262,70 +262,16 @@ export interface UpdateFarmRequest {
  */
 export type FarmsListResponse = PaginatedResponse<Farm>;
 
-/**
- * Query parameters for listing farms with pagination, sorting, filtering, and search.
- *
- * @example
- * ```typescript
- * const params: FarmsListQuery = {
- *   page: 1,
- *   limit: 10,
- *   sortBy: "totalArea",
- *   sortOrder: "DESC",
- *   state: "SP",
- *   search: "Fazenda"
- * };
- * ```
- */
-export interface FarmsListQuery {
-	/**
-	 * Page number
-	 *
-	 * @default 1
-	 * @minimum `1`
-	 */
-	page?: number;
+export interface FarmFilterOptions extends BaseListFilterOptions<FarmSortField> {
+	/** Filter by Brazilian state */
+	state?: BrazilianState;
 
-	/**
-	 * Number of items per page.
-	 *
-	 * @default 10
-	 * @minimum `1`
-	 * @maximum `100`
-	 */
-	limit?: number;
-
-	/**
-	 * Field to sort by.
-	 *
-	 * @default "name"
-	 */
-	sortBy?: FarmSortField;
-
-	/**
-	 * Sort order direction.
-	 *
-	 * @default "ASC"
-	 */
-	sortOrder?: SortOrder;
-
-	/**
-	 * Search query for farm name (case-insensitive).
-	 */
-	search?: string;
-
-	/**
-	 * Filter by Brazilian state.
-	 */
-	state?: string;
-
-	/**
-	 * Filter by city name (exact match).
-	 */
+	/** Filter by city name (exact match) */
 	city?: string;
 
-	/**
-	 * Filter by producer ID.
-	 */
+	/** Filter by producer ID */
 	producerId?: string;
+
+	/** Filter by crop types */
+	crops?: Array<CropType>;
 }
