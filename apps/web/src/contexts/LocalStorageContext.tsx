@@ -2,6 +2,10 @@ import { createContext, useCallback, useContext, useMemo } from "react";
 
 import type { ReactElement, ReactNode } from "react";
 
+import { Logger } from "@/utils/logger.util";
+
+const logger = new Logger({ context: "LocalStorage" });
+
 /**
  * Local storage context value interface.
  *
@@ -13,7 +17,7 @@ export interface LocalStorageContextValue {
 	getItem: <T>(key: string, defaultValue?: T) => T | undefined;
 
 	/** Set a value in localStorage with automatic JSON serialization */
-	setItem: <T>(key: string, value: T) => void;
+	setItem: (key: string, value: unknown) => void;
 
 	/** Remove a value from localStorage */
 	removeItem: (key: string) => void;
@@ -50,16 +54,16 @@ export function LocalStorageProvider({ children }: LocalStorageProviderProps): R
 
 			return JSON.parse(item) as T;
 		} catch (error) {
-			console.error(`[LocalStorage] Failed to get item "${key}":`, error);
+			logger.error(`Failed to get item "${key}":`, error);
 			return defaultValue;
 		}
 	}, []);
 
-	const setItem = useCallback(<T,>(key: string, value: T): void => {
+	const setItem = useCallback((key: string, value: unknown): void => {
 		try {
 			window.localStorage.setItem(key, JSON.stringify(value));
 		} catch (error) {
-			console.error(`[LocalStorage] Failed to set item "${key}":`, error);
+			logger.error(`Failed to set item "${key}":`, error);
 		}
 	}, []);
 
@@ -67,7 +71,7 @@ export function LocalStorageProvider({ children }: LocalStorageProviderProps): R
 		try {
 			window.localStorage.removeItem(key);
 		} catch (error) {
-			console.error(`[LocalStorage] Failed to remove item "${key}":`, error);
+			logger.error(`Failed to remove item "${key}":`, error);
 		}
 	}, []);
 
@@ -75,7 +79,7 @@ export function LocalStorageProvider({ children }: LocalStorageProviderProps): R
 		try {
 			window.localStorage.clear();
 		} catch (error) {
-			console.error("[LocalStorage] Failed to clear storage:", error);
+			logger.error("Failed to clear storage:", error);
 		}
 	}, []);
 

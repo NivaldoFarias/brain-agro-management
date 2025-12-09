@@ -75,7 +75,7 @@ export function DashboardPage(): ReactElement {
 			name: t(($) => $.crops[item.cropType]),
 			value: totalCrops > 0 ? Math.round((item.count / totalCrops) * 100) : 0,
 		}));
-	}, [stats?.distributions.byCrop, t]);
+	}, [stats, t]);
 
 	/** Transformed land use data for pie chart */
 	const landUseChartData = useMemo(() => {
@@ -91,7 +91,7 @@ export function DashboardPage(): ReactElement {
 				value: totalLand > 0 ? Math.round((stats.landUse.vegetationArea / totalLand) * 100) : 0,
 			},
 		];
-	}, [stats?.landUse, t]);
+	}, [stats, t]);
 
 	/** Transformed land efficiency data for gauge */
 	const landEfficiencyData = useMemo(

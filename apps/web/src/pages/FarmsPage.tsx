@@ -2,7 +2,6 @@ import { Flex, Heading } from "@radix-ui/themes";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
-import styled from "styled-components";
 
 import type { ReactElement } from "react";
 
@@ -15,6 +14,7 @@ import { PageContainer } from "@/components/templates/PageContainer";
 import { Button, ConfirmDialog } from "@/components/ui/";
 import { useToast } from "@/contexts/ToastContext";
 import { FarmList } from "@/features";
+import { useLogger } from "@/hooks";
 import { useDeleteFarmMutation, useGetFarmsQuery, useGetProducersQuery } from "@/store/api";
 import { ROUTES } from "@/utils/";
 
@@ -25,6 +25,7 @@ import { ROUTES } from "@/utils/";
  * search, filtering, and pagination capabilities.
  */
 export function FarmsPage(): ReactElement {
+	const logger = useLogger(FarmsPage.name);
 	const { t } = useTranslation();
 	const navigate = useNavigate();
 	const toast = useToast();
@@ -73,7 +74,7 @@ export function FarmsPage(): ReactElement {
 			await deleteFarm(farmToDelete).unwrap();
 			toast.success(t(($) => $.farms.deleteSuccess));
 		} catch (error) {
-			console.error("Failed to delete farm:", error);
+			logger.error("Failed to delete farm:", error);
 			toast.error(
 				t(($) => $.farms.deleteError),
 				t(($) => $.common.retry),

@@ -1,8 +1,6 @@
 import { Controller, Get, HttpStatus } from "@nestjs/common";
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 
-import type { CitiesByState } from "@agro/shared/types";
-
 import { DashboardService } from "./dashboard.service";
 import { DashboardStatsDto } from "./dto";
 

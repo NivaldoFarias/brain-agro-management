@@ -16,7 +16,7 @@ concurrency:
 
 jobs:
   lint-and-typecheck:
-    name: Lint, Format, and Type Check
+    name: Code Quality Checks
     runs-on: ubuntu-latest
 
     steps:
@@ -45,17 +45,20 @@ jobs:
       - name: Build shared package
         run: bun run --filter='@agro/shared' build
 
+      # Check 1: Code patterns and style (ESLint)
       - name: Run linter
         run: bun run lint
 
+      # Check 2: Code formatting consistency (Prettier)
       - name: Check formatting
         run: bun run format:check
 
+      # Check 3: Type safety and compilation (TypeScript)
       - name: Run type checker
         run: bun run type-check
 
   test:
-    name: Run Tests
+    name: Unit & Integration Tests
     runs-on: ubuntu-latest
 
     steps:
@@ -84,5 +87,5 @@ jobs:
       - name: Build shared package
         run: bun run --filter='@agro/shared' build
 
-      - name: Run tests
+      - name: Run all tests
         run: bun test

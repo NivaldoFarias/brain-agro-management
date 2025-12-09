@@ -115,16 +115,16 @@ export class DashboardAveragesDto {
  * Contains geographic and crop distribution information.
  */
 export class DashboardDistributionsDto {
-	@ApiProperty({ type: [Object] })
+	@ApiProperty({ type: [Object], isArray: true })
 	byState!: Array<StateDistribution>;
 
-	@ApiProperty({ type: [Object] })
+	@ApiProperty({ type: [Object], isArray: true })
 	byCrop!: Array<CropDistribution>;
 
-	@ApiProperty({ type: [CityDistributionDto] })
+	@ApiProperty({ type: [CityDistributionDto], isArray: true })
 	byCityTop10!: Array<CityDistributionDto>;
 
-	@ApiProperty({ type: [Object] })
+	@ApiProperty({ type: [Object], isArray: true })
 	producersByState!: Array<StateDistribution>;
 }
 
@@ -134,10 +134,10 @@ export class DashboardDistributionsDto {
  * Highlights best-performing entities.
  */
 export class DashboardTopRecordsDto {
-	@ApiProperty({ type: [FarmSummaryDto] })
+	@ApiProperty({ type: [FarmSummaryDto], isArray: true })
 	largestFarms!: Array<FarmSummaryDto>;
 
-	@ApiProperty({ type: [ProducerSummaryDto] })
+	@ApiProperty({ type: [ProducerSummaryDto], isArray: true })
 	mostProductiveProducers!: Array<ProducerSummaryDto>;
 }
 

@@ -10,6 +10,7 @@ import { Typography } from "@/components/atoms";
 import { Card, EmptyState, LoadingState } from "@/components/ui/";
 import { useToast } from "@/contexts";
 import { FarmForm } from "@/features";
+import { useLogger } from "@/hooks";
 import { useCreateFarmMutation, useGetProducersQuery } from "@/store/api";
 import { ROUTES } from "@/utils/";
 
@@ -20,6 +21,7 @@ import { ROUTES } from "@/utils/";
  * with area validation and crop selection.
  */
 export function CreateFarmPage(): ReactElement {
+	const logger = useLogger(CreateFarmPage.name);
 	const { t } = useTranslation();
 	const navigate = useNavigate();
 	const toast = useToast();
@@ -41,7 +43,7 @@ export function CreateFarmPage(): ReactElement {
 
 			await navigate(ROUTES.farms.list);
 		} catch (error) {
-			console.error(
+			logger.error(
 				t(($) => $.farms.createError),
 				error,
 			);

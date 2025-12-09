@@ -68,7 +68,7 @@ export function DashboardGauge({ title, data, isLoading, error, overrides }: Das
 							innerRadius={60}
 							outerRadius={90}
 							dataKey="value"
-							label={({ name, value }) => `${name}: ${String(value.toFixed(1))}%`}
+							label={({ name, value }: { name: string; value: number }) => `${name}: ${value.toFixed(1)}%`}
 							labelLine={false}
 							style={{ fontSize: "11px" }}
 							{...(overrides as unknown as Record<string, unknown>)}

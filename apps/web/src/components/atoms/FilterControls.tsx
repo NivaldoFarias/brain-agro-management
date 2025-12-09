@@ -171,7 +171,7 @@ export function FilterControls(props: FilterControlsProps) {
 						</Text>
 						<Select.Root
 							value={filters.sortBy ?? (type === "producers" ? ProducerSortField.Name : FarmSortField.Name)}
-							onValueChange={(value) => {
+							onValueChange={(value: string) => {
 								if (type === "producers") {
 									onFiltersChange({ ...filters, sortBy: value as ProducerSortField });
 								} else {

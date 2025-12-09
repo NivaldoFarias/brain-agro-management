@@ -2,7 +2,11 @@ import { createContext, useCallback, useContext, useState } from "react";
 
 import type { ReactElement, ReactNode } from "react";
 
+import { Logger } from "@/utils/logger.util";
+
 import { useLocalStorageContext } from "./LocalStorageContext";
+
+const logger = new Logger({ context: "AuthProvider" });
 
 /**
  * Token storage key in localStorage.
@@ -64,7 +68,7 @@ export function AuthProvider({ children }: AuthProviderProps): ReactElement {
 	const [token, setToken] = useState<string | undefined>(() => {
 		const storedToken = storage.getItem<string>(TOKEN_STORAGE_KEY);
 
-		console.log("[AuthProvider] Initial token from localStorage:", storedToken ? "EXISTS" : "NULL");
+		logger.debug("Initial token from localStorage:", storedToken ? "EXISTS" : "NULL");
 
 		return storedToken;
 	});
@@ -72,41 +76,41 @@ export function AuthProvider({ children }: AuthProviderProps): ReactElement {
 	const [user, setUser] = useState<User | undefined>(() => {
 		const parsedUser = storage.getItem<User>("brain_ag_user");
 
-		console.log("[AuthProvider] Initial user from localStorage:", parsedUser);
+		logger.debug("Initial user from localStorage:", parsedUser);
 
 		return parsedUser;
 	});
 
 	const login = useCallback(
 		(accessToken: string, email: string) => {
-			console.log("[AuthProvider] login() called with email:", email);
+			logger.debug("login() called with email:", email);
 
 			storage.setItem(TOKEN_STORAGE_KEY, accessToken);
 			storage.setItem("brain_ag_user", { email });
 
-			console.log("[AuthProvider] Saved to localStorage successfully");
+			logger.debug("Saved to localStorage successfully");
 
 			setToken(accessToken);
 			setUser({ email });
 
-			console.log("[AuthProvider] State updated - token and user set");
+			logger.debug("State updated - token and user set");
 		},
 		[storage],
 	);
 
 	const logout = useCallback(() => {
-		console.log("[AuthProvider] logout() called");
+		logger.debug("logout() called");
 
 		storage.removeItem(TOKEN_STORAGE_KEY);
 		storage.removeItem("brain_ag_user");
 		setToken(undefined);
 		setUser(undefined);
 
-		console.log("[AuthProvider] Logged out successfully");
+		logger.debug("Logged out successfully");
 	}, [storage]);
 
 	const isAuthenticated = Boolean(token);
-	console.log("[AuthProvider] isAuthenticated:", isAuthenticated, "| token:", token ? "EXISTS" : "NULL");
+	logger.debug("isAuthenticated:", isAuthenticated, "| token:", token ? "EXISTS" : "NULL");
 
 	const value: AuthContextValue = {
 		token,

@@ -6,10 +6,9 @@ import { Repository } from "typeorm";
 
 import type { CityResponseDto, FindAllCitiesDto } from "./dto";
 
-import type { BrazilianState } from "@agro/shared/enums";
 import type { CitiesByState, PaginatedResponse } from "@agro/shared/types";
 
-import { CitySortField, SortOrder } from "@agro/shared/enums";
+import { BrazilianState, CitySortField, SortOrder } from "@agro/shared/enums";
 
 import { City } from "./entities/city.entity";
 
@@ -105,14 +104,18 @@ export class CitiesService {
 			order: { state: SortOrder.Ascending, name: SortOrder.Ascending },
 		});
 
-		const grouppedCities = cities.reduce<CitiesByState>((acc, city) => {
-			const state = city.state as BrazilianState;
+		const grouppedCities = cities.reduce<CitiesByState>(
+			(acc, city) => {
+				const state = city.state as BrazilianState;
 
-			acc[state] ??= [];
-			acc[state].push(city.name);
+				acc[state].push(city.name);
 
-			return acc;
-		}, {} as CitiesByState);
+				return acc;
+			},
+			Object.fromEntries(
+				Object.values(BrazilianState).map((state) => [state, [] as Array<string>]),
+			) as CitiesByState,
+		);
 
 		return grouppedCities;
 	}

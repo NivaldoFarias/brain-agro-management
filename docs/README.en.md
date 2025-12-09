@@ -53,6 +53,7 @@ app_port: 7860
 - [Quick Start](#quick-start)
 - [Status](#status)
 - [Documentation](#documentation)
+- [Contributing](#contributing)
 - [Design Notes](#design-notes)
 
 ## About the Project
@@ -190,6 +191,7 @@ bun run type-check   # Check TypeScript types
 | [ENVIRONMENT.md](./ENVIRONMENT.md)                                      | Environment variables and configuration    |
 | [DOCKER.md](./DOCKER.md)                                                | Containerization and deployment guide      |
 | [MONITORING.md](./MONITORING.md)                                        | Monitoring, alerts, and automatic recovery |
+| [CODE_QUALITY.md](./CODE_QUALITY.md)                                    | CI/CD strategy, linting and type-checking  |
 | [Swagger UI](https://badivia-brain-ag-api.hf.space/api/docs)            | Interactive API documentation (OpenAPI)    |
 | [Scalar Reference](https://badivia-brain-ag-api.hf.space/api/reference) | Modern API reference                       |
 
@@ -201,6 +203,25 @@ Coding standards and style guides in `.github/instructions/`:
 - **Database**: Migrations, seeds, TypeORM patterns
 - **Testing**: Unit tests, integration tests, TDD
 - **TypeScript**: Strict mode, type safety, JSDoc
+
+## Contributing
+
+Contributions are welcome! Please read our [Contributing Guide](../CONTRIBUTING.md) to understand:
+
+- ✅ Development workflow
+- ✅ Code quality standards
+- ✅ Pull Request process
+- ✅ Development environment setup
+
+**Key points**:
+- Use `bun run lint:fix` before committing
+- Run `bun run type-check` before pushing
+- Follow [Conventional Commits](https://www.conventionalcommits.org/)
+- Add tests for new features
+- Keep documentation updated
+
+> [!TIP]
+> See [CODE_QUALITY.md](./CODE_QUALITY.md) to understand our CI/CD strategy and why we separate linting, type-checking, and testing.
 
 ## Design Notes
 

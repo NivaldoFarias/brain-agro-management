@@ -1,5 +1,9 @@
 import { useCallback, useState } from "react";
 
+import { Logger } from "@/utils/logger.util";
+
+const logger = new Logger({ context: "useLocalStorage" });
+
 /**
  * Type-safe localStorage hook with automatic JSON serialization.
  *
@@ -37,7 +41,7 @@ export function useLocalStorage<T>(
 			const item = window.localStorage.getItem(key);
 			return item ? (JSON.parse(item) as T) : initialValue;
 		} catch (error) {
-			console.error(`[useLocalStorage] Failed to read key "${key}":`, error);
+			logger.error(`Failed to read key "${key}":`, error);
 			return initialValue;
 		}
 	});
@@ -49,7 +53,7 @@ export function useLocalStorage<T>(
 				setStoredValue(value);
 				window.localStorage.setItem(key, JSON.stringify(value));
 			} catch (error) {
-				console.error(`[useLocalStorage] Failed to set key "${key}":`, error);
+				logger.error(`Failed to set key "${key}":`, error);
 			}
 		},
 		[key],
@@ -61,7 +65,7 @@ export function useLocalStorage<T>(
 			window.localStorage.removeItem(key);
 			setStoredValue(initialValue);
 		} catch (error) {
-			console.error(`[useLocalStorage] Failed to remove key "${key}":`, error);
+			logger.error(`Failed to remove key "${key}":`, error);
 		}
 	}, [key, initialValue]);
 

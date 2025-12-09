@@ -1,6 +1,6 @@
 import type { BaseListFilterOptions } from "./api";
 
-import type { ProducerSortField, SortOrder } from "@/enums";
+import type { ProducerSortField } from "@/enums";
 
 /**
  * Producer entity type representing rural producers and agricultural companies.
@@ -136,4 +136,4 @@ export interface ProducersListResponse {
 	limit: number;
 }
 
-export interface ProducersFilterOptions extends BaseListFilterOptions<ProducerSortField> {}
+export type ProducersFilterOptions = BaseListFilterOptions<ProducerSortField>;

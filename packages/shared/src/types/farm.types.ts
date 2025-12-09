@@ -1,6 +1,6 @@
 import type { BaseListFilterOptions, PaginatedResponse } from "./api";
 
-import { BrazilianState, CropType, FarmSortField, SortOrder } from "../enums";
+import { BrazilianState, CropType, FarmSortField } from "../enums";
 
 /**
  * Farm entity type representing agricultural properties.

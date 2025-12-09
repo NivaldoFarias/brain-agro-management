@@ -2,7 +2,6 @@ import { Flex, Heading } from "@radix-ui/themes";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
-import styled from "styled-components";
 
 import type { ReactElement } from "react";
 
@@ -10,11 +9,12 @@ import type { ProducersFilterOptions } from "@agro/shared/types";
 
 import { ProducerSortField, SortOrder } from "@agro/shared/enums";
 
-import { FilterControls, Typography } from "@/components/atoms";
+import { FilterControls } from "@/components/atoms";
 import { PageContainer } from "@/components/templates/PageContainer";
 import { Button, ConfirmDialog } from "@/components/ui/";
 import { useToast } from "@/contexts/ToastContext";
 import { ProducerList } from "@/features";
+import { useLogger } from "@/hooks";
 import { useDeleteProducerMutation, useGetProducersQuery } from "@/store/api";
 import { ROUTES } from "@/utils/";
 
@@ -25,6 +25,7 @@ import { ROUTES } from "@/utils/";
  * Provides actions for creating, editing, and deleting producers.
  */
 export function ProducersPage(): ReactElement {
+	const logger = useLogger(ProducersPage.name);
 	const { t } = useTranslation();
 	const navigate = useNavigate();
 	const toast = useToast();
@@ -70,7 +71,7 @@ export function ProducersPage(): ReactElement {
 			await deleteProducer(producerToDelete).unwrap();
 			toast.success(t(($) => $.producers.deleteSuccess));
 		} catch (error) {
-			console.error("Failed to delete producer:", error);
+			logger.error("Failed to delete producer:", error);
 			toast.error(
 				t(($) => $.producers.deleteError),
 				t(($) => $.common.retry),

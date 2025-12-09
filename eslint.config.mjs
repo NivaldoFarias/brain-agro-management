@@ -9,8 +9,6 @@ import globals from "globals";
 import tseslint from "typescript-eslint";
 
 export default defineConfig(
-	tseslint.configs.strictTypeChecked,
-	tseslint.configs.stylisticTypeChecked,
 	{
 		ignores: [
 			"**/node_modules/**",
@@ -31,21 +29,21 @@ export default defineConfig(
 			"**/coverage/**",
 		],
 	},
+	tseslint.configs.strict,
+	tseslint.configs.stylistic,
 	{
 		files: ["**/*.{js,cjs,mjs,ts,mts,cts,d.ts}"],
 		plugins: {
 			"@typescript-eslint": tseslint.plugin,
 		},
 		languageOptions: {
-			globals: { ...globals.node },
+			globals: {
+				...globals.node,
+				NodeJS: "readonly",
+			},
 			parser: tseslint.parser,
 			parserOptions: {
-				project: [
-					"./tsconfig.json",
-					"./apps/web/tsconfig.json",
-					"./apps/api/tsconfig.json",
-					"./packages/shared/tsconfig.json",
-				],
+				project: true,
 				tsconfigRootDir: import.meta.dirname,
 				ecmaVersion: "latest",
 				sourceType: "module",

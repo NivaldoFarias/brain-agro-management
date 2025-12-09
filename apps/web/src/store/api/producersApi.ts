@@ -45,7 +45,8 @@ export const producersApi = api.injectEndpoints({
 					...(search && { search }),
 				},
 			}),
-			transformResponse: (response: ApiResponse<ProducersListResponse>) => response.data,
+			transformResponse: (response: ApiResponse<ProducersListResponse>): ProducersListResponse =>
+				response.data,
 			providesTags: (result) =>
 				result ?
 					[

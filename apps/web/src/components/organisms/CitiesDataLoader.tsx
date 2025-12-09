@@ -3,6 +3,7 @@ import { useEffect } from "react";
 import type { ReactElement, ReactNode } from "react";
 
 import { useLocalStorageContext } from "@/contexts/LocalStorageContext";
+import { useLogger } from "@/hooks";
 import { useGetAllCitiesByStateQuery } from "@/store/api/citiesApi";
 import { STORAGE_KEYS } from "@/utils/constants.util";
 
@@ -28,6 +29,7 @@ interface CitiesDataLoaderProps {
  * ```
  */
 export function CitiesDataLoader({ children }: CitiesDataLoaderProps): ReactElement {
+	const logger = useLogger(CitiesDataLoader.name);
 	const storage = useLocalStorageContext();
 	const { data: citiesByState, isSuccess } = useGetAllCitiesByStateQuery(undefined, {
 		skip: storage.getItem(STORAGE_KEYS.citiesByState) != null,
@@ -35,14 +37,14 @@ export function CitiesDataLoader({ children }: CitiesDataLoaderProps): ReactElem
 
 	useEffect(() => {
 		if (isSuccess) {
-			console.log("[CitiesDataLoader] Caching cities data in localStorage");
+			logger.info("Caching cities data in localStorage");
 			storage.setItem(STORAGE_KEYS.citiesByState, citiesByState);
 		}
 
 		return () => {
-			console.log("[CitiesDataLoader] Component unmounted");
+			logger.debug("Component unmounted");
 		};
-	}, [isSuccess, citiesByState, storage]);
+	}, [isSuccess, citiesByState, storage, logger]);
 
 	return <>{children}</>;
 }

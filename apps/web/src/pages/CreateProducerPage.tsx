@@ -10,6 +10,7 @@ import { Typography } from "@/components/atoms";
 import { Card } from "@/components/ui/";
 import { useToast } from "@/contexts";
 import { ProducerForm } from "@/features";
+import { useLogger } from "@/hooks";
 import { useCreateProducerMutation } from "@/store/api";
 import { ROUTES } from "@/utils/";
 
@@ -20,6 +21,7 @@ import { ROUTES } from "@/utils/";
  * with CPF/CNPJ validation and Brazilian address fields.
  */
 export function CreateProducerPage(): ReactElement {
+	const logger = useLogger(CreateProducerPage.name);
 	const { t } = useTranslation();
 	const navigate = useNavigate();
 	const toast = useToast();
@@ -36,7 +38,7 @@ export function CreateProducerPage(): ReactElement {
 
 			await navigate(ROUTES.producers.list);
 		} catch (error) {
-			console.error(
+			logger.error(
 				t(($) => $.producers.createError),
 				error,
 			);

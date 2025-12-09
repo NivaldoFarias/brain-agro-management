@@ -10,6 +10,7 @@ import { Typography } from "@/components/atoms";
 import { Card, LoadingState } from "@/components/ui/";
 import { useToast } from "@/contexts";
 import { ProducerForm } from "@/features";
+import { useLogger } from "@/hooks";
 import { useGetProducerQuery, useUpdateProducerMutation } from "@/store/api";
 import { ROUTES } from "@/utils/";
 
@@ -20,6 +21,7 @@ import { ROUTES } from "@/utils/";
  * Handles validation and submission with success/error feedback.
  */
 export function EditProducerPage(): ReactElement {
+	const logger = useLogger(EditProducerPage.name);
 	const { t } = useTranslation();
 	const navigate = useNavigate();
 	const toast = useToast();
@@ -44,7 +46,7 @@ export function EditProducerPage(): ReactElement {
 
 			await navigate(ROUTES.producers.list);
 		} catch (error) {
-			console.error(
+			logger.error(
 				t(($) => $.producers.updateError),
 				error,
 			);
