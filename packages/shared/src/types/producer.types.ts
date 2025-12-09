@@ -1,4 +1,5 @@
 import type { BaseListFilterOptions } from "./api";
+import type { Farm } from "./farm.types";
 
 import type { ProducerSortField } from "@/enums";
 
@@ -15,6 +16,7 @@ import type { ProducerSortField } from "@/enums";
  *   id: "550e8400-e29b-41d4-a716-446655440000",
  *   name: "João Silva",
  *   document: "111.444.777-35",
+ *   farms: [],
  *   createdAt: "2024-01-15T10:30:00.000Z",
  *   updatedAt: "2024-01-15T10:30:00.000Z"
  * };
@@ -34,6 +36,9 @@ export interface Producer {
 	 * - CNPJ format: "11.222.333/0001-81" or "11222333000181" (14 digits)
 	 */
 	document: string;
+
+	/** Array of farms owned by the producer */
+	farms: Array<Farm>;
 
 	/** Timestamp when the producer was created */
 	createdAt: string;

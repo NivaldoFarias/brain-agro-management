@@ -2,7 +2,7 @@ import { faker } from "@faker-js/faker/locale/pt_BR";
 import { ApiProperty } from "@nestjs/swagger";
 import { Exclude, Expose } from "class-transformer";
 
-import type { Farm } from "@/modules/farms/entities";
+import type { Farm } from "@agro/shared/types";
 
 import { generateDocument } from "@agro/shared/utils";
 

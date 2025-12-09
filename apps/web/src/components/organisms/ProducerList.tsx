@@ -1,11 +1,14 @@
-import { Button, Flex, Skeleton, Table, Text } from "@radix-ui/themes";
+import { Badge, Button, Dialog, Flex, Skeleton, Table, Text } from "@radix-ui/themes";
 import { BadgeXIcon as DeleteIcon, SquarePenIcon as EditIcon } from "lucide-react";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 
 import type { ReactElement } from "react";
 
-import type { Producer } from "@agro/shared/types";
+import type { Farm, Producer } from "@agro/shared/types";
+
+import { CROP_TO_COLOR } from "@/utils";
 
 import { PaginationControls } from "../atoms/";
 import { EmptyState } from "../ui/EmptyState";
@@ -82,6 +85,7 @@ export function ProducerList({
 }: ProducerListProps): ReactElement {
 	const { t } = useTranslation();
 	const navigate = useNavigate();
+	const [selectedFarm, setSelectedFarm] = useState<Farm | null>(null);
 
 	const totalPages = Math.ceil(total / limit);
 	const showPagination = total > limit;
@@ -110,39 +114,159 @@ export function ProducerList({
 	}
 
 	return (
-		<Flex direction="column" gap="4">
-			<Table.Root variant="surface" size="2">
-				<Table.Header>
-					<Table.Row>
-						<Table.ColumnHeaderCell>{t(($) => $.producers.name)}</Table.ColumnHeaderCell>
-						<Table.ColumnHeaderCell>{t(($) => $.producers.document)}</Table.ColumnHeaderCell>
-						<Table.ColumnHeaderCell>{t(($) => $.form.createdAt)}</Table.ColumnHeaderCell>
-						<Table.ColumnHeaderCell>{t(($) => $.common.actions)}</Table.ColumnHeaderCell>
-					</Table.Row>
-				</Table.Header>
+		<>
+			<Flex direction="column" gap="4">
+				<Table.Root variant="surface" size="2">
+					<Table.Header>
+						<Table.Row>
+							<Table.ColumnHeaderCell>{t(($) => $.producers.name)}</Table.ColumnHeaderCell>
+							<Table.ColumnHeaderCell>{t(($) => $.producers.document)}</Table.ColumnHeaderCell>
+							<Table.ColumnHeaderCell>{t(($) => $.producers.farmCount)}</Table.ColumnHeaderCell>
+							<Table.ColumnHeaderCell>{t(($) => $.form.createdAt)}</Table.ColumnHeaderCell>
+							<Table.ColumnHeaderCell>{t(($) => $.common.actions)}</Table.ColumnHeaderCell>
+						</Table.Row>
+					</Table.Header>
 
-				<Table.Body>
-					{isLoading ?
-						<LoadingState />
-					:	producers.map((producer) => ProducerDataRow(producer))}
-				</Table.Body>
-			</Table.Root>
+					<Table.Body>
+						{isLoading ?
+							<LoadingState />
+						:	producers.map((producer) => <ProducerDataRow key={producer.id} producer={producer} />)}
+					</Table.Body>
+				</Table.Root>
 
-			{showPagination ?
-				<PaginationControls
-					page={page}
-					total={total}
-					isLoading={isLoading}
-					totalPages={totalPages}
-					onPageChange={onPageChange}
-				/>
+				{showPagination ?
+					<PaginationControls
+						page={page}
+						total={total}
+						isLoading={isLoading}
+						totalPages={totalPages}
+						onPageChange={onPageChange}
+					/>
+				:	null}
+			</Flex>
+
+			{selectedFarm ?
+				<FarmDetailsDialog farm={selectedFarm} />
 			:	null}
-		</Flex>
+		</>
 	);
 
-	function ProducerDataRow(producer: Producer) {
+	function FarmDetailsDialog({ farm }: { farm: Farm }) {
 		return (
-			<Table.Row key={producer.id}>
+			<Dialog.Root
+				open={farm !== null}
+				onOpenChange={(open) => {
+					if (!open) setSelectedFarm(null);
+				}}
+			>
+				<Dialog.Content style={{ maxWidth: 600 }}>
+					<Dialog.Title>{farm.name}</Dialog.Title>
+					<Dialog.Description>{t(($) => $.farms.farmDetails)}</Dialog.Description>
+
+					<Flex direction="column" gap="4" mt="4">
+						<Table.Root variant="surface" size="2">
+							<Table.Body>
+								<Table.Row>
+									<Table.Cell>
+										<Text weight="bold">{t(($) => $.farms.name)}</Text>
+									</Table.Cell>
+									<Table.Cell>
+										<Text>{farm.name}</Text>
+									</Table.Cell>
+								</Table.Row>
+								<Table.Row>
+									<Table.Cell>
+										<Text weight="bold">{t(($) => $.farms.city)}</Text>
+									</Table.Cell>
+									<Table.Cell>
+										<Text>{farm.city}</Text>
+									</Table.Cell>
+								</Table.Row>
+								<Table.Row>
+									<Table.Cell>
+										<Text weight="bold">{t(($) => $.farms.state)}</Text>
+									</Table.Cell>
+									<Table.Cell>
+										<Text>{t(($) => $.states[farm.state])}</Text>
+									</Table.Cell>
+								</Table.Row>
+								<Table.Row>
+									<Table.Cell>
+										<Text weight="bold">{t(($) => $.farms.totalArea)}</Text>
+									</Table.Cell>
+									<Table.Cell>
+										<Text>
+											{farm.totalArea.toFixed(2)} {t(($) => $.abbreviations.hectares)}
+										</Text>
+									</Table.Cell>
+								</Table.Row>
+								<Table.Row>
+									<Table.Cell>
+										<Text weight="bold">{t(($) => $.farms.arableArea)}</Text>
+									</Table.Cell>
+									<Table.Cell>
+										<Text>
+											{farm.arableArea.toFixed(2)} {t(($) => $.abbreviations.hectares)}
+										</Text>
+									</Table.Cell>
+								</Table.Row>
+								<Table.Row>
+									<Table.Cell>
+										<Text weight="bold">{t(($) => $.farms.vegetationArea)}</Text>
+									</Table.Cell>
+									<Table.Cell>
+										<Text>
+											{farm.vegetationArea.toFixed(2)} {t(($) => $.abbreviations.hectares)}
+										</Text>
+									</Table.Cell>
+								</Table.Row>
+								<Table.Row>
+									<Table.Cell>
+										<Text weight="bold">{t(($) => $.farms.crops)}</Text>
+									</Table.Cell>
+									<Table.Cell>
+										<Flex gap="1" wrap="wrap">
+											{farm.crops && farm.crops.length > 0 ?
+												farm.crops.map((crop) => (
+													<Badge key={crop} variant="soft" color={CROP_TO_COLOR[crop]}>
+														{t(($) => $.crops[crop])}
+													</Badge>
+												))
+											:	t(($) => $.common.none)}
+										</Flex>
+									</Table.Cell>
+								</Table.Row>
+							</Table.Body>
+						</Table.Root>
+
+						<Flex gap="3" justify="end">
+							<Dialog.Close>
+								<Button variant="soft" color="gray">
+									{t(($) => $.common.close)}
+								</Button>
+							</Dialog.Close>
+							<Button
+								onClick={() => {
+									void navigate(`/farms/${farm.id}/edit`);
+								}}
+							>
+								<Flex>
+									<EditIcon size={16} aria-hidden="true" style={{ marginRight: 4 }} />
+									{t(($) => $.common.edit)}
+								</Flex>
+							</Button>
+						</Flex>
+					</Flex>
+				</Dialog.Content>
+			</Dialog.Root>
+		);
+	}
+
+	function ProducerDataRow({ producer }: { producer: Producer }) {
+		const hasFarms = producer.farms && producer.farms.length > 0;
+
+		return (
+			<Table.Row>
 				<Table.RowHeaderCell>
 					<Text>{producer.name}</Text>
 				</Table.RowHeaderCell>
@@ -150,6 +274,27 @@ export function ProducerList({
 					<Text size="2" color="gray">
 						{producer.document}
 					</Text>
+				</Table.Cell>
+				<Table.Cell>
+					{!hasFarms ?
+						<Text size="2" color="gray">
+							{t(($) => $.common.none)}
+						</Text>
+					:	<Flex direction="column" gap="1">
+							{producer.farms.map((farm) => (
+								<Badge
+									key={farm.id}
+									variant="soft"
+									style={{ cursor: "pointer", width: "fit-content" }}
+									onClick={() => {
+										setSelectedFarm(farm);
+									}}
+								>
+									{farm.name}
+								</Badge>
+							))}
+						</Flex>
+					}
 				</Table.Cell>
 				<Table.Cell>
 					<Text size="2">{new Date(producer.createdAt).toLocaleDateString()}</Text>
@@ -202,6 +347,11 @@ export function ProducerList({
 						<Text>
 							{t(($) => $.common.loading)} {t(($) => $.producers.document)}
 						</Text>
+					</Skeleton>
+				</Table.Cell>
+				<Table.Cell>
+					<Skeleton>
+						<Badge variant="soft">{t(($) => $.common.loading)}</Badge>
 					</Skeleton>
 				</Table.Cell>
 				<Table.Cell>

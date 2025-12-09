@@ -1,5 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Badge, Button, Checkbox, Flex, Grid, Select, Text, TextField } from "@radix-ui/themes";
+import { Badge, Button, Flex, Grid, Select, Text, TextField } from "@radix-ui/themes";
 import { useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
@@ -12,7 +12,7 @@ import { BrazilianState, CropType } from "@agro/shared/enums";
 
 import { useLocalStorageContext } from "@/contexts/LocalStorageContext";
 import { createFarmSchema } from "@/schemas";
-import { STORAGE_KEYS } from "@/utils/constants.util";
+import { CROP_TO_COLOR, STORAGE_KEYS } from "@/utils/constants.util";
 
 /** Props for the FarmForm component */
 export interface FarmFormProps {
@@ -85,7 +85,11 @@ export function FarmForm({ onSubmit, isLoading = false, defaultValues, producerI
 	}, [selectedState, storage]);
 
 	const handleCropToggle = (crop: CropType): void => {
-		const newCrops = selectedCrops.includes(crop) ? selectedCrops.filter((c) => c !== crop) : [...selectedCrops, crop];
+		const newCrops =
+			selectedCrops.includes(crop) ?
+				selectedCrops.filter((selectedCrop) => selectedCrop !== crop)
+			:	[...selectedCrops, crop];
+
 		setSelectedCrops(newCrops);
 		setValue("crops", newCrops, { shouldValidate: true });
 	};
@@ -276,18 +280,11 @@ export function FarmForm({ onSubmit, isLoading = false, defaultValues, producerI
 					<Flex wrap="wrap" gap="2" mt="2">
 						{Object.values(CropType).map((crop) => {
 							const isSelected = selectedCrops.includes(crop);
-							const cropToColor: Record<CropType, "blue" | "green" | "orange" | "gray" | "red"> = {
-								[CropType.Corn]: "green",
-								[CropType.Soy]: "blue",
-								[CropType.Coffee]: "orange",
-								[CropType.Sugarcane]: "gray",
-								[CropType.Cotton]: "red",
-							};
 
 							return (
 								<Badge
 									key={crop}
-									color={cropToColor[crop]}
+									color={CROP_TO_COLOR[crop]}
 									variant={isSelected ? "solid" : "soft"}
 									size="2"
 									style={{ cursor: "pointer" }}
@@ -296,7 +293,7 @@ export function FarmForm({ onSubmit, isLoading = false, defaultValues, producerI
 									}}
 								>
 									<Flex gap="1" align="center">
-										<Checkbox checked={isSelected} disabled={isLoading} style={{ pointerEvents: "none" }} />
+										{isSelected && "✓ "}
 										{t(($) => $.crops[crop])}
 									</Flex>
 								</Badge>

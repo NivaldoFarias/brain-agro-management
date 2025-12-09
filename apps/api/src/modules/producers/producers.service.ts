@@ -7,7 +7,8 @@ import {
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 
-import type { PaginatedResponse } from "@agro/shared/types";
+import type { BrazilianState, CropType } from "@agro/shared/enums";
+import type { Farm as FarmType, PaginatedResponse } from "@agro/shared/types";
 
 import { ProducerSortField, SortOrder } from "@agro/shared/enums";
 import {
@@ -16,6 +17,8 @@ import {
 	validateCNPJ,
 	validateCPF,
 } from "@agro/shared/validators";
+
+import { Farm } from "@/modules/farms/entities";
 
 import {
 	CreateProducerDto,
@@ -127,7 +130,9 @@ export class ProducersService {
 
 		const qb = this.producerRepository
 			.createQueryBuilder("producer")
-			.leftJoinAndSelect("producer.farms", "farms");
+			.leftJoinAndSelect("producer.farms", "farms")
+			.leftJoinAndSelect("farms.farmHarvests", "farmHarvests")
+			.leftJoinAndSelect("farmHarvests.crops", "crops");
 
 		if (search) qb.andWhere("producer.name LIKE :search", { search: `%${search}%` });
 
@@ -162,10 +167,13 @@ export class ProducersService {
 	 * ```
 	 */
 	public async findOne(id: string): Promise<ProducerResponseDto> {
-		const producer = await this.producerRepository.findOne({
-			where: { id },
-			relations: { farms: true },
-		});
+		const producer = await this.producerRepository
+			.createQueryBuilder("producer")
+			.leftJoinAndSelect("producer.farms", "farms")
+			.leftJoinAndSelect("farms.farmHarvests", "farmHarvests")
+			.leftJoinAndSelect("farmHarvests.crops", "crops")
+			.where("producer.id = :id", { id })
+			.getOne();
 
 		if (!producer) {
 			throw new NotFoundException(`Producer with ID ${id} not found`);
@@ -308,15 +316,46 @@ export class ProducersService {
 	/**
 	 * Maps a Producer entity to a ProducerResponseDto.
 	 *
-	 * @param producer The producer entity to map
+	 * Extracts crops from each farm's harvests and includes them in the response.
 	 *
-	 * @returns The mapped response DTO
+	 * @param producer The producer entity to map (with eagerly loaded farms, farmHarvests, and crops)
+	 *
+	 * @returns The mapped response DTO with farms containing flattened crops arrays
 	 */
 	private mapToResponseDto(producer: Producer): ProducerResponseDto {
+		const farmsWithCrops =
+			producer.farms?.map((farm: Farm) => {
+				const cropSet = new Set<string>();
+
+				if (Array.isArray(farm.farmHarvests) && farm.farmHarvests.length > 0) {
+					for (const farmHarvest of farm.farmHarvests) {
+						const harvestCrops = Array.isArray(farmHarvest.crops) ? farmHarvest.crops : [];
+
+						for (const crop of harvestCrops) {
+							if (crop.cropType) cropSet.add(crop.cropType);
+						}
+					}
+				}
+
+				return {
+					id: farm.id,
+					name: farm.name,
+					city: farm.city,
+					state: farm.state as BrazilianState,
+					totalArea: farm.totalArea,
+					arableArea: farm.arableArea,
+					vegetationArea: farm.vegetationArea,
+					crops: Array.from(cropSet) as Array<CropType>,
+					producerId: farm.producerId,
+					createdAt: farm.createdAt.toISOString(),
+					updatedAt: farm.updatedAt.toISOString(),
+				} as FarmType;
+			}) ?? [];
+
 		return {
 			id: producer.id,
 			name: producer.name,
-			farms: producer.farms,
+			farms: farmsWithCrops,
 			document: producer.document,
 			createdAt: producer.createdAt,
 			updatedAt: producer.updatedAt,
