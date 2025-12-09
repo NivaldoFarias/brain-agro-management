@@ -13,8 +13,8 @@ app_port: 7860
 <div align="center">
 
 [![CI Status](https://github.com/NivaldoFarias/brain-agro-management/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/NivaldoFarias/brain-agro-management/actions/workflows/ci.yml)
-[![API Health](https://img.shields.io/website?url=https%3A%2F%2Fbadivia-brain-ag-api.hf.space%2Fapi%2Fhealth%2Fready&label=API%20Status&up_message=healthy&down_message=down)](https://badivia-brain-ag-api.hf.space/api/health/ready)
-[![HuggingFace](https://img.shields.io/badge/🤗%20HuggingFace-Deployed-yellow)](https://badivia-brain-ag-api.hf.space/api)
+[![API Health](https://img.shields.io/website?url=https%3A%2F%2Fbadivia-brain-ag-api.hf.space%2Fapi%2Fhealth%2Fready&label=API%20Status&up_message=healthy&down_message=down)](https://badivia-brain-ag.hf.space/api/health/ready)
+[![HuggingFace](https://img.shields.io/badge/🤗%20HuggingFace-Deployed-yellow)](https://badivia-brain-ag.hf.space/api)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Version](https://img.shields.io/badge/version-0.0.1-green.svg)](package.json)
 
@@ -32,9 +32,9 @@ app_port: 7860
 
 ### Quick Links
 
-[Live API](https://badivia-brain-ag-api.hf.space/api) • 
-[API Docs (Swagger)](https://badivia-brain-ag-api.hf.space/api/docs) • 
-[API Reference (Scalar)](https://badivia-brain-ag-api.hf.space/api/reference) • 
+[Live API](https://badivia-brain-ag.hf.space/api) • 
+[API Docs (Swagger)](https://badivia-brain-ag.hf.space/api/docs) • 
+[API Reference (Scalar)](https://badivia-brain-ag.hf.space/api/reference) • 
 [Architecture](./docs/ARCHITECTURE.md) • 
 [Docker Guide](./docs/DOCKER.md)
 
@@ -189,13 +189,13 @@ bun run type-check   # Verificar tipos TypeScript
 
 ### Configuração & Operação
 
-| Documento                                                               | Descrição                                    |
-| ----------------------------------------------------------------------- | -------------------------------------------- |
-| [ENVIRONMENT.md](./docs/ENVIRONMENT.md)                                 | Variáveis de ambiente e configuração         |
-| [DOCKER.md](./docs/DOCKER.md)                                           | Guia de containerização e deploy             |
-| [CODE_QUALITY.md](./docs/CODE_QUALITY.md)                               | Estratégia de CI/CD, linting e type-checking |
-| [Swagger UI](https://badivia-brain-ag-api.hf.space/api/docs)            | Documentação interativa da API (OpenAPI)     |
-| [Scalar Reference](https://badivia-brain-ag-api.hf.space/api/reference) | Referência moderna da API                    |
+| Documento                                                           | Descrição                                    |
+| ------------------------------------------------------------------- | -------------------------------------------- |
+| [ENVIRONMENT.md](./docs/ENVIRONMENT.md)                             | Variáveis de ambiente e configuração         |
+| [DOCKER.md](./docs/DOCKER.md)                                       | Guia de containerização e deploy             |
+| [CODE_QUALITY.md](./docs/CODE_QUALITY.md)                           | Estratégia de CI/CD, linting e type-checking |
+| [Swagger UI](https://badivia-brain-ag.hf.space/api/docs)            | Documentação interativa da API (OpenAPI)     |
+| [Scalar Reference](https://badivia-brain-ag.hf.space/api/reference) | Referência moderna da API                    |
 
 ### Desenvolvimento
 

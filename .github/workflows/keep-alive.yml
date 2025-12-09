@@ -11,7 +11,7 @@ jobs:
     steps:
       - name: Ping Health Endpoint
         run: |
-          curl -f https://badivia-brain-ag-api.hf.space/api/health || exit 1
+          curl -f https://badivia-brain-ag.hf.space/api/health || exit 1
           echo "✅ Server is alive at $(date)"
 
       - name: Notify on Failure
