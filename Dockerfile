@@ -33,6 +33,9 @@ RUN apk add --no-cache dumb-init curl
 # Create non-root user
 RUN addgroup -g 1001 -S nodejs && adduser -S nodejs -u 1001
 
+# Install build dependencies needed for native modules (sqlite3)
+RUN apk add --no-cache python3 make g++
+
 # Copy package files for production install
 COPY --from=builder /app/package.json /app/bun.lock* ./
 COPY --from=builder /app/apps/api/package.json ./apps/api/
