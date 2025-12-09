@@ -110,7 +110,6 @@ export class HttpExceptionFilter implements ExceptionFilter {
 			};
 		}
 
-		// Handle non-HTTP exceptions (unexpected errors)
 		return {
 			statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
 			message: "Internal server error",

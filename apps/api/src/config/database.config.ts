@@ -1,13 +1,15 @@
 import { DataSource } from "typeorm";
 
-import { env } from "@/config/env.config";
-import { migrations } from "@/database/migrations";
-import { City } from "@/modules/cities/entities/city.entity";
-import { FarmHarvestCrop } from "@/modules/farms/entities/farm-harvest-crop.entity";
-import { FarmHarvest } from "@/modules/farms/entities/farm-harvest.entity";
-import { Farm } from "@/modules/farms/entities/farm.entity";
-import { Harvest } from "@/modules/farms/entities/harvest.entity";
-import { Producer } from "@/modules/producers/entities/producer.entity";
+import { migrations } from "../database/migrations";
+import { User } from "../modules/auth/entities/user.entity";
+import { City } from "../modules/cities/entities/city.entity";
+import { FarmHarvestCrop } from "../modules/farms/entities/farm-harvest-crop.entity";
+import { FarmHarvest } from "../modules/farms/entities/farm-harvest.entity";
+import { Farm } from "../modules/farms/entities/farm.entity";
+import { Harvest } from "../modules/farms/entities/harvest.entity";
+import { Producer } from "../modules/producers/entities/producer.entity";
+
+import { env } from "./env.config";
 
 /**
  * TypeORM DataSource configuration for CLI operations and migrations.
@@ -24,7 +26,7 @@ import { Producer } from "@/modules/producers/entities/producer.entity";
 export const AppDataSource = new DataSource({
 	type: "sqlite",
 	database: env.API__DATABASE_PATH,
-	entities: [Producer, Farm, Harvest, FarmHarvest, FarmHarvestCrop, City],
+	entities: [User, Producer, Farm, Harvest, FarmHarvest, FarmHarvestCrop, City],
 	migrations,
 	migrationsTableName: "migrations",
 	migrationsRun: false,

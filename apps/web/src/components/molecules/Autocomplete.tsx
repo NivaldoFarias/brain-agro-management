@@ -160,11 +160,11 @@ export function Autocomplete<T>({
 									cursor: "pointer",
 									borderBottom: index < filteredOptions.length - 1 ? "1px solid var(--gray-4)" : "none",
 								}}
-								onMouseEnter={(e) => {
-									e.currentTarget.style.backgroundColor = "var(--gray-3)";
+								onMouseEnter={(event) => {
+									event.currentTarget.style.backgroundColor = "var(--gray-3)";
 								}}
-								onMouseLeave={(e) => {
-									e.currentTarget.style.backgroundColor = "transparent";
+								onMouseLeave={(event) => {
+									event.currentTarget.style.backgroundColor = "transparent";
 								}}
 							>
 								<Text size="2">{optionLabel}</Text>

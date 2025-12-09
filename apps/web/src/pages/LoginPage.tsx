@@ -5,6 +5,8 @@ import styled from "styled-components";
 
 import type { FormEvent, ReactElement } from "react";
 
+import { DEMO_CREDENTIALS } from "@agro/shared/constants";
+
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { ErrorMessage } from "@/components/ui/ErrorMessage";
@@ -80,15 +82,15 @@ export function LoginPage(): ReactElement {
 					<Subtitle>{t(($) => $.app.subtitle)}</Subtitle>
 				</Header>
 				<form
-					onSubmit={(e) => {
-						void handleSubmit(e);
+					onSubmit={(event) => {
+						void handleSubmit(event);
 					}}
 				>
 					<FormField id="email" label={t(($) => $.auth.email)} required>
 						<Input
 							id="email"
 							type="email"
-							placeholder="admin@example.com"
+							placeholder={t(($) => $.auth.emailPlaceholder)}
 							value={email}
 							onChange={(event) => {
 								setEmail(event.target.value);
@@ -120,8 +122,12 @@ export function LoginPage(): ReactElement {
 				</form>
 				<DemoCredentials>
 					<DemoTitle>{t(($) => $.auth.demoCredentials)}</DemoTitle>
-					<DemoText>{t(($) => $.auth.email)}: admin@example.com</DemoText>
-					<DemoText>{t(($) => $.auth.password)}: admin123</DemoText>
+					<DemoText>
+						{t(($) => $.auth.email)}: {DEMO_CREDENTIALS.username}
+					</DemoText>
+					<DemoText>
+						{t(($) => $.auth.password)}: {DEMO_CREDENTIALS.password}
+					</DemoText>
 				</DemoCredentials>
 			</LoginCard>
 		</PageContainer>

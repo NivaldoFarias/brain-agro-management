@@ -39,7 +39,7 @@ export class AuthController {
 	 * Content-Type: application/json
 	 *
 	 * {
-	 *   "email": "admin@example.com",
+	 *   "email": "admin@brainag.com",
 	 *   "password": "admin123"
 	 * }
 	 * ```
@@ -55,19 +55,16 @@ export class AuthController {
 		status: HttpStatus.UNAUTHORIZED,
 		description: "Invalid credentials",
 	})
-	login(@Body() loginDto: LoginDto): AuthResponseDto {
-		// For this technical assessment, we use a simplified auth flow
-		// In production, you would validate credentials against a user database
+	async login(@Body() loginDto: LoginDto): Promise<AuthResponseDto> {
 		const { email, password } = loginDto;
 
-		// Simple credential validation for demo purposes
-		// Accept any email with password "admin123"
-		if (password !== "admin123") {
-			throw new UnauthorizedException("Invalid credentials");
+		const user = await this.authService.validateCredentials(email, password);
+
+		if (!user) {
+			throw new UnauthorizedException("Invalid email or password");
 		}
 
-		// Generate a token with mock user ID
-		const token = this.authService.generateToken("demo-user-id", email);
+		const token = this.authService.generateToken(user.id, user.email);
 
 		return token;
 	}

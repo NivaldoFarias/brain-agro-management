@@ -7,11 +7,13 @@ import { env } from "@/config/env.config";
 import { InitialSchema1732406400000 } from "./1732406400000-InitialSchema";
 import { SeedCities1732406500000 } from "./1732406500000-SeedCities";
 import { AddPerformanceIndexes1732500000000 } from "./1732500000000-AddPerformanceIndexes";
+import { CreateUsersTable1733702400000 } from "./1733702400000-CreateUsersTable";
 
 export const migrations = [
 	InitialSchema1732406400000,
 	SeedCities1732406500000,
 	AddPerformanceIndexes1732500000000,
+	CreateUsersTable1733702400000,
 ];
 
 /**

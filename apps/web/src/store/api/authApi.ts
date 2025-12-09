@@ -18,7 +18,7 @@ export const authApi = api.injectEndpoints({
 		 * @example
 		 * ```tsx
 		 * const [login, { isLoading }] = useLoginMutation();
-		 * const response = await login({ email: "admin@example.com", password: "admin123" });
+		 * const response = await login({ email: "admin@brainag.com", password: "admin123" });
 		 * ```
 		 */
 		login: builder.mutation<AuthResponseDto, LoginDto>({

@@ -46,6 +46,7 @@
         "login": "Entrar",
         "logout": "Sair",
         "email": "E-mail",
+        "emailPlaceholder": "Digite seu e-mail",
         "password": "Senha",
         "passwordPlaceholder": "Digite sua senha",
         "forgotPassword": "Esqueceu a senha?",

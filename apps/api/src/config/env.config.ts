@@ -164,6 +164,14 @@ const apiEnvSchema = z.object({
 	 * @see {@link environmentDefaults.API__LOCALE}
 	 */
 	API__LOCALE: z.enum(SupportedLocale).default(environmentDefaults.API__LOCALE),
+
+	/**
+	 * Number of salt rounds for password hashing
+	 *
+	 * @default 10
+	 * @see {@link environmentDefaults.API__SALT_ROUNDS}
+	 */
+	API__SALT_ROUNDS: z.coerce.number().int().min(4).default(environmentDefaults.API__SALT_ROUNDS),
 });
 
 /** Type-safe environment variables for the API application */

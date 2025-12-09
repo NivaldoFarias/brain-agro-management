@@ -1,15 +1,18 @@
 import { faker } from "@faker-js/faker/locale/pt_BR";
 import { Injectable } from "@nestjs/common";
+import * as bcrypt from "bcryptjs";
 import { InjectPinoLogger, PinoLogger } from "nestjs-pino";
 import { DataSource } from "typeorm";
 
 import type { SeedConfig } from "./seed.constants";
 
+import { DEMO_CREDENTIALS } from "@agro/shared/constants";
 import { BrazilianState } from "@agro/shared/enums";
 import { generateDocument } from "@agro/shared/utils";
 
 import { delay } from "@/common";
 import { createPinoConfig, env } from "@/config/";
+import { User } from "@/modules/auth/entities/user.entity";
 import { City } from "@/modules/cities/entities";
 import { IbgeApiService } from "@/modules/cities/ibge-api.service";
 import { Farm, FarmHarvest, FarmHarvestCrop, Harvest } from "@/modules/farms/entities";
@@ -78,6 +81,7 @@ export class SeedService {
 		try {
 			this.logger.info("Starting database seeding");
 
+			await this.seedUsers();
 			await this.seedCities();
 			await this.seedProducers();
 			await this.seedFarms();
@@ -91,6 +95,40 @@ export class SeedService {
 
 			throw error;
 		}
+	}
+
+	/**
+	 * Seeds default users for authentication.
+	 *
+	 * Creates an admin user with bcrypt-hashed password for testing and development.
+	 * Includes idempotency check to skip if users already exist.
+	 *
+	 * @returns {Promise<void>}
+	 */
+	private async seedUsers(): Promise<void> {
+		const userRepository = this.dataSource.getRepository(User);
+		const existingCount = await userRepository.count();
+
+		if (existingCount > 0) {
+			this.logger.warn({ userCount: existingCount }, "Users already seeded, skipping");
+
+			return;
+		}
+
+		this.logger.info("Creating default users");
+
+		const hashedPassword = await bcrypt.hash(DEMO_CREDENTIALS.password, env.API__SALT_ROUNDS);
+
+		const adminUser = userRepository.create({
+			email: DEMO_CREDENTIALS.username,
+			name: "Admin User",
+			password: hashedPassword,
+			isActive: true,
+		});
+
+		await userRepository.save(adminUser);
+
+		this.logger.info({ email: adminUser.email }, "Created default admin user");
 	}
 
 	/**
