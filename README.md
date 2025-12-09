@@ -13,7 +13,7 @@ app_port: 7860
 <div align="center">
 
 [![CI Status](https://github.com/NivaldoFarias/brain-agro-management/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/NivaldoFarias/brain-agro-management/actions/workflows/ci.yml)
-[![API Health](https://img.shields.io/website?url=https%3A%2F%2Fbadivia-brain-ag-api.hf.space%2Fapi%2Fhealth%2Fready&label=API%20Status&up_message=healthy&down_message=down)](https://badivia-brain-ag.hf.space/api/health/ready)
+[![API Health](https://img.shields.io/website?url=https%3A%2F%2Fbadivia-brain-ag.hf.space%2Fapi%2Fhealth%2Fready&label=API%20Status&up_message=healthy&down_message=down)](https://badivia-brain-ag.hf.space/api/health/ready)
 [![HuggingFace](https://img.shields.io/badge/🤗%20HuggingFace-Deployed-yellow)](https://badivia-brain-ag.hf.space/api)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Version](https://img.shields.io/badge/version-0.0.1-green.svg)](package.json)
