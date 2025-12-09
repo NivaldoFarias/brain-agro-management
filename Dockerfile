@@ -16,6 +16,9 @@ COPY packages/shared ./packages/shared
 COPY apps/api ./apps/api
 COPY tsconfig.base.json tsconfig.json ./
 
+# Build shared package first (required for API build to resolve @agro/shared imports)
+RUN cd packages/shared && bun run build
+
 # Build the API application (Bun bundles dependencies, including @agro/shared)
 RUN cd apps/api && bun run build
 
