@@ -235,8 +235,7 @@ function setupScalarApiReference(app: INestApplication, document: OpenAPIObject)
  * @param logger The Pino logger instance
  */
 async function startServer(app: INestApplication, logger: Logger): Promise<void> {
-	const port = String(env.API__PORT);
-	await app.listen(port);
+	await app.listen(env.API__PORT);
 
 	logger.log(`Application running: ${env.API__BASE_URL}/api`, "Bootstrap");
 	logger.log(`Swagger documentation: ${env.API__BASE_URL}/api/docs`, "Bootstrap");
