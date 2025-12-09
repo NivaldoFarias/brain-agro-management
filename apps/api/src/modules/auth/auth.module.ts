@@ -1,11 +1,13 @@
 import { Module } from "@nestjs/common";
 import { JwtModule } from "@nestjs/jwt";
 import { PassportModule } from "@nestjs/passport";
+import { TypeOrmModule } from "@nestjs/typeorm";
 
 import { env } from "@/config/env.config";
 
 import { AuthController } from "./auth.controller";
 import { AuthService } from "./auth.service";
+import { User } from "./entities/user.entity";
 import { JwtStrategy } from "./strategies/jwt.strategy";
 
 /**
@@ -16,6 +18,7 @@ import { JwtStrategy } from "./strategies/jwt.strategy";
  */
 @Module({
 	imports: [
+		TypeOrmModule.forFeature([User]),
 		PassportModule.register({ defaultStrategy: "jwt" }),
 		JwtModule.register({
 			secret: env.API__JWT_SECRET,

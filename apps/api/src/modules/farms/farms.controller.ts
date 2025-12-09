@@ -1,10 +1,29 @@
 import { faker } from "@faker-js/faker";
-import { Body, Controller, Delete, Get, HttpStatus, Param, Patch, Post } from "@nestjs/common";
+import {
+	Body,
+	Controller,
+	Delete,
+	Get,
+	HttpStatus,
+	Param,
+	Patch,
+	Post,
+	Query,
+} from "@nestjs/common";
 import { ApiBearerAuth, ApiOperation, ApiParam, ApiResponse, ApiTags } from "@nestjs/swagger";
 
-import { BrazilianState, CropType, ParseUUIDPipe } from "@/common";
+import type {
+	CropDistribution,
+	LandUseStats,
+	PaginatedResponse,
+	StateDistribution,
+} from "@agro/shared/types";
 
-import { CreateFarmDto, FarmResponseDto, UpdateFarmDto } from "./dto";
+import { BrazilianState, CropType } from "@agro/shared/enums";
+
+import { ParseUUIDPipe } from "@/common";
+
+import { CreateFarmDto, FarmResponseDto, FindAllFarmsDto, UpdateFarmDto } from "./dto";
 import { FarmsService } from "./farms.service";
 
 /**
@@ -16,7 +35,7 @@ import { FarmsService } from "./farms.service";
  *
  * ## Authentication
  * All endpoints will require JWT authentication in production.
- * Currently documented with @ApiBearerAuth for API specification.
+ * Currently documented with {@link ApiBearerAuth} for API specification.
  *
  * @example
  * ```typescript
@@ -28,7 +47,7 @@ import { FarmsService } from "./farms.service";
  * ```
  */
 @ApiTags("Farms")
-@ApiBearerAuth("JWT-auth")
+@ApiBearerAuth("JWT")
 @Controller("farms")
 export class FarmsController {
 	constructor(private readonly farmsService: FarmsService) {}
@@ -39,7 +58,7 @@ export class FarmsController {
 	 * Validates that the producer exists and that area constraints are met
 	 * (arableArea + vegetationArea ≤ totalArea).
 	 *
-	 * @param createFarmDto - Farm data including name, location, areas, and producer ID
+	 * @param createFarmDto Farm data including name, location, areas, and producer ID
 	 *
 	 * @returns The created farm with generated ID and timestamps
 	 *
@@ -58,38 +77,33 @@ export class FarmsController {
 		description: "Invalid input data or area constraints violated",
 	})
 	@ApiResponse({ status: HttpStatus.NOT_FOUND, description: "Producer not found" })
-	create(@Body() createFarmDto: CreateFarmDto): Promise<FarmResponseDto> {
+	public create(@Body() createFarmDto: CreateFarmDto): Promise<FarmResponseDto> {
 		return this.farmsService.create(createFarmDto);
 	}
 
 	/**
-	 * Retrieves all farms with pagination.
+	 * Retrieves all farms with pagination, sorting, filtering, and search.
 	 *
-	 * Returns farms ordered alphabetically by name.
-	 * For now, ignores pagination params and returns all farms (assessment requirement).
+	 * Supports filtering by state, city, producer, and name search with
+	 * configurable sorting and pagination. All query parameters are optional.
 	 *
-	 * @returns Paginated farm response
+	 * @param query Query parameters for pagination, sorting, filtering, and search
+	 *
+	 * @returns Paginated farm response with metadata
 	 */
 	@Get()
-	@ApiOperation({ summary: "Get all farms" })
+	@ApiOperation({
+		summary: "Get all farms with pagination, sorting, filtering, and search",
+		description:
+			"Retrieves a paginated list of farms. Supports filtering by state, city, producer, name search, customizable sorting, and pagination.",
+	})
 	@ApiResponse({
 		status: HttpStatus.OK,
-		description: "List of farms",
+		description: "Paginated list of farms",
 		type: [FarmResponseDto],
 	})
-	async findAll(): Promise<{
-		data: Array<FarmResponseDto>;
-		total: number;
-		page: number;
-		limit: number;
-	}> {
-		const farms = await this.farmsService.findAll();
-		return {
-			data: farms,
-			total: farms.length,
-			page: 1,
-			limit: farms.length,
-		};
+	public findAll(@Query() query: FindAllFarmsDto): Promise<PaginatedResponse<FarmResponseDto>> {
+		return this.farmsService.findAll(query);
 	}
 
 	/**
@@ -111,7 +125,7 @@ export class FarmsController {
 		type: FarmResponseDto,
 	})
 	@ApiResponse({ status: HttpStatus.NOT_FOUND, description: "Farm not found" })
-	findOne(@Param("id", ParseUUIDPipe) id: string): Promise<FarmResponseDto> {
+	public findOne(@Param("id", ParseUUIDPipe) id: string): Promise<FarmResponseDto> {
 		return this.farmsService.findOne(id);
 	}
 
@@ -131,7 +145,7 @@ export class FarmsController {
 		description: "List of farms for the producer",
 		type: [FarmResponseDto],
 	})
-	findByProducer(
+	public findByProducer(
 		@Param("producerId", ParseUUIDPipe) producerId: string,
 	): Promise<Array<FarmResponseDto>> {
 		return this.farmsService.findByProducer(producerId);
@@ -152,13 +166,15 @@ export class FarmsController {
 		name: "state",
 		description: "Brazilian state code (UF)",
 		example: BrazilianState.SP,
+		enum: BrazilianState,
+		enumName: "BrazilianState",
 	})
 	@ApiResponse({
 		status: HttpStatus.OK,
 		description: "List of farms in the state",
 		type: [FarmResponseDto],
 	})
-	findByState(@Param("state") state: string): Promise<Array<FarmResponseDto>> {
+	public findByState(@Param("state") state: string): Promise<Array<FarmResponseDto>> {
 		return this.farmsService.findByState(state);
 	}
 
@@ -188,7 +204,7 @@ export class FarmsController {
 		description: "Invalid input data or area constraints violated",
 	})
 	@ApiResponse({ status: HttpStatus.NOT_FOUND, description: "Farm or producer not found" })
-	update(
+	public update(
 		@Param("id", ParseUUIDPipe) id: string,
 		@Body() updateFarmDto: UpdateFarmDto,
 	): Promise<FarmResponseDto> {
@@ -210,7 +226,7 @@ export class FarmsController {
 	@ApiOperation({ summary: "Delete farm" })
 	@ApiResponse({ status: HttpStatus.OK, description: "Farm deleted successfully" })
 	@ApiResponse({ status: HttpStatus.NOT_FOUND, description: "Farm not found" })
-	remove(@Param("id", ParseUUIDPipe) id: string): Promise<void> {
+	public remove(@Param("id", ParseUUIDPipe) id: string): Promise<void> {
 		return this.farmsService.delete(id);
 	}
 
@@ -228,11 +244,32 @@ export class FarmsController {
 		description: "Total farm area in hectares",
 		schema: {
 			type: "number",
-			example: faker.number.float({ min: 1000, max: 20_000, fractionDigits: 2 }),
+			example: faker.number.float({ min: 1000, max: 20_000, fractionDigits: 2 }) satisfies number,
 		},
 	})
-	getTotalArea(): Promise<number> {
+	public getTotalArea(): Promise<number> {
 		return this.farmsService.getTotalArea();
+	}
+
+	/**
+	 * Calculates the total area of all farms.
+	 *
+	 * Dashboard endpoint that aggregates the sum of all farm areas.
+	 *
+	 * @returns Total area in hectares
+	 */
+	@Get("stats/count")
+	@ApiOperation({ summary: "Get total count of all farms" })
+	@ApiResponse({
+		status: HttpStatus.OK,
+		description: "Total farm count",
+		schema: {
+			type: "number",
+			example: faker.number.int({ min: 0 }) satisfies number,
+		},
+	})
+	public getTotalCount(): Promise<number> {
+		return this.farmsService.getTotalCount();
 	}
 
 	/**
@@ -252,10 +289,10 @@ export class FarmsController {
 			example: [
 				{ state: BrazilianState.SP, count: 15 },
 				{ state: BrazilianState.MG, count: 8 },
-			],
+			] satisfies Array<StateDistribution>,
 		},
 	})
-	countByState(): Promise<Array<{ state: string; count: number }>> {
+	public countByState(): Promise<Array<StateDistribution>> {
 		return this.farmsService.countByState();
 	}
 
@@ -277,10 +314,10 @@ export class FarmsController {
 			example: {
 				arableArea: 5230.5,
 				vegetationArea: 1847.2,
-			},
+			} satisfies LandUseStats,
 		},
 	})
-	getLandUseStats(): Promise<{ arableArea: number; vegetationArea: number }> {
+	public getLandUseStats(): Promise<LandUseStats> {
 		return this.farmsService.getLandUseStats();
 	}
 
@@ -300,13 +337,13 @@ export class FarmsController {
 		schema: {
 			type: "array",
 			example: [
-				{ cropType: CropType.Soja, count: 15 },
-				{ cropType: CropType.Milho, count: 12 },
-				{ cropType: CropType.Cafe, count: 8 },
-			],
+				{ cropType: CropType.Soy, count: 15 },
+				{ cropType: CropType.Corn, count: 12 },
+				{ cropType: CropType.Coffee, count: 8 },
+			] satisfies Array<CropDistribution>,
 		},
 	})
-	getCropsDistribution(): Promise<Array<{ cropType: string; count: number }>> {
+	public getCropsDistribution(): Promise<Array<CropDistribution>> {
 		return this.farmsService.getCropsDistribution();
 	}
 }

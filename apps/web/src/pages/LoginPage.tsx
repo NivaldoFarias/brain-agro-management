@@ -5,6 +5,8 @@ import styled from "styled-components";
 
 import type { FormEvent, ReactElement } from "react";
 
+import { DEMO_CREDENTIALS } from "@agro/shared/constants";
+
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { ErrorMessage } from "@/components/ui/ErrorMessage";
@@ -12,6 +14,7 @@ import { FormField } from "@/components/ui/FormField";
 import { Input } from "@/components/ui/Input";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/contexts/ToastContext";
+import { useLogger } from "@/hooks";
 import { useLoginMutation } from "@/store/api/authApi";
 import { ROUTES } from "@/utils/";
 
@@ -22,6 +25,7 @@ import { ROUTES } from "@/utils/";
  * Redirects to dashboard on successful login.
  */
 export function LoginPage(): ReactElement {
+	const logger = useLogger(LoginPage.name);
 	const { t } = useTranslation();
 	const navigate = useNavigate();
 	const { login: setAuthToken } = useAuth();
@@ -36,34 +40,35 @@ export function LoginPage(): ReactElement {
 		event.preventDefault();
 		setError(undefined);
 
-		console.log("[LoginPage] handleSubmit called");
-		console.log("[LoginPage] Email:", email);
+		logger.debug("handleSubmit called");
+		logger.debug("Email:", email);
 
 		if (!email || !password) {
-			const errorMsg = t("auth.required");
+			const errorMsg = t(($) => $.auth.required);
 			setError(errorMsg);
 			toast.error(errorMsg, errorMsg);
 			return;
 		}
 
 		try {
-			console.log("[LoginPage] Calling login API...");
+			logger.debug("Calling login API...");
 			const response = await login({ email, password }).unwrap();
-			console.log("[LoginPage] Login API response:", response);
+			logger.debug("Login API response:", response);
 
-			console.log("[LoginPage] Calling setAuthToken...");
+			logger.debug("Calling setAuthToken...");
 			setAuthToken(response.accessToken, email);
-			console.log("[LoginPage] setAuthToken completed");
+			logger.debug("setAuthToken completed");
 
-			toast.success(t("auth.loginSuccess"), t("auth.welcomeBack"));
+			toast.success(
+				t(($) => $.auth.loginSuccess),
+				t(($) => $.auth.welcomeBack),
+			);
 
-			await new Promise((resolve) => setTimeout(resolve, 100));
-
-			console.log("[LoginPage] Navigating to dashboard...");
+			logger.debug("Navigating to dashboard...");
 			await navigate(ROUTES.dashboard, { replace: true });
 		} catch (error) {
-			console.error("[LoginPage] Login failed:", error);
-			const errorMsg = t("auth.loginError");
+			logger.error("Login failed:", error);
+			const errorMsg = t(($) => $.auth.loginError);
 			setError(errorMsg);
 			toast.error(errorMsg, errorMsg);
 		}
@@ -73,19 +78,19 @@ export function LoginPage(): ReactElement {
 		<PageContainer>
 			<LoginCard>
 				<Header>
-					<Title>{t("app.title")}</Title>
-					<Subtitle>{t("app.subtitle")}</Subtitle>
-				</Header>{" "}
+					<Title>{t(($) => $.app.title)}</Title>
+					<Subtitle>{t(($) => $.app.subtitle)}</Subtitle>
+				</Header>
 				<form
-					onSubmit={(e) => {
-						void handleSubmit(e);
+					onSubmit={(event) => {
+						void handleSubmit(event);
 					}}
 				>
-					<FormField id="email" label={t("auth.email")} required>
+					<FormField id="email" label={t(($) => $.auth.email)} required>
 						<Input
 							id="email"
 							type="email"
-							placeholder="admin@example.com"
+							placeholder={t(($) => $.auth.emailPlaceholder)}
 							value={email}
 							onChange={(event) => {
 								setEmail(event.target.value);
@@ -95,11 +100,11 @@ export function LoginPage(): ReactElement {
 						/>
 					</FormField>
 
-					<FormField id="password" label={t("auth.password")} required>
+					<FormField id="password" label={t(($) => $.auth.password)} required>
 						<Input
 							id="password"
 							type="password"
-							placeholder="Enter your password"
+							placeholder={t(($) => $.auth.passwordPlaceholder)}
 							value={password}
 							onChange={(event) => {
 								setPassword(event.target.value);
@@ -112,13 +117,17 @@ export function LoginPage(): ReactElement {
 					{error && <ErrorMessage message={error} />}
 
 					<Button variant="primary" type="submit" disabled={isLoading} isLoading={isLoading} fullWidth>
-						{isLoading ? `${t("auth.login")}...` : t("auth.login")}
+						{isLoading ? `${t(($) => $.auth.login)}...` : t(($) => $.auth.login)}
 					</Button>
 				</form>
 				<DemoCredentials>
-					<DemoTitle>Demo Credentials</DemoTitle>
-					<DemoText>{t("auth.email")}: admin@example.com</DemoText>
-					<DemoText>{t("auth.password")}: admin123</DemoText>
+					<DemoTitle>{t(($) => $.auth.demoCredentials)}</DemoTitle>
+					<DemoText>
+						{t(($) => $.auth.email)}: {DEMO_CREDENTIALS.username}
+					</DemoText>
+					<DemoText>
+						{t(($) => $.auth.password)}: {DEMO_CREDENTIALS.password}
+					</DemoText>
 				</DemoCredentials>
 			</LoginCard>
 		</PageContainer>

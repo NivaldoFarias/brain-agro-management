@@ -5,7 +5,7 @@ import type { SetRequired } from "type-fest";
 import type { CitiesService } from "@/modules/cities/cities.service";
 import type { CreateFarmDto } from "@/modules/farms/dto";
 
-import { BrazilianState } from "@agro/shared/utils";
+import { BrazilianState } from "@agro/shared/enums";
 
 enum FarmSize {
 	SMALL = "small",
@@ -204,7 +204,8 @@ export const farmFixtures = {
 	 *
 	 * Violates business rule: arableArea + vegetationArea must be ≤ totalArea.
 	 *
-	 * @param producerId - Producer UUID
+	 * @param producerId Producer UUID
+	 *
 	 * @returns Invalid farm data for validation testing
 	 */
 	invalidAreaConstraints(producerId: string): CreateFarmDto {
@@ -224,7 +225,8 @@ export const farmFixtures = {
 	/**
 	 * Farm with negative area values.
 	 *
-	 * @param producerId - Producer UUID
+	 * @param producerId Producer UUID
+	 *
 	 * @returns Invalid farm data for validation testing
 	 */
 	negativeAreas(producerId: string): CreateFarmDto {

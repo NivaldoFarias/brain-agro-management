@@ -1,20 +1,18 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useState } from "react";
+import { Badge, Button, Flex, Grid, Select, Text, TextField } from "@radix-ui/themes";
+import { useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
-import styled from "styled-components";
+import { useTranslation } from "react-i18next";
 
 import type { ReactElement } from "react";
 
 import type { CreateFarmFormData } from "@/schemas";
 
-import { BrazilianState, CropType } from "@agro/shared/utils";
+import { BrazilianState, CropType } from "@agro/shared/enums";
 
+import { useLocalStorageContext } from "@/contexts/LocalStorageContext";
 import { createFarmSchema } from "@/schemas";
-
-import { Button } from "../ui/Button";
-import { FormField } from "../ui/FormField";
-import { Input } from "../ui/Input";
-import { Select } from "../ui/Select";
+import { CROP_TO_COLOR, STORAGE_KEYS } from "@/utils/constants.util";
 
 /** Props for the FarmForm component */
 export interface FarmFormProps {
@@ -26,9 +24,6 @@ export interface FarmFormProps {
 
 	/** Initial form values for editing */
 	defaultValues?: Partial<CreateFarmFormData>;
-
-	/** Submit button text */
-	submitLabel?: string;
 
 	/** Producer ID to associate the farm with */
 	producerId: string;
@@ -53,14 +48,11 @@ export interface FarmFormProps {
  * />
  * ```
  */
-export function FarmForm({
-	onSubmit,
-	isLoading = false,
-	defaultValues,
-	submitLabel = "Save Farm",
-	producerId,
-}: FarmFormProps): ReactElement {
+export function FarmForm({ onSubmit, isLoading = false, defaultValues, producerId }: FarmFormProps): ReactElement {
+	const { t } = useTranslation();
+	const storage = useLocalStorageContext();
 	const [selectedState, setSelectedState] = useState<string>(defaultValues?.state ?? "");
+	const [selectedCity, setSelectedCity] = useState<string>(defaultValues?.city ?? "");
 
 	const {
 		register,
@@ -83,213 +75,245 @@ export function FarmForm({
 
 	const [selectedCrops, setSelectedCrops] = useState<CropType[]>(defaultValues?.crops ?? []);
 
+	/** Get cities from localStorage and filter by selected state */
+	const availableCities = useMemo(() => {
+		if (!selectedState) return [];
+
+		const citiesData = storage.getItem<Record<string, string[]>>(STORAGE_KEYS.citiesByState as string);
+
+		return citiesData?.[selectedState] ?? [];
+	}, [selectedState, storage]);
+
 	const handleCropToggle = (crop: CropType): void => {
-		const newCrops = selectedCrops.includes(crop) ? selectedCrops.filter((c) => c !== crop) : [...selectedCrops, crop];
+		const newCrops =
+			selectedCrops.includes(crop) ?
+				selectedCrops.filter((selectedCrop) => selectedCrop !== crop)
+			:	[...selectedCrops, crop];
+
 		setSelectedCrops(newCrops);
 		setValue("crops", newCrops, { shouldValidate: true });
 	};
 
+	/** Handle state change and reset city */
+	const handleStateChange = (state: string): void => {
+		setSelectedState(state);
+		setValue("state", state as BrazilianState, { shouldValidate: true });
+
+		setSelectedCity("");
+		setValue("city", "", { shouldValidate: false });
+	};
+
 	return (
-		<Form
+		<form
 			onSubmit={(event) => {
 				void handleSubmit(onSubmit)(event);
 			}}
 			noValidate
+			style={{ maxWidth: "800px" }}
 		>
-			<FormField
-				id="name"
-				label="Farm Name"
-				required
-				error={errors.name?.message}
-				hint="Name of the agricultural property"
-			>
-				<Input
-					{...register("name")}
-					id="name"
-					type="text"
-					placeholder="Fazenda Boa Vista"
-					hasError={!!errors.name}
-					fullWidth
-					disabled={isLoading}
-				/>
-			</FormField>
-
-			<FormField id="city" label="City" required error={errors.city?.message} hint="Brazilian municipality">
-				<Input
-					{...register("city")}
-					id="city"
-					type="text"
-					placeholder="Campinas"
-					hasError={!!errors.city}
-					fullWidth
-					disabled={isLoading}
-				/>
-			</FormField>
-
-			<FormField id="state" label="State" required error={errors.state?.message} hint="Brazilian state (UF)">
-				<Select
-					value={selectedState}
-					onValueChange={(value) => {
-						setSelectedState(value);
-						setValue("state", value as BrazilianState, { shouldValidate: true });
-					}}
-					placeholder="Select a state"
-					disabled={isLoading}
-					aria-label="Farm state"
-					options={Object.values(BrazilianState).map((state) => ({
-						value: state,
-						label: state,
-					}))}
-				/>
-			</FormField>
-
-			<AreaFieldsGroup>
-				<FormField
-					id="totalArea"
-					label="Total Area (ha)"
-					required
-					error={errors.totalArea?.message}
-					hint="Total farm area in hectares"
-				>
-					<Input
-						{...register("totalArea", { valueAsNumber: true })}
-						id="totalArea"
-						type="number"
-						step="0.01"
-						min="0.01"
-						placeholder="100.00"
-						hasError={!!errors.totalArea}
-						fullWidth
+			<Flex direction="column" gap="4">
+				{/* Farm Name */}
+				<label>
+					<Text as="div" size="2" weight="medium" mb="1">
+						{t(($) => $.farms.name)} <Text color="red">*</Text>
+					</Text>
+					<Text as="div" size="1" color="gray" mb="1">
+						{t(($) => $.farms.nameHint)}
+					</Text>
+					<TextField.Root
+						{...register("name")}
+						placeholder="Fazenda Boa Vista"
 						disabled={isLoading}
+						color={errors.name ? "red" : undefined}
 					/>
-				</FormField>
+					{errors.name && (
+						<Text size="1" color="red" mt="1">
+							{errors.name.message}
+						</Text>
+					)}
+				</label>
 
-				<FormField
-					id="arableArea"
-					label="Arable Area (ha)"
-					required
-					error={errors.arableArea?.message}
-					hint="Agricultural area"
-				>
-					<Input
-						{...register("arableArea", { valueAsNumber: true })}
-						id="arableArea"
-						type="number"
-						step="0.01"
-						min="0"
-						placeholder="70.00"
-						hasError={!!errors.arableArea}
-						fullWidth
-						disabled={isLoading}
-					/>
-				</FormField>
+				{/* City */}
+				<label>
+					<Text as="div" size="2" weight="medium" mb="1">
+						{t(($) => $.farms.city)} <Text color="red">*</Text>
+					</Text>
+					<Text as="div" size="1" color="gray" mb="1">
+						{t(($) => $.farms.cityHint)}
+					</Text>
+					<Select.Root
+						value={selectedCity}
+						onValueChange={(value) => {
+							setSelectedCity(value);
+							setValue("city", value, { shouldValidate: true });
+						}}
+						disabled={isLoading || !selectedState || availableCities.length === 0}
+					>
+						<Select.Trigger
+							placeholder={
+								!selectedState ? t(($) => $.farms.selectStateFirst)
+								: availableCities.length === 0 ?
+									t(($) => $.farms.noCitiesAvailable)
+								:	t(($) => $.farms.selectCity)
+							}
+						/>
+						<Select.Content>
+							{availableCities.map((city) => (
+								<Select.Item key={city} value={city}>
+									{city}
+								</Select.Item>
+							))}
+						</Select.Content>
+					</Select.Root>
+					{errors.city && (
+						<Text size="1" color="red" mt="1">
+							{errors.city.message}
+						</Text>
+					)}
+				</label>
 
-				<FormField
-					id="vegetationArea"
-					label="Vegetation Area (ha)"
-					required
-					error={errors.vegetationArea?.message}
-					hint="Preservation area"
-				>
-					<Input
-						{...register("vegetationArea", { valueAsNumber: true })}
-						id="vegetationArea"
-						type="number"
-						step="0.01"
-						min="0"
-						placeholder="25.00"
-						hasError={!!errors.vegetationArea}
-						fullWidth
-						disabled={isLoading}
-					/>
-				</FormField>
-			</AreaFieldsGroup>
+				{/* State */}
+				<label>
+					<Text as="div" size="2" weight="medium" mb="1">
+						{t(($) => $.farms.state)} <Text color="red">*</Text>
+					</Text>
+					<Text as="div" size="1" color="gray" mb="1">
+						{t(($) => $.farms.stateHint)}
+					</Text>
+					<Select.Root value={selectedState} onValueChange={handleStateChange} disabled={isLoading}>
+						<Select.Trigger placeholder={t(($) => $.farms.selectState)} />
+						<Select.Content>
+							{Object.values(BrazilianState).map((state, index) => (
+								<Select.Item key={index} value={state}>
+									{t(($) => $.states[state])}
+								</Select.Item>
+							))}
+						</Select.Content>
+					</Select.Root>
+					{errors.state && (
+						<Text size="1" color="red" mt="1">
+							{errors.state.message}
+						</Text>
+					)}
+				</label>
 
-			<FormField
-				id="crops"
-				label="Crops"
-				required
-				error={errors.crops?.message}
-				hint="Select one or more crops cultivated on this farm"
-			>
-				<CropSelector>
-					{Object.values(CropType).map((crop) => (
-						<CropCheckbox key={crop}>
-							<input
-								type="checkbox"
-								id={`crop-${crop}`}
-								checked={selectedCrops.includes(crop)}
-								onChange={() => {
-									handleCropToggle(crop);
-								}}
-								disabled={isLoading}
-							/>
-							<label htmlFor={`crop-${crop}`}>{crop}</label>
-						</CropCheckbox>
-					))}
-				</CropSelector>
-			</FormField>
+				{/* Area Fields */}
+				<Grid columns={{ initial: "1", sm: "3" }} gap="3">
+					<label>
+						<Text as="div" size="2" weight="medium" mb="1">
+							{t(($) => $.farms.totalArea)} <Text color="red">*</Text>
+						</Text>
+						<Text as="div" size="1" color="gray" mb="1">
+							{t(($) => $.farms.totalAreaHint)}
+						</Text>
+						<TextField.Root
+							{...register("totalArea", { valueAsNumber: true })}
+							type="number"
+							step="0.01"
+							min="0.01"
+							placeholder="100.00"
+							disabled={isLoading}
+							color={errors.totalArea ? "red" : undefined}
+						/>
+						{errors.totalArea && (
+							<Text size="1" color="red" mt="1">
+								{errors.totalArea.message}
+							</Text>
+						)}
+					</label>
 
-			<ButtonGroup>
-				<Button type="submit" variant="primary" disabled={isLoading} isLoading={isLoading}>
-					{submitLabel}
-				</Button>
-			</ButtonGroup>
-		</Form>
+					<label>
+						<Text as="div" size="2" weight="medium" mb="1">
+							{t(($) => $.farms.arableArea)} <Text color="red">*</Text>
+						</Text>
+						<Text as="div" size="1" color="gray" mb="1">
+							{t(($) => $.farms.arableAreaHint)}
+						</Text>
+						<TextField.Root
+							{...register("arableArea", { valueAsNumber: true })}
+							type="number"
+							step="0.01"
+							min="0"
+							placeholder="70.00"
+							disabled={isLoading}
+							color={errors.arableArea ? "red" : undefined}
+						/>
+						{errors.arableArea && (
+							<Text size="1" color="red" mt="1">
+								{errors.arableArea.message}
+							</Text>
+						)}
+					</label>
+
+					<label>
+						<Text as="div" size="2" weight="medium" mb="1">
+							{t(($) => $.farms.vegetationArea)} <Text color="red">*</Text>
+						</Text>
+						<Text as="div" size="1" color="gray" mb="1">
+							{t(($) => $.farms.vegetationAreaHint)}
+						</Text>
+						<TextField.Root
+							{...register("vegetationArea", { valueAsNumber: true })}
+							type="number"
+							step="0.01"
+							min="0"
+							placeholder="25.00"
+							disabled={isLoading}
+							color={errors.vegetationArea ? "red" : undefined}
+						/>
+						{errors.vegetationArea && (
+							<Text size="1" color="red" mt="1">
+								{errors.vegetationArea.message}
+							</Text>
+						)}
+					</label>
+				</Grid>
+
+				{/* Crops */}
+				<label>
+					<Text as="div" size="2" weight="medium" mb="1">
+						{t(($) => $.farms.crops)} <Text color="red">*</Text>
+					</Text>
+					<Text as="div" size="1" color="gray" mb="1">
+						{t(($) => $.farms.cropsHint)}
+					</Text>
+					<Flex wrap="wrap" gap="2" mt="2">
+						{Object.values(CropType).map((crop) => {
+							const isSelected = selectedCrops.includes(crop);
+
+							return (
+								<Badge
+									key={crop}
+									color={CROP_TO_COLOR[crop]}
+									variant={isSelected ? "solid" : "soft"}
+									size="2"
+									style={{ cursor: "pointer" }}
+									onClick={() => {
+										handleCropToggle(crop);
+									}}
+								>
+									<Flex gap="1" align="center">
+										{isSelected && "✓ "}
+										{t(($) => $.crops[crop])}
+									</Flex>
+								</Badge>
+							);
+						})}
+					</Flex>
+					{errors.crops && (
+						<Text size="1" color="red" mt="1">
+							{errors.crops.message}
+						</Text>
+					)}
+				</label>
+
+				{/* Submit Button */}
+				<Flex justify="end" mt="2">
+					<Button type="submit" disabled={isLoading} loading={isLoading}>
+						{t(($) => $.farms.submitLabel)}
+					</Button>
+				</Flex>
+			</Flex>
+		</form>
 	);
 }
-
-const Form = styled.form`
-	display: flex;
-	flex-direction: column;
-	gap: ${(props) => props.theme.spacing.lg};
-	max-width: 800px;
-`;
-
-const AreaFieldsGroup = styled.div`
-	display: grid;
-	grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-	gap: ${(props) => props.theme.spacing.md};
-`;
-
-const CropSelector = styled.div`
-	display: flex;
-	flex-wrap: wrap;
-	gap: ${(props) => props.theme.spacing.md};
-`;
-
-const CropCheckbox = styled.div`
-	display: flex;
-	align-items: center;
-	gap: ${(props) => props.theme.spacing.sm};
-
-	input[type="checkbox"] {
-		width: 20px;
-		height: 20px;
-		cursor: pointer;
-
-		&:disabled {
-			cursor: not-allowed;
-			opacity: 0.5;
-		}
-	}
-
-	label {
-		font-size: ${(props) => props.theme.typography.fontSize.sm};
-		color: ${(props) => props.theme.colors.text};
-		cursor: pointer;
-		user-select: none;
-
-		&:has(+ input:disabled) {
-			cursor: not-allowed;
-			opacity: 0.5;
-		}
-	}
-`;
-
-const ButtonGroup = styled.div`
-	display: flex;
-	gap: ${(props) => props.theme.spacing.md};
-	justify-content: flex-end;
-	margin-top: ${(props) => props.theme.spacing.md};
-`;

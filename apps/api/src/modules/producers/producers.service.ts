@@ -7,7 +7,10 @@ import {
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 
-import { OrderBy } from "@agro/shared/utils";
+import type { BrazilianState, CropType } from "@agro/shared/enums";
+import type { Farm as FarmType, PaginatedResponse } from "@agro/shared/types";
+
+import { ProducerSortField, SortOrder } from "@agro/shared/enums";
 import {
 	stripCNPJFormatting,
 	stripCPFFormatting,
@@ -15,7 +18,14 @@ import {
 	validateCPF,
 } from "@agro/shared/validators";
 
-import { CreateProducerDto, ProducerResponseDto, UpdateProducerDto } from "./dto";
+import { Farm } from "@/modules/farms/entities";
+
+import {
+	CreateProducerDto,
+	FindAllProducersDto,
+	ProducerResponseDto,
+	UpdateProducerDto,
+} from "./dto";
 import { Producer } from "./entities/producer.entity";
 
 /**
@@ -40,7 +50,7 @@ export class ProducersService {
 	/**
 	 * Creates an instance of ProducersService.
 	 *
-	 * @param producerRepository - TypeORM repository for Producer entity
+	 * @param producerRepository TypeORM repository for Producer entity
 	 */
 	constructor(
 		@InjectRepository(Producer)
@@ -53,7 +63,7 @@ export class ProducersService {
 	 * Validates the document (CPF or CNPJ) using Brazilian government algorithms
 	 * and checks for duplicate documents before creating the producer.
 	 *
-	 * @param createProducerDto - The producer data to create
+	 * @param createProducerDto The producer data to create
 	 *
 	 * @returns The created producer
 	 *
@@ -68,7 +78,7 @@ export class ProducersService {
 	 * });
 	 * ```
 	 */
-	async create(createProducerDto: CreateProducerDto): Promise<ProducerResponseDto> {
+	public async create(createProducerDto: CreateProducerDto): Promise<ProducerResponseDto> {
 		const { name, document } = createProducerDto;
 
 		const strippedDocument = this.validateAndStripDocument(document);
@@ -86,28 +96,66 @@ export class ProducersService {
 	}
 
 	/**
-	 * Retrieves all producers from the database.
+	 * Retrieves all producers with pagination, sorting, and search.
 	 *
-	 * @returns Array of all producers
+	 * Supports filtering by name search with configurable sorting and pagination.
+	 * Uses TypeORM QueryBuilder for efficient database queries.
+	 *
+	 * @param query Query parameters for pagination, sorting, and search
+	 *
+	 * @returns Paginated response with producers and metadata
 	 *
 	 * @example
 	 * ```typescript
-	 * const producers = await service.findAll();
-	 * console.log(`Found ${producers.length} producers`);
+	 * const result = await service.findAll({
+	 *   page: 1,
+	 *   limit: 10,
+	 *   sortBy: ProducerSortField.Name,
+	 *   sortOrder: SortOrder.Ascending,
+	 *   search: "Silva"
+	 * });
+	 * console.log(`Found ${result.total} producers`);
 	 * ```
 	 */
-	async findAll(): Promise<Array<ProducerResponseDto>> {
-		const producers = await this.producerRepository.find({
-			order: { name: OrderBy.Ascending },
-		});
+	public async findAll(
+		query: FindAllProducersDto = {},
+	): Promise<PaginatedResponse<ProducerResponseDto>> {
+		const {
+			page = 1,
+			limit = 10,
+			sortBy = ProducerSortField.Name,
+			sortOrder = SortOrder.Ascending,
+			search,
+		} = query;
 
-		return producers.map((producer) => this.mapToResponseDto(producer));
+		const qb = this.producerRepository
+			.createQueryBuilder("producer")
+			.leftJoinAndSelect("producer.farms", "farms")
+			.leftJoinAndSelect("farms.farmHarvests", "farmHarvests")
+			.leftJoinAndSelect("farmHarvests.crops", "crops");
+
+		if (search) qb.andWhere("producer.name LIKE :search", { search: `%${search}%` });
+
+		qb.orderBy(`producer.${sortBy}`, sortOrder as SortOrder);
+
+		const skip = (page - 1) * limit;
+		qb.skip(skip).take(limit);
+
+		const [producers, total] = await qb.getManyAndCount();
+
+		return {
+			data: producers.map((producer) => this.mapToResponseDto(producer)),
+			page,
+			limit,
+			total,
+			totalPages: Math.ceil(total / limit),
+		};
 	}
 
 	/**
 	 * Retrieves a single producer by ID.
 	 *
-	 * @param id - The UUID of the producer to retrieve
+	 * @param id The UUID of the producer to retrieve
 	 *
 	 * @returns The producer with the specified ID
 	 *
@@ -118,11 +166,14 @@ export class ProducersService {
 	 * const producer = await service.findOne("550e8400-e29b-41d4-a716-446655440000");
 	 * ```
 	 */
-	async findOne(id: string): Promise<ProducerResponseDto> {
-		const producer = await this.producerRepository.findOne({
-			where: { id },
-			relations: ["farms"],
-		});
+	public async findOne(id: string): Promise<ProducerResponseDto> {
+		const producer = await this.producerRepository
+			.createQueryBuilder("producer")
+			.leftJoinAndSelect("producer.farms", "farms")
+			.leftJoinAndSelect("farms.farmHarvests", "farmHarvests")
+			.leftJoinAndSelect("farmHarvests.crops", "crops")
+			.where("producer.id = :id", { id })
+			.getOne();
 
 		if (!producer) {
 			throw new NotFoundException(`Producer with ID ${id} not found`);
@@ -138,8 +189,8 @@ export class ProducersService {
 	 * If document is being updated, validates the new document and checks
 	 * for duplicates.
 	 *
-	 * @param id - The UUID of the producer to update
-	 * @param updateProducerDto - The fields to update
+	 * @param id The UUID of the producer to update
+	 * @param updateProducerDto The fields to update
 	 *
 	 * @returns The updated producer
 	 *
@@ -155,7 +206,10 @@ export class ProducersService {
 	 * );
 	 * ```
 	 */
-	async update(id: string, updateProducerDto: UpdateProducerDto): Promise<ProducerResponseDto> {
+	public async update(
+		id: string,
+		updateProducerDto: UpdateProducerDto,
+	): Promise<ProducerResponseDto> {
 		const producer = await this.producerRepository.findOne({ where: { id } });
 
 		if (!producer) {
@@ -183,7 +237,7 @@ export class ProducersService {
 	 * Note: This will also cascade delete all associated farms due to
 	 * the database foreign key constraint with ON DELETE CASCADE.
 	 *
-	 * @param id - The UUID of the producer to delete
+	 * @param id The UUID of the producer to delete
 	 *
 	 * @throws {NotFoundException} If the producer does not exist
 	 *
@@ -192,7 +246,7 @@ export class ProducersService {
 	 * await service.delete("550e8400-e29b-41d4-a716-446655440000");
 	 * ```
 	 */
-	async delete(id: string): Promise<void> {
+	public async delete(id: string): Promise<void> {
 		const result = await this.producerRepository.delete(id);
 
 		if (result.affected === 0) {
@@ -201,18 +255,26 @@ export class ProducersService {
 	}
 
 	/**
+	 * Gets the total count of all producers.
+	 *
+	 * @returns Total producer count
+	 */
+	public async getTotalCount(): Promise<number> {
+		return this.producerRepository.count();
+	}
+
+	/**
 	 * Validates a Brazilian document (CPF or CNPJ) and strips formatting.
 	 *
 	 * Determines whether the document is CPF (11 digits) or CNPJ (14 digits)
 	 * and validates using the appropriate algorithm.
 	 *
-	 * @param document - The document to validate (formatted or unformatted)
+	 * @param document The document to validate (formatted or unformatted)
 	 *
 	 * @returns The document without formatting (digits only)
 	 *
 	 * @throws {BadRequestException} If the document format is invalid
 	 *
-	 * @private
 	 */
 	private validateAndStripDocument(document: string): string {
 		const digitsOnly = document.replaceAll(/\D/g, "");
@@ -235,12 +297,11 @@ export class ProducersService {
 	/**
 	 * Checks if a document is already registered in the database.
 	 *
-	 * @param document - The document to check (already stripped of formatting)
-	 * @param excludeId - Optional producer ID to exclude from the check (for updates)
+	 * @param document The document to check (already stripped of formatting)
+	 * @param excludeId Optional producer ID to exclude from the check (for updates)
 	 *
 	 * @throws {ConflictException} If the document is already in use
 	 *
-	 * @private
 	 */
 	private async checkDuplicateDocument(document: string, excludeId?: string): Promise<void> {
 		const existingProducer = await this.producerRepository.findOne({
@@ -255,16 +316,46 @@ export class ProducersService {
 	/**
 	 * Maps a Producer entity to a ProducerResponseDto.
 	 *
-	 * @param producer - The producer entity to map
+	 * Extracts crops from each farm's harvests and includes them in the response.
 	 *
-	 * @returns The mapped response DTO
+	 * @param producer The producer entity to map (with eagerly loaded farms, farmHarvests, and crops)
 	 *
-	 * @private
+	 * @returns The mapped response DTO with farms containing flattened crops arrays
 	 */
 	private mapToResponseDto(producer: Producer): ProducerResponseDto {
+		const farmsWithCrops =
+			producer.farms?.map((farm: Farm) => {
+				const cropSet = new Set<string>();
+
+				if (Array.isArray(farm.farmHarvests) && farm.farmHarvests.length > 0) {
+					for (const farmHarvest of farm.farmHarvests) {
+						const harvestCrops = Array.isArray(farmHarvest.crops) ? farmHarvest.crops : [];
+
+						for (const crop of harvestCrops) {
+							if (crop.cropType) cropSet.add(crop.cropType);
+						}
+					}
+				}
+
+				return {
+					id: farm.id,
+					name: farm.name,
+					city: farm.city,
+					state: farm.state as BrazilianState,
+					totalArea: farm.totalArea,
+					arableArea: farm.arableArea,
+					vegetationArea: farm.vegetationArea,
+					crops: Array.from(cropSet) as Array<CropType>,
+					producerId: farm.producerId,
+					createdAt: farm.createdAt.toISOString(),
+					updatedAt: farm.updatedAt.toISOString(),
+				} as FarmType;
+			}) ?? [];
+
 		return {
 			id: producer.id,
 			name: producer.name,
+			farms: farmsWithCrops,
 			document: producer.document,
 			createdAt: producer.createdAt,
 			updatedAt: producer.updatedAt,

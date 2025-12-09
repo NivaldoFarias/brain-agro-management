@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import styled from "styled-components";
 
 import type { ReactElement } from "react";
@@ -12,15 +13,17 @@ import { Button } from "@/components/ui/Button";
  * Provides navigation back to home/dashboard.
  */
 export function NotFoundPage(): ReactElement {
+	const { t } = useTranslation();
+
 	return (
 		<Container>
 			<Typography variant="h1">404</Typography>
-			<Typography variant="h3">Page Not Found</Typography>
+			<Typography variant="h3">{t(($) => $.notFoundPage.title)}</Typography>
 			<Typography variant="body" color="textSecondary">
-				The page you&apos;re looking for doesn&apos;t exist or has been moved.
+				{t(($) => $.notFoundPage.description)}
 			</Typography>
 			<Button variant="primary" onClick={() => (window.location.href = "/")}>
-				Go to Dashboard
+				{t(($) => $.notFoundPage.goToDashboard)}
 			</Button>
 		</Container>
 	);

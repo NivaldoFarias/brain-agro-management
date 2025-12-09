@@ -1,17 +1,9 @@
-import type { ApiResponse, AuthResponseDto } from "@agro/shared/types";
+import type { ApiResponse, AuthResponseDto, LoginDto } from "@agro/shared/types";
 
-import { HttpMethod } from "@agro/shared/utils";
+import { ROUTE_PATHS } from "@agro/shared/constants";
+import { HttpMethod } from "@agro/shared/enums";
 
 import { api } from "./baseApi";
-
-/** Login request payload interface */
-export interface LoginRequest {
-	/** User email */
-	email: string;
-
-	/** User password */
-	password: string;
-}
 
 /**
  * Authentication API endpoints using RTK Query.
@@ -26,12 +18,12 @@ export const authApi = api.injectEndpoints({
 		 * @example
 		 * ```tsx
 		 * const [login, { isLoading }] = useLoginMutation();
-		 * const response = await login({ email: "admin@example.com", password: "admin123" });
+		 * const response = await login({ email: "admin@brainag.com", password: "admin123" });
 		 * ```
 		 */
-		login: builder.mutation<AuthResponseDto, LoginRequest>({
+		login: builder.mutation<AuthResponseDto, LoginDto>({
 			query: (credentials) => ({
-				url: "/auth/login",
+				url: ROUTE_PATHS.authLogin,
 				method: HttpMethod.POST,
 				body: credentials,
 			}),

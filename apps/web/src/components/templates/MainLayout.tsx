@@ -1,3 +1,11 @@
+import {
+	BarChart3 as ChartIcon,
+	X as CloseIcon,
+	Factory as FarmIcon,
+	LogOut as LogOutIcon,
+	Menu as MenuIcon,
+	Users as UsersIcon,
+} from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { NavLink, useNavigate } from "react-router-dom";
@@ -6,7 +14,6 @@ import styled from "styled-components";
 import type { ReactElement, ReactNode } from "react";
 
 import { Button } from "@/components/ui/Button";
-import { ChartIcon, CloseIcon, FarmIcon, LogOutIcon, MenuIcon, UsersIcon } from "@/components/ui/Icon";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/contexts/ToastContext";
 import { ROUTES } from "@/utils/constants.util";
@@ -33,7 +40,10 @@ export function MainLayout({ children }: MainLayoutProps): ReactElement {
 
 	const handleLogout = (): void => {
 		logout();
-		toast.info(t("auth.logoutSuccess"), t("auth.logoutSuccess"));
+		toast.info(
+			t(($) => $.auth.logoutSuccess),
+			t(($) => $.auth.logoutSuccess),
+		);
 		void navigate(ROUTES.auth.login, { replace: true });
 	};
 
@@ -52,7 +62,7 @@ export function MainLayout({ children }: MainLayoutProps): ReactElement {
 							<CloseIcon size={20} />
 						:	<MenuIcon size={20} />}
 					</MenuButton>
-					<Logo>{t("app.title")}</Logo>
+					<Logo>{t(($) => $.app.title)}</Logo>
 				</HeaderLeft>
 				<HeaderRight>
 					<UserInfo>
@@ -60,7 +70,7 @@ export function MainLayout({ children }: MainLayoutProps): ReactElement {
 					</UserInfo>
 					<LogoutButton variant="tertiary" onClick={handleLogout} size="small">
 						<LogOutIcon size={16} />
-						{t("auth.logout")}
+						{t(($) => $.auth.logout)}
 					</LogoutButton>
 				</HeaderRight>
 			</Header>
@@ -70,15 +80,15 @@ export function MainLayout({ children }: MainLayoutProps): ReactElement {
 					<SidebarNav>
 						<NavItem to={ROUTES.dashboard}>
 							<ChartIcon size={20} />
-							<NavText>{t("nav.dashboard")}</NavText>
+							<NavText>{t(($) => $.nav.dashboard)}</NavText>
 						</NavItem>
 						<NavItem to={ROUTES.producers.list}>
 							<UsersIcon size={20} />
-							<NavText>{t("nav.producers")}</NavText>
+							<NavText>{t(($) => $.nav.producers)}</NavText>
 						</NavItem>
 						<NavItem to={ROUTES.farms.list}>
 							<FarmIcon size={20} />
-							<NavText>{t("nav.farms")}</NavText>
+							<NavText>{t(($) => $.nav.farms)}</NavText>
 						</NavItem>
 					</SidebarNav>
 				</Sidebar>

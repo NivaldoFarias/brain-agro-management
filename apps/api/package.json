@@ -20,13 +20,14 @@
 		"migration:run": "bun run typeorm migration:run -d src/config/database.config.ts",
 		"migration:revert": "bun run typeorm migration:revert -d src/config/database.config.ts",
 		"db:seed": "bun run src/database/seeds/index.ts",
-		"clean": "rm -rf dist .turbo node_modules"
+		"db:reset": "bun run migration:revert && bun run migration:run && bun run db:seed"
 	},
 	"dependencies": {
 		"@agro/shared": "workspace:*",
 		"@faker-js/faker": "^10.1.0",
 		"@fnando/cnpj": "^2.0.0",
 		"@fnando/cpf": "^1.0.2",
+		"@nestjs/axios": "^4.0.1",
 		"@nestjs/common": "^11.1.9",
 		"@nestjs/config": "^4.0.2",
 		"@nestjs/core": "^11.1.9",
@@ -38,6 +39,9 @@
 		"@nestjs/throttler": "^6.4.0",
 		"@nestjs/typeorm": "^11.0.0",
 		"@scalar/nestjs-api-reference": "^1.0.8",
+		"@types/better-sqlite3": "^7.6.13",
+		"axios": "^1.13.2",
+		"better-sqlite3": "^12.5.0",
 		"class-transformer": "^0.5.1",
 		"class-validator": "^0.14.3",
 		"helmet": "^8.1.0",

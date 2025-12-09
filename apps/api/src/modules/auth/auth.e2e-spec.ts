@@ -2,6 +2,8 @@ import { HttpStatus, INestApplication } from "@nestjs/common";
 import { Test } from "@nestjs/testing";
 import request from "supertest";
 
+import { DEMO_CREDENTIALS } from "@agro/shared/constants";
+
 import { AppModule } from "@/app.module";
 
 describe("AuthController (e2e)", () => {
@@ -23,8 +25,8 @@ describe("AuthController (e2e)", () => {
 	describe("POST /auth/login", () => {
 		it("should return JWT token for valid credentials", async () => {
 			const loginDto = {
-				email: "test@example.com",
-				password: "test123",
+				email: DEMO_CREDENTIALS.username,
+				password: DEMO_CREDENTIALS.password,
 			};
 
 			const response = await request(app.getHttpServer())
@@ -34,6 +36,18 @@ describe("AuthController (e2e)", () => {
 
 			expect(response.body).toHaveProperty("accessToken");
 			expect(typeof response.body.accessToken).toBe("string");
+		});
+
+		it("should reject request with invalid credentials", async () => {
+			const loginDto = {
+				email: DEMO_CREDENTIALS.username,
+				password: "wrongpassword",
+			};
+
+			await request(app.getHttpServer())
+				.post("/api/auth/login")
+				.send(loginDto)
+				.expect(HttpStatus.UNAUTHORIZED);
 		});
 
 		it("should reject request with invalid email", async () => {
@@ -66,8 +80,8 @@ describe("AuthController (e2e)", () => {
 
 		beforeAll(async () => {
 			const loginDto = {
-				email: "test@example.com",
-				password: "test123",
+				email: DEMO_CREDENTIALS.username,
+				password: DEMO_CREDENTIALS.password,
 			};
 
 			const response = await request(app.getHttpServer()).post("/api/auth/login").send(loginDto);

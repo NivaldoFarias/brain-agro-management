@@ -1,8 +1,10 @@
 import { z } from "zod";
 
-import { createEnv, LogLevel, RuntimeEnvironment } from "@agro/shared/utils";
+import { LogLevel, RuntimeEnvironment, SupportedLocale } from "@agro/shared/enums";
+import { createEnv } from "@agro/shared/utils";
 
-import { environmentDefaults } from "@/utils/constants.util";
+import { environmentDefaults } from "@/common/utils/constants.util";
+import { SeedScale } from "@/database/seeds/seed.constants";
 
 /**
  * API-specific environment schema.
@@ -132,12 +134,44 @@ const apiEnvSchema = z.object({
 	API__SEED_DATABASE: z.stringbool().default(environmentDefaults.API__SEED_DATABASE),
 
 	/**
+	 * Seeding scale preset (small/medium/large)
+	 *
+	 * @default "medium"
+	 * @see {@link environmentDefaults.API__SEED_SCALE}
+	 */
+	API__SEED_SCALE: z.enum(SeedScale).default(environmentDefaults.API__SEED_SCALE),
+
+	/**
 	 * Base URL for the API (e.g., `http://localhost:3000`)
 	 *
 	 * @default "http://localhost:3000"
 	 * @see {@link environmentDefaults.API__BASE_URL}
 	 */
 	API__BASE_URL: z.url().default(environmentDefaults.API__BASE_URL),
+
+	/**
+	 * IBGE API base URL for municipalities endpoint
+	 *
+	 * @default "https://servicodados.ibge.gov.br/api/v1/localidades"
+	 * @see {@link environmentDefaults.API__IBGE_API_BASE_URL}
+	 */
+	API__IBGE_API_BASE_URL: z.url().default(environmentDefaults.API__IBGE_API_BASE_URL),
+
+	/**
+	 * Application locale for internationalization
+	 *
+	 * @default "pt_BR"
+	 * @see {@link environmentDefaults.API__LOCALE}
+	 */
+	API__LOCALE: z.enum(SupportedLocale).default(environmentDefaults.API__LOCALE),
+
+	/**
+	 * Number of salt rounds for password hashing
+	 *
+	 * @default 10
+	 * @see {@link environmentDefaults.API__SALT_ROUNDS}
+	 */
+	API__SALT_ROUNDS: z.coerce.number().int().min(4).default(environmentDefaults.API__SALT_ROUNDS),
 });
 
 /** Type-safe environment variables for the API application */

@@ -13,7 +13,7 @@ app_port: 7860
 <div align="center">
 
 [![CI Status](https://github.com/NivaldoFarias/brain-agro-management/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/NivaldoFarias/brain-agro-management/actions/workflows/ci.yml)
-[![API Health](https://img.shields.io/website?url=https%3A%2F%2Fbadivia-brain-ag-api.hf.space%2Fapi%2Fhealth&label=API%20Status&up_message=healthy&down_message=down)](https://badivia-brain-ag-api.hf.space/api/health)
+[![API Health](https://img.shields.io/website?url=https%3A%2F%2Fbadivia-brain-ag-api.hf.space%2Fapi%2Fhealth%2Fready&label=API%20Status&up_message=healthy&down_message=down)](https://badivia-brain-ag-api.hf.space/api/health/ready)
 [![HuggingFace](https://img.shields.io/badge/🤗%20HuggingFace-Deployed-yellow)](https://badivia-brain-ag-api.hf.space/api)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Version](https://img.shields.io/badge/version-0.0.1-green.svg)](package.json)
@@ -53,6 +53,7 @@ app_port: 7860
 - [Quick Start](#quick-start)
 - [Status](#status)
 - [Documentation](#documentation)
+- [Contributing](#contributing)
 - [Design Notes](#design-notes)
 
 ## About the Project
@@ -148,23 +149,30 @@ bun run type-check   # Check TypeScript types
 
 ## Status
 
-### ✅ Implemented Features
+### Implemented 
 
-- **Backend API**: Complete CRUD for producers and farms
-- **Validation**: CPF/CNPJ and farm area rules
+- **Backend API**: Complete CRUD for producers and farms with validation
 - **Authentication**: JWT system with refresh tokens
-- **Documentation**: OpenAPI (Swagger + Scalar)
-- **Tests**: Unit test suite on backend
+- **Database**: TypeORM + Bun native SQLite with migrations
+- **Validation**: CPF/CNPJ validators and farm area constraints
+- **Documentation**: OpenAPI (Swagger + Scalar) with comprehensive examples
+- **Logging**: Structured Pino logs with correlation IDs
 - **CI/CD**: Automated pipeline with GitHub Actions
-- **Deploy**: Production on HuggingFace Spaces
+- **Deployment**: Live API on HuggingFace Spaces
+- **Frontend**: Complete CRUD interfaces with React + Redux Toolkit
+- **UI Components**: Radix UI-based design system (30+ components)
+- **Forms**: react-hook-form + Zod validation for all inputs
+- **Internationalization**: i18next with Portuguese and English
 
-### 🚧 In Development
+### 🚧 In Progress
 
-- **Dashboard UI**: Charts and visualizations (Recharts)
-- **E2E Tests**: Cypress for end-to-end testing
-- **Frontend Coverage**: Expanding React test suite
+- **Dashboard Charts**: Recharts installed, components pending implementation
+- **Testing Suite**: Infrastructure ready, test files pending
+- **Edit Pages**: Forms ready, data loading pending
+- **E2E Tests**: Cypress/Playwright setup pending
 
-> 📋 See [ROADMAP.md](./ROADMAP.md) for detailed checklist and complete progress.
+> [!TIP]
+> See [ROADMAP.md](./docs/ROADMAP.md) for detailed checklist and priority guidance.
 
 ## Documentation
 
@@ -178,13 +186,13 @@ bun run type-check   # Check TypeScript types
 
 ### Configuration & Operation
 
-| Document                                                                | Description                                |
-| ----------------------------------------------------------------------- | ------------------------------------------ |
-| [ENVIRONMENT.md](./ENVIRONMENT.md)                                      | Environment variables and configuration    |
-| [DOCKER.md](./DOCKER.md)                                                | Containerization and deployment guide      |
-| [MONITORING.md](./MONITORING.md)                                        | Monitoring, alerts, and automatic recovery |
-| [Swagger UI](https://badivia-brain-ag-api.hf.space/api/docs)            | Interactive API documentation (OpenAPI)    |
-| [Scalar Reference](https://badivia-brain-ag-api.hf.space/api/reference) | Modern API reference                       |
+| Document                                                                | Description                               |
+| ----------------------------------------------------------------------- | ----------------------------------------- |
+| [ENVIRONMENT.md](./ENVIRONMENT.md)                                      | Environment variables and configuration   |
+| [DOCKER.md](./DOCKER.md)                                                | Containerization and deployment guide     |
+| [CODE_QUALITY.md](./CODE_QUALITY.md)                                    | CI/CD strategy, linting and type-checking |
+| [Swagger UI](https://badivia-brain-ag-api.hf.space/api/docs)            | Interactive API documentation (OpenAPI)   |
+| [Scalar Reference](https://badivia-brain-ag-api.hf.space/api/reference) | Modern API reference                      |
 
 ### Development
 
@@ -194,6 +202,25 @@ Coding standards and style guides in `.github/instructions/`:
 - **Database**: Migrations, seeds, TypeORM patterns
 - **Testing**: Unit tests, integration tests, TDD
 - **TypeScript**: Strict mode, type safety, JSDoc
+
+## Contributing
+
+Contributions are welcome! Please read our [Contributing Guide](../CONTRIBUTING.md) to understand:
+
+- ✅ Development workflow
+- ✅ Code quality standards
+- ✅ Pull Request process
+- ✅ Development environment setup
+
+**Key points**:
+- Use `bun run lint:fix` before committing
+- Run `bun run type-check` before pushing
+- Follow [Conventional Commits](https://www.conventionalcommits.org/)
+- Add tests for new features
+- Keep documentation updated
+
+> [!TIP]
+> See [CODE_QUALITY.md](./CODE_QUALITY.md) to understand our CI/CD strategy and why we separate linting, type-checking, and testing.
 
 ## Design Notes
 

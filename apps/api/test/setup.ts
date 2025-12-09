@@ -83,7 +83,7 @@ export async function createTestApp(): Promise<{
  * and resets auto-increment counters. Use in beforeEach hooks to
  * ensure test isolation.
  *
- * @param dataSource - TypeORM DataSource instance
+ * @param dataSource TypeORM DataSource instance
  *
  * @example
  * ```typescript

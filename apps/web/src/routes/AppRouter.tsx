@@ -14,8 +14,10 @@ const LoginPage = lazy(() => import("@/pages").then((module) => ({ default: modu
 const DashboardPage = lazy(() => import("@/pages").then((module) => ({ default: module.DashboardPage })));
 const ProducersPage = lazy(() => import("@/pages").then((module) => ({ default: module.ProducersPage })));
 const CreateProducerPage = lazy(() => import("@/pages").then((module) => ({ default: module.CreateProducerPage })));
+const EditProducerPage = lazy(() => import("@/pages").then((module) => ({ default: module.EditProducerPage })));
 const FarmsPage = lazy(() => import("@/pages").then((module) => ({ default: module.FarmsPage })));
 const CreateFarmPage = lazy(() => import("@/pages").then((module) => ({ default: module.CreateFarmPage })));
+const EditFarmPage = lazy(() => import("@/pages").then((module) => ({ default: module.EditFarmPage })));
 const NotFoundPage = lazy(() => import("@/pages").then((module) => ({ default: module.NotFoundPage })));
 
 /**
@@ -68,6 +70,16 @@ export function AppRouter(): ReactElement {
 						}
 					/>
 					<Route
+						path="/producers/:id/edit"
+						element={
+							<ProtectedRoute>
+								<MainLayout>
+									<EditProducerPage />
+								</MainLayout>
+							</ProtectedRoute>
+						}
+					/>
+					<Route
 						path={ROUTES.farms.list}
 						element={
 							<ProtectedRoute>
@@ -88,21 +100,11 @@ export function AppRouter(): ReactElement {
 						}
 					/>
 					<Route
-						path="/producers/:id/edit"
-						element={
-							<ProtectedRoute>
-								<MainLayout>
-									<NotFoundPage />
-								</MainLayout>
-							</ProtectedRoute>
-						}
-					/>
-					<Route
 						path="/farms/:id/edit"
 						element={
 							<ProtectedRoute>
 								<MainLayout>
-									<NotFoundPage />
+									<EditFarmPage />
 								</MainLayout>
 							</ProtectedRoute>
 						}

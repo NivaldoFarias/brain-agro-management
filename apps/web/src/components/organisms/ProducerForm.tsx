@@ -1,16 +1,13 @@
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Button, Flex, Text, TextField } from "@radix-ui/themes";
 import { useForm } from "react-hook-form";
-import styled from "styled-components";
+import { useTranslation } from "react-i18next";
 
 import type { ReactElement } from "react";
 
 import type { CreateProducerFormData } from "@/schemas";
 
 import { createProducerSchema } from "@/schemas";
-
-import { Button } from "../ui/Button";
-import { FormField } from "../ui/FormField";
-import { Input } from "../ui/Input";
 
 /** Props for the ProducerForm component */
 export interface ProducerFormProps {
@@ -22,9 +19,6 @@ export interface ProducerFormProps {
 
 	/** Initial form values for editing */
 	defaultValues?: Partial<CreateProducerFormData>;
-
-	/** Submit button text */
-	submitLabel?: string;
 }
 
 /**
@@ -45,12 +39,8 @@ export interface ProducerFormProps {
  * />
  * ```
  */
-export function ProducerForm({
-	onSubmit,
-	isLoading = false,
-	defaultValues,
-	submitLabel = "Save Producer",
-}: ProducerFormProps): ReactElement {
+export function ProducerForm({ onSubmit, isLoading = false, defaultValues }: ProducerFormProps): ReactElement {
+	const { t } = useTranslation();
 	const {
 		register,
 		handleSubmit,
@@ -62,67 +52,63 @@ export function ProducerForm({
 	});
 
 	return (
-		<Form
+		<form
 			onSubmit={(event) => {
 				void handleSubmit(onSubmit)(event);
 			}}
 			noValidate
+			style={{ maxWidth: "600px" }}
 		>
-			<FormField
-				id="name"
-				label="Producer Name"
-				required
-				error={errors.name?.message}
-				hint="Full name of the rural producer or company"
-			>
-				<Input
-					{...register("name")}
-					id="name"
-					type="text"
-					placeholder="João da Silva"
-					hasError={!!errors.name}
-					fullWidth
-					disabled={isLoading}
-				/>
-			</FormField>
+			<Flex direction="column" gap="4">
+				{/* Producer Name */}
+				<label>
+					<Text as="div" size="2" weight="medium" mb="1">
+						{t(($) => $.producers.name)} <Text color="red">*</Text>
+					</Text>
+					<Text as="div" size="1" color="gray" mb="1">
+						{t(($) => $.producers.nameHint)}
+					</Text>
+					<TextField.Root
+						{...register("name")}
+						placeholder="João da Silva"
+						disabled={isLoading}
+						color={errors.name ? "red" : undefined}
+					/>
+					{errors.name && (
+						<Text size="1" color="red" mt="1">
+							{errors.name.message}
+						</Text>
+					)}
+				</label>
 
-			<FormField
-				id="document"
-				label="CPF/CNPJ"
-				required
-				error={errors.document?.message}
-				hint="Brazilian document number (CPF or CNPJ)"
-			>
-				<Input
-					{...register("document")}
-					id="document"
-					type="text"
-					placeholder="111.444.777-35 or 11.222.333/0001-81"
-					hasError={!!errors.document}
-					fullWidth
-					disabled={isLoading}
-				/>
-			</FormField>
+				{/* Document (CPF/CNPJ) */}
+				<label>
+					<Text as="div" size="2" weight="medium" mb="1">
+						{t(($) => $.producers.document)} <Text color="red">*</Text>
+					</Text>
+					<Text as="div" size="1" color="gray" mb="1">
+						{t(($) => $.producers.documentHint)}
+					</Text>
+					<TextField.Root
+						{...register("document")}
+						placeholder="111.444.777-35 or 11.222.333/0001-81"
+						disabled={isLoading}
+						color={errors.document ? "red" : undefined}
+					/>
+					{errors.document && (
+						<Text size="1" color="red" mt="1">
+							{errors.document.message}
+						</Text>
+					)}
+				</label>
 
-			<ButtonGroup>
-				<Button type="submit" variant="primary" disabled={isLoading} isLoading={isLoading}>
-					{submitLabel}
-				</Button>
-			</ButtonGroup>
-		</Form>
+				{/* Submit Button */}
+				<Flex justify="end" mt="2">
+					<Button type="submit" disabled={isLoading} loading={isLoading}>
+						{t(($) => $.producers.submitLabel)}
+					</Button>
+				</Flex>
+			</Flex>
+		</form>
 	);
 }
-
-const Form = styled.form`
-	display: flex;
-	flex-direction: column;
-	gap: ${(props) => props.theme.spacing.lg};
-	max-width: 600px;
-`;
-
-const ButtonGroup = styled.div`
-	display: flex;
-	gap: ${(props) => props.theme.spacing.md};
-	justify-content: flex-end;
-	margin-top: ${(props) => props.theme.spacing.md};
-`;

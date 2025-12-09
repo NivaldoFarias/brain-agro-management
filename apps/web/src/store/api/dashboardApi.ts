@@ -1,88 +1,68 @@
-import type {
-	ApiResponse,
-	CropDistribution,
-	LandUseStats,
-	StateDistribution,
-	TotalAreaStats,
-} from "@agro/shared/types";
+import type { ApiResponse, DashboardStats } from "@agro/shared/types";
+
+import { ROUTE_PATHS } from "@agro/shared/constants";
 
 import { api } from "./baseApi";
 
 /**
  * Dashboard statistics API endpoints using RTK Query.
  *
- * Provides hooks for fetching aggregated farm statistics
- * for dashboard visualizations.
+ * Provides a single optimized hook for fetching all dashboard statistics
+ * in one request, replacing multiple individual endpoints.
+ *
+ * ## Performance Benefits
+ * - Single HTTP request instead of 6+
+ * - Parallel database queries on backend
+ * - Reduced network latency
+ * - Atomic data consistency
+ *
+ * @example
+ * ```tsx
+ * const { data, isLoading, error } = useGetDashboardStatsQuery();
+ *
+ * console.log(`Total farms: ${data?.totals.farms}`);
+ * console.log(`Average area: ${data?.averages.areaPerFarm} ha`);
+ * console.log(`Top farm: ${data?.topRecords.largestFarms[0]?.name}`);
+ * ```
  */
 export const dashboardApi = api.injectEndpoints({
 	endpoints: (builder) => ({
 		/**
-		 * Fetches total farms count and total area in hectares.
+		 * Fetches all dashboard statistics in a single aggregated response.
+		 *
+		 * Returns comprehensive metrics including:
+		 * - Totals (farms, producers, areas)
+		 * - Averages (area per farm, farms per producer, percentages)
+		 * - Distributions (by state, city, crop, producer)
+		 * - Top records (largest farms, most productive producers)
+		 * - Land use breakdown
+		 *
+		 * Cache is invalidated when farms or producers are created/updated/deleted.
 		 *
 		 * @example
 		 * ```tsx
-		 * const { data, isLoading } = useGetTotalAreaStatsQuery();
-		 * console.log(`Total farms: ${data?.totalFarms}, Total area: ${data?.totalAreaHectares} ha`);
-		 * ```
-		 */
-		getTotalAreaStats: builder.query<TotalAreaStats, unknown>({
-			query: () => "/farms/stats/total-area",
-			transformResponse: (response: ApiResponse<TotalAreaStats>) => response.data,
-			providesTags: [{ type: "DashboardStats", id: "TOTAL_AREA" }],
-		}),
-
-		/**
-		 * Fetches farm distribution by Brazilian state.
+		 * function Dashboard() {
+		 *   const { data: stats, isLoading, error, refetch } = useGetDashboardStatsQuery();
 		 *
-		 * @example
-		 * ```tsx
-		 * const { data, isLoading } = useGetStateDistributionQuery();
-		 * data?.forEach(({ state, count }) => console.log(`${state}: ${count} farms`));
-		 * ```
-		 */
-		getStateDistribution: builder.query<StateDistribution[], unknown>({
-			query: () => "/farms/stats/by-state",
-			transformResponse: (response: ApiResponse<StateDistribution[]>) => response.data,
-			providesTags: [{ type: "DashboardStats", id: "STATE_DISTRIBUTION" }],
-		}),
-
-		/**
-		 * Fetches crop distribution with percentages.
+		 *   if (isLoading) return <Skeleton />;
+		 *   if (error) return <Error message="Failed to load" onRetry={refetch} />;
 		 *
-		 * @example
-		 * ```tsx
-		 * const { data, isLoading } = useGetCropDistributionQuery();
-		 * data?.forEach(({ crop, count, percentage }) =>
-		 *   console.log(`${crop}: ${count} (${percentage}%)`)
-		 * );
+		 *   return (
+		 *     <>
+		 *       <StatCard value={stats.totals.farms} label="Total Farms" />
+		 *       <BarChart data={stats.distributions.byState} />
+		 *       <Table data={stats.topRecords.largestFarms} />
+		 *     </>
+		 *   );
+		 * }
 		 * ```
 		 */
-		getCropDistribution: builder.query<CropDistribution[], unknown>({
-			query: () => "/farms/stats/crops-distribution",
-			transformResponse: (response: ApiResponse<CropDistribution[]>) => response.data,
-			providesTags: [{ type: "DashboardStats", id: "CROP_DISTRIBUTION" }],
-		}),
-
-		/**
-		 * Fetches land use statistics (arable vs vegetation area).
-		 *
-		 * @example
-		 * ```tsx
-		 * const { data, isLoading } = useGetLandUseStatsQuery();
-		 * console.log(`Arable: ${data?.arablePercentage}%, Vegetation: ${data?.vegetationPercentage}%`);
-		 * ```
-		 */
-		getLandUseStats: builder.query<LandUseStats, unknown>({
-			query: () => "/farms/stats/land-use",
-			transformResponse: (response: ApiResponse<LandUseStats>) => response.data,
-			providesTags: [{ type: "DashboardStats", id: "LAND_USE" }],
+		getDashboardStats: builder.query<DashboardStats, undefined>({
+			query: () => ROUTE_PATHS.dashboardStats,
+			transformResponse: (response: ApiResponse<DashboardStats>) => response.data,
+			providesTags: [{ type: "DashboardStats", id: "ALL" }],
 		}),
 	}),
 });
 
-export const {
-	useGetTotalAreaStatsQuery,
-	useGetStateDistributionQuery,
-	useGetCropDistributionQuery,
-	useGetLandUseStatsQuery,
-} = dashboardApi;
+export const { useGetDashboardStatsQuery } = dashboardApi;

@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 
@@ -7,7 +8,9 @@ import type { CreateProducerRequest } from "@agro/shared/types";
 
 import { Typography } from "@/components/atoms";
 import { Card } from "@/components/ui/";
+import { useToast } from "@/contexts";
 import { ProducerForm } from "@/features";
+import { useLogger } from "@/hooks";
 import { useCreateProducerMutation } from "@/store/api";
 import { ROUTES } from "@/utils/";
 
@@ -18,30 +21,43 @@ import { ROUTES } from "@/utils/";
  * with CPF/CNPJ validation and Brazilian address fields.
  */
 export function CreateProducerPage(): ReactElement {
+	const logger = useLogger(CreateProducerPage.name);
+	const { t } = useTranslation();
 	const navigate = useNavigate();
+	const toast = useToast();
 	const [createProducer, { isLoading }] = useCreateProducerMutation();
 
 	const handleSubmit = async (data: CreateProducerRequest) => {
 		try {
 			await createProducer(data).unwrap();
-			// TODO: Show success toast when Toast component is ready
-			void navigate(ROUTES.producers.list);
+
+			toast.success(
+				t(($) => $.producers.createSuccess),
+				t(($) => $.producers.producerAdded),
+			);
+
+			await navigate(ROUTES.producers.list);
 		} catch (error) {
-			console.error("Failed to create producer:", error);
-			// TODO: Show error toast when Toast component is ready
-			alert("Failed to create producer. Please try again.");
+			logger.error(
+				t(($) => $.producers.createError),
+				error,
+			);
+			toast.error(
+				t(($) => $.producers.createError),
+				t(($) => $.common.retry),
+			);
 		}
 	};
 
 	return (
 		<Container>
 			<Header>
-				<Typography variant="h1">Create Producer</Typography>
-				<Typography variant="body">Add a new rural producer</Typography>
+				<Typography variant="h1">{t(($) => $.producers.createProducer)}</Typography>
+				<Typography variant="body">{t(($) => $.producers.addNewProducer)}</Typography>
 			</Header>
 
 			<FormCard>
-				<ProducerForm onSubmit={handleSubmit} isLoading={isLoading} submitLabel="Create Producer" />
+				<ProducerForm onSubmit={handleSubmit} isLoading={isLoading} />
 			</FormCard>
 		</Container>
 	);

@@ -1,3 +1,5 @@
+import { TriangleAlertIcon as ErrorIcon } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import styled from "styled-components";
 
 import type { HTMLAttributes, ReactElement } from "react";
@@ -26,13 +28,15 @@ export interface ErrorMessageProps extends HTMLAttributes<HTMLDivElement> {
  * ```
  */
 export function ErrorMessage({ message, onRetry, ...props }: ErrorMessageProps): ReactElement {
+	const { t } = useTranslation();
+
 	return (
 		<Container role="alert" {...props}>
-			<ErrorIcon aria-hidden="true">⚠</ErrorIcon>
+			<ErrorIcon size={48} color="red" aria-hidden="true" />
 			<Message>{message}</Message>
 			{onRetry && (
 				<RetryButton onClick={onRetry} type="button">
-					Try Again
+					{t(($) => $.common.retry)}
 				</RetryButton>
 			)}
 		</Container>
@@ -47,11 +51,6 @@ const Container = styled.div`
 	padding: ${(props) => props.theme.spacing.xl};
 	text-align: center;
 	gap: ${(props) => props.theme.spacing.md};
-`;
-
-const ErrorIcon = styled.span`
-	font-size: 48px;
-	color: ${(props) => props.theme.colors.error};
 `;
 
 const Message = styled.p`

@@ -24,7 +24,7 @@ import type {
 	API_ROUTES_FARMS,
 	API_ROUTES_HEALTH,
 	API_ROUTES_PRODUCERS,
-} from "@/constants/routes";
+} from "../../constants";
 
 /**
  * Type representing all possible API route paths.

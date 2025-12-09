@@ -11,14 +11,12 @@ import { getRepositoryToken } from "@nestjs/typeorm";
 import { fixtures, TestConstants } from "test/fixtures";
 import { Repository } from "typeorm";
 
-import { OrderBy } from "@agro/shared/utils";
+import { BrazilianState, CropType, SortOrder } from "@agro/shared/enums";
 
-import { BrazilianState } from "@/common";
-import { Producer } from "@/modules/producers/entities/producer.entity";
+import { Producer } from "@/modules/producers/entities/";
 
 import { CreateFarmDto, UpdateFarmDto } from "./dto";
-import { FarmHarvestCrop } from "./entities/farm-harvest-crop.entity";
-import { Farm } from "./entities/farm.entity";
+import { Farm, FarmHarvestCrop } from "./entities/";
 import { FarmsService } from "./farms.service";
 
 describe("FarmsService", () => {
@@ -93,8 +91,8 @@ describe("FarmsService", () => {
 				arableArea: createDto.arableArea,
 				vegetationArea: createDto.vegetationArea,
 				producerId: createDto.producerId,
-				producer: Promise.resolve({} as Producer),
-				farmHarvests: Promise.resolve([]),
+				producer: {} as Producer,
+				farmHarvests: [],
 				createdAt: new Date("2025-11-24T10:00:00Z"),
 				updatedAt: new Date("2025-11-24T10:00:00Z"),
 			};
@@ -170,8 +168,8 @@ describe("FarmsService", () => {
 					arableArea: 70,
 					vegetationArea: 25,
 					producerId: "550e8400-e29b-41d4-a716-446655440000",
-					producer: Promise.resolve({} as Producer),
-					farmHarvests: Promise.resolve([]),
+					producer: {} as Producer,
+					farmHarvests: [],
 					createdAt: new Date(),
 					updatedAt: new Date(),
 				},
@@ -181,10 +179,10 @@ describe("FarmsService", () => {
 
 			const result = await service.findAll();
 
-			expect(result).toHaveLength(1);
-			expect(result[0]?.name).toBe("Fazenda Boa Vista");
+			expect(result.data).toHaveLength(1);
+			expect(result.data[0]?.name).toBe("Fazenda Boa Vista");
 			expect(mockFarmRepository.find).toHaveBeenCalledWith({
-				order: { name: OrderBy.Ascending },
+				order: { name: SortOrder.Ascending },
 			});
 		});
 
@@ -193,7 +191,7 @@ describe("FarmsService", () => {
 
 			const result = await service.findAll();
 
-			expect(result).toEqual([]);
+			expect(result.data).toEqual([]);
 		});
 	});
 
@@ -207,8 +205,8 @@ describe("FarmsService", () => {
 			arableArea: 70,
 			vegetationArea: 25,
 			producerId: "550e8400-e29b-41d4-a716-446655440000",
-			producer: Promise.resolve({} as Producer),
-			farmHarvests: Promise.resolve([]),
+			producer: {} as Producer,
+			farmHarvests: [],
 			createdAt: new Date(),
 			updatedAt: new Date(),
 		};
@@ -243,8 +241,8 @@ describe("FarmsService", () => {
 			arableArea: 70,
 			vegetationArea: 25,
 			producerId: "550e8400-e29b-41d4-a716-446655440000",
-			producer: Promise.resolve({} as Producer),
-			farmHarvests: Promise.resolve([]),
+			producer: {} as Producer,
+			farmHarvests: [],
 			createdAt: new Date(),
 			updatedAt: new Date(),
 		};
@@ -335,8 +333,8 @@ describe("FarmsService", () => {
 					arableArea: 70,
 					vegetationArea: 25,
 					producerId,
-					producer: Promise.resolve({} as Producer),
-					farmHarvests: Promise.resolve([]),
+					producer: {} as Producer,
+					farmHarvests: [],
 					createdAt: new Date(),
 					updatedAt: new Date(),
 				},
@@ -350,7 +348,7 @@ describe("FarmsService", () => {
 			expect(result[0]?.producerId).toBe(producerId);
 			expect(mockFarmRepository.find).toHaveBeenCalledWith({
 				where: { producerId },
-				order: { name: OrderBy.Ascending },
+				order: { name: SortOrder.Ascending },
 			});
 		});
 	});
@@ -367,8 +365,8 @@ describe("FarmsService", () => {
 					arableArea: 70,
 					vegetationArea: 25,
 					producerId: "550e8400-e29b-41d4-a716-446655440000",
-					producer: Promise.resolve({} as Producer),
-					farmHarvests: Promise.resolve([]),
+					producer: {} as Producer,
+					farmHarvests: [],
 					createdAt: new Date(),
 					updatedAt: new Date(),
 				},
@@ -494,9 +492,9 @@ describe("FarmsService", () => {
 				groupBy: jest.fn().mockReturnThis(),
 				orderBy: jest.fn().mockReturnThis(),
 				getRawMany: jest.fn().mockResolvedValue([
-					{ cropType: "Soja", count: "15" },
-					{ cropType: "Milho", count: "12" },
-					{ cropType: "Café", count: "8" },
+					{ cropType: CropType.Soy, count: "15" },
+					{ cropType: CropType.Corn, count: "12" },
+					{ cropType: CropType.Coffee, count: "8" },
 				]),
 			};
 
@@ -505,9 +503,9 @@ describe("FarmsService", () => {
 			const result = await service.getCropsDistribution();
 
 			expect(result).toEqual([
-				{ cropType: "Soja", count: 15 },
-				{ cropType: "Milho", count: 12 },
-				{ cropType: "Café", count: 8 },
+				{ cropType: CropType.Soy, count: 15 },
+				{ cropType: CropType.Corn, count: 12 },
+				{ cropType: CropType.Coffee, count: 8 },
 			]);
 			expect(mockQueryBuilder.innerJoin).toHaveBeenCalledWith("fhc.farmHarvest", "fh");
 			expect(mockQueryBuilder.select).toHaveBeenCalledWith("fhc.cropType", "cropType");

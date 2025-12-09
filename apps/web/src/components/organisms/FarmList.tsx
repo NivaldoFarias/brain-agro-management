@@ -1,15 +1,17 @@
+import { Badge, Button, Flex, Skeleton, Table, Text } from "@radix-ui/themes";
+import { BadgeXIcon as DeleteIcon, SquarePenIcon as EditIcon } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
-import styled from "styled-components";
 
 import type { ReactElement } from "react";
 
 import type { Farm } from "@agro/shared/types";
 
-import { Button } from "../ui/Button";
-import { Card } from "../ui/Card";
+import { CropType } from "@agro/shared/enums";
+
+import { PaginationControls } from "../atoms/";
 import { EmptyState } from "../ui/EmptyState";
 import { ErrorMessage } from "../ui/ErrorMessage";
-import { LoadingState } from "../ui/LoadingState";
 
 /** Props for the FarmList component */
 export interface FarmListProps {
@@ -30,13 +32,29 @@ export interface FarmListProps {
 
 	/** Whether delete operation is in progress */
 	isDeletingId?: string;
+
+	/**
+	 * Current page number
+	 *
+	 * @default 1
+	 */
+	page?: number;
+
+	/** Total number of items */
+	total?: number;
+
+	/** Number of items per page */
+	limit?: number;
+
+	/** Callback when page changes */
+	onPageChange?: (page: number) => void;
 }
 
 /**
  * List component for displaying farms with actions.
  *
  * Handles loading, error, and empty states automatically.
- * Provides edit and delete actions for each farm.
+ * Provides edit and delete actions for each farm in a table format.
  *
  * @example
  * ```tsx
@@ -59,163 +77,204 @@ export function FarmList({
 	onRetry,
 	onDelete,
 	isDeletingId,
+	page = 1,
+	total = 0,
+	limit = 10,
+	onPageChange,
 }: FarmListProps): ReactElement {
+	const { t } = useTranslation();
 	const navigate = useNavigate();
 
-	if (isLoading) {
-		return <LoadingState message="Loading farms..." />;
-	}
+	const totalPages = Math.ceil(total / limit);
+	const showPagination = total > limit;
 
 	if (error) {
 		return <ErrorMessage message={error} onRetry={onRetry} />;
 	}
 
-	if (farms.length === 0) {
+	if (!isLoading && farms.length === 0) {
 		return (
 			<EmptyState
-				title="No farms yet"
-				description="Create your first farm to start tracking agricultural properties"
+				title={t(($) => $.farms.noFarms)}
+				description={t(($) => $.farms.createFirstFarm)}
 				icon="🌾"
 				action={
 					<Button
-						variant="primary"
 						onClick={() => {
 							void navigate("/farms/create");
 						}}
 					>
-						Create Farm
+						{t(($) => $.farms.createFarm)}
 					</Button>
 				}
 			/>
 		);
 	}
 
+	const cropToColor: Record<CropType, "blue" | "green" | "orange" | "gray" | "red"> = {
+		[CropType.Corn]: "green",
+		[CropType.Soy]: "blue",
+		[CropType.Coffee]: "orange",
+		[CropType.Sugarcane]: "gray",
+		[CropType.Cotton]: "red",
+	};
+
 	return (
-		<ListContainer>
-			{farms.map((farm) => (
-				<Card key={farm.id} padding="md">
-					<CardContent>
-						<FarmInfo>
-							<FarmName>{farm.name}</FarmName>
-							<FarmLocation>
-								{farm.city}, {farm.state}
-							</FarmLocation>
-							<FarmAreas>
-								<AreaBadge>
-									<strong>Total:</strong> {farm.totalArea.toFixed(2)} ha
-								</AreaBadge>
-								<AreaBadge>
-									<strong>Arable:</strong> {farm.arableArea.toFixed(2)} ha
-								</AreaBadge>
-								<AreaBadge>
-									<strong>Vegetation:</strong> {farm.vegetationArea.toFixed(2)} ha
-								</AreaBadge>
-							</FarmAreas>
-							<CropsList>
-								<strong>Crops:</strong> {farm.crops.length > 0 ? farm.crops.join(", ") : "None"}
-							</CropsList>
-						</FarmInfo>
-						<ActionButtons>
-							<Button
-								variant="secondary"
-								size="sm"
-								onClick={() => {
-									void navigate(`/farms/${farm.id}/edit`);
-								}}
-							>
-								Edit
-							</Button>
-							<Button
-								variant="danger"
-								size="sm"
-								onClick={() => onDelete?.(farm.id)}
-								disabled={isDeletingId === farm.id}
-								isLoading={isDeletingId === farm.id}
-							>
-								Delete
-							</Button>
-						</ActionButtons>
-					</CardContent>
-				</Card>
-			))}
-		</ListContainer>
+		<Flex direction="column" gap="4">
+			<Table.Root variant="surface" size="2">
+				<Table.Header>
+					<Table.Row>
+						<Table.ColumnHeaderCell>{t(($) => $.farms.name)}</Table.ColumnHeaderCell>
+						<Table.ColumnHeaderCell>{t(($) => $.farms.city)}</Table.ColumnHeaderCell>
+						<Table.ColumnHeaderCell>{t(($) => $.dashboard.totalArea)}</Table.ColumnHeaderCell>
+						<Table.ColumnHeaderCell>{t(($) => $.dashboard.arable)}</Table.ColumnHeaderCell>
+						<Table.ColumnHeaderCell>{t(($) => $.dashboard.vegetation)}</Table.ColumnHeaderCell>
+						<Table.ColumnHeaderCell>{t(($) => $.dashboard.crops)}</Table.ColumnHeaderCell>
+						<Table.ColumnHeaderCell>{t(($) => $.common.actions)}</Table.ColumnHeaderCell>
+					</Table.Row>
+				</Table.Header>
+
+				<Table.Body>
+					{isLoading ?
+						<LoadingState />
+					:	farms.map((farm) => FarmDataRow(farm))}
+				</Table.Body>
+			</Table.Root>
+
+			{showPagination ?
+				<PaginationControls
+					page={page}
+					total={total}
+					isLoading={isLoading}
+					totalPages={totalPages}
+					onPageChange={onPageChange}
+				/>
+			:	null}
+		</Flex>
 	);
+
+	function FarmDataRow(farm: Farm) {
+		return (
+			<Table.Row key={farm.id}>
+				<Table.RowHeaderCell>
+					<Text>{farm.name}</Text>
+				</Table.RowHeaderCell>
+				<Table.Cell>
+					<Text size="2" color="gray">
+						{farm.city}, {t(($) => $.states[farm.state])}
+					</Text>
+				</Table.Cell>
+				<Table.Cell>
+					<Text size="2">
+						{farm.totalArea.toFixed(2)} {t(($) => $.abbreviations.hectares)}
+					</Text>
+				</Table.Cell>
+				<Table.Cell>
+					<Text size="2">
+						{farm.arableArea.toFixed(2)} {t(($) => $.abbreviations.hectares)}
+					</Text>
+				</Table.Cell>
+				<Table.Cell>
+					<Text size="2">
+						{farm.vegetationArea.toFixed(2)} {t(($) => $.abbreviations.hectares)}
+					</Text>
+				</Table.Cell>
+				<Table.Cell>
+					{farm.crops.length > 0 ?
+						<Flex gap="1" wrap="wrap">
+							{farm.crops.map((crop, index) => (
+								<Badge key={index} color={cropToColor[crop]} variant="soft" size="1">
+									{t(($) => $.crops[crop])}
+								</Badge>
+							))}
+						</Flex>
+					:	<Text size="2" color="gray">
+							{t(($) => $.common.none)}
+						</Text>
+					}
+				</Table.Cell>
+				<Table.Cell>
+					<Flex gap="2">
+						<Button
+							variant="soft"
+							size="1"
+							onClick={() => {
+								void navigate(`/farms/${farm.id}/edit`);
+							}}
+						>
+							<Flex>
+								<EditIcon size={16} aria-hidden="true" style={{ marginRight: 4 }} />
+								{t(($) => $.common.edit)}
+							</Flex>
+						</Button>
+						<Button
+							color="red"
+							variant="soft"
+							size="1"
+							onClick={() => onDelete?.(farm.id)}
+							disabled={isDeletingId === farm.id}
+							loading={isDeletingId === farm.id}
+						>
+							<Flex>
+								<DeleteIcon size={16} aria-hidden="true" style={{ marginRight: 4 }} />
+								{t(($) => $.common.delete)}
+							</Flex>
+						</Button>
+					</Flex>
+				</Table.Cell>
+			</Table.Row>
+		);
+	}
+
+	function LoadingState() {
+		return Array.from({ length: 10 }).map((_, index) => (
+			<Table.Row key={index}>
+				<Table.Cell>
+					<Skeleton>
+						<Text>
+							{t(($) => $.common.loading)} {t(($) => $.farms.name)}
+						</Text>
+					</Skeleton>
+				</Table.Cell>
+				<Table.Cell>
+					<Skeleton>
+						<Text>
+							{t(($) => $.common.loading)} {t(($) => $.farms.city)}
+						</Text>
+					</Skeleton>
+				</Table.Cell>
+				<Table.Cell>
+					<Skeleton>
+						<Text>000.00 {t(($) => $.abbreviations.hectares)}</Text>
+					</Skeleton>
+				</Table.Cell>
+				<Table.Cell>
+					<Skeleton>
+						<Text>000.00 {t(($) => $.abbreviations.hectares)}</Text>
+					</Skeleton>
+				</Table.Cell>
+				<Table.Cell>
+					<Skeleton>
+						<Text>000.00 {t(($) => $.abbreviations.hectares)}</Text>
+					</Skeleton>
+				</Table.Cell>
+				<Table.Cell>
+					<Skeleton>
+						<Flex gap="1">
+							<Badge>{t(($) => $.common.loading)}</Badge>
+						</Flex>
+					</Skeleton>
+				</Table.Cell>
+				<Table.Cell>
+					<Skeleton>
+						<Flex gap="2">
+							<Button disabled={true} size="1">
+								{t(($) => $.common.edit)}
+							</Button>
+						</Flex>
+					</Skeleton>
+				</Table.Cell>
+			</Table.Row>
+		));
+	}
 }
-
-const ListContainer = styled.div`
-	display: flex;
-	flex-direction: column;
-	gap: ${(props) => props.theme.spacing.md};
-`;
-
-const CardContent = styled.div`
-	display: flex;
-	justify-content: space-between;
-	align-items: flex-start;
-	gap: ${(props) => props.theme.spacing.lg};
-
-	@media (max-width: ${(props) => props.theme.breakpoints.md}) {
-		flex-direction: column;
-	}
-`;
-
-const FarmInfo = styled.div`
-	display: flex;
-	flex-direction: column;
-	gap: ${(props) => props.theme.spacing.sm};
-	flex: 1;
-`;
-
-const FarmName = styled.h3`
-	margin: 0;
-	font-size: ${(props) => props.theme.typography.fontSize.lg};
-	font-weight: ${(props) => props.theme.typography.fontWeight.semibold};
-	color: ${(props) => props.theme.colors.text};
-`;
-
-const FarmLocation = styled.p`
-	margin: 0;
-	font-size: ${(props) => props.theme.typography.fontSize.base};
-	color: ${(props) => props.theme.colors.textSecondary};
-`;
-
-const FarmAreas = styled.div`
-	display: flex;
-	flex-wrap: wrap;
-	gap: ${(props) => props.theme.spacing.sm};
-	margin-top: ${(props) => props.theme.spacing.xs};
-`;
-
-const AreaBadge = styled.span`
-	padding: ${(props) => props.theme.spacing.xs} ${(props) => props.theme.spacing.sm};
-	font-size: ${(props) => props.theme.typography.fontSize.xs};
-	color: ${(props) => props.theme.colors.text};
-	background-color: ${(props) => props.theme.colors.backgroundAlt};
-	border-radius: ${(props) => props.theme.borderRadius.md};
-	font-family: ${(props) => props.theme.typography.fontFamily.mono};
-
-	strong {
-		font-weight: ${(props) => props.theme.typography.fontWeight.semibold};
-	}
-`;
-
-const CropsList = styled.p`
-	margin: 0;
-	font-size: ${(props) => props.theme.typography.fontSize.sm};
-	color: ${(props) => props.theme.colors.textSecondary};
-
-	strong {
-		font-weight: ${(props) => props.theme.typography.fontWeight.medium};
-		color: ${(props) => props.theme.colors.text};
-	}
-`;
-
-const ActionButtons = styled.div`
-	display: flex;
-	gap: ${(props) => props.theme.spacing.sm};
-
-	@media (max-width: ${(props) => props.theme.breakpoints.md}) {
-		width: 100%;
-		justify-content: flex-end;
-	}
-`;

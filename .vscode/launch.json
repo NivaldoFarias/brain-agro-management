@@ -1,0 +1,111 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "[Server] Debug API",
+            "type": "node-terminal",
+            "request": "launch",
+            "command": "cd ${workspaceFolder}/apps/api && bun --inspect --watch src/main.ts",
+            "cwd": "${workspaceFolder}",
+            "serverReadyAction": {
+                "pattern": "Application running: (https?://[^\\s]+)",
+                "uriFormat": "%s",
+                "action": "debugWithChrome"
+            }
+        },
+        {
+            "name": "[Server] Debug API (No Watch)",
+            "type": "node-terminal",
+            "request": "launch",
+            "command": "cd ${workspaceFolder}/apps/api && bun --inspect src/main.ts",
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "name": "[Server] Debug API (Break on Start)",
+            "type": "node-terminal",
+            "request": "launch",
+            "command": "cd ${workspaceFolder}/apps/api && bun --inspect-brk src/main.ts",
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "name": "[Server] Debug API via Workspace Script",
+            "type": "node-terminal",
+            "request": "launch",
+            "command": "bun run dev:api",
+            "cwd": "${workspaceFolder}",
+            "serverReadyAction": {
+                "pattern": "Application running: (https?://[^\\s]+)",
+                "uriFormat": "%s",
+                "action": "debugWithChrome"
+            }
+        },
+        {
+            "name": "[Client] Debug Web",
+            "type": "chrome",
+            "request": "launch",
+            "url": "http://localhost:5173",
+            "webRoot": "${workspaceFolder}/apps/web",
+            "sourceMapPathOverrides": {
+                "/@fs/*": "/*",
+                "/src/*": "${webRoot}/src/*"
+            },
+            "runtimeArgs": ["--auto-open-devtools-for-tabs"],
+            "preLaunchTask": "Start Vite Dev Server"
+        },
+        {
+            "name": "[Client] Debug Web via Workspace Script",
+            "type": "node-terminal",
+            "request": "launch",
+            "command": "bun run dev:web",
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "name": "[Server] Attach to Running API",
+            "type": "node",
+            "request": "attach",
+            "port": 6499,
+            "cwd": "${workspaceFolder}/apps/api",
+            "skipFiles": ["<node_internals>/**", "**/node_modules/**"],
+            "resolveSourceMapLocations": ["${workspaceFolder}/**", "!**/node_modules/**"]
+        },
+        {
+            "name": "[Server] Debug API Tests",
+            "type": "node-terminal",
+            "request": "launch",
+            "command": "cd ${workspaceFolder}/apps/api && bun --inspect test",
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "name": "[Client] Debug Web Tests",
+            "type": "node-terminal",
+            "request": "launch",
+            "command": "cd ${workspaceFolder}/apps/web && bun --inspect test",
+            "cwd": "${workspaceFolder}"
+        }
+    ],
+    "compounds": [
+        {
+            "name": "Debug Full Stack",
+            "configurations": ["[Server] Debug API", "[Client] Debug Web"],
+            "stopAll": true,
+            "presentation": {
+                "hidden": false,
+                "group": "fullstack",
+                "order": 1
+            }
+        },
+        {
+            "name": "Debug Full Stack (Workspace Scripts)",
+            "configurations": [
+                "[Server] Debug API via Workspace Script",
+                "[Client] Debug Web via Workspace Script"
+            ],
+            "stopAll": true,
+            "presentation": {
+                "hidden": false,
+                "group": "fullstack",
+                "order": 2
+            }
+        }
+    ]
+}

@@ -23,7 +23,7 @@ export interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
  *   type="text"
  *   placeholder="Producer name"
  *   value={name}
- *   onChange={(e) => setName(e.target.value)}
+ *   onChange={(event) => setName(event.target.value)}
  *   hasError={!!errors.name}
  *   aria-describedby="name-error"
  * />

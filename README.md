@@ -13,7 +13,7 @@ app_port: 7860
 <div align="center">
 
 [![CI Status](https://github.com/NivaldoFarias/brain-agro-management/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/NivaldoFarias/brain-agro-management/actions/workflows/ci.yml)
-[![API Health](https://img.shields.io/website?url=https%3A%2F%2Fbadivia-brain-ag-api.hf.space%2Fapi%2Fhealth&label=API%20Status&up_message=healthy&down_message=down)](https://badivia-brain-ag-api.hf.space/api/health)
+[![API Health](https://img.shields.io/website?url=https%3A%2F%2Fbadivia-brain-ag-api.hf.space%2Fapi%2Fhealth%2Fready&label=API%20Status&up_message=healthy&down_message=down)](https://badivia-brain-ag-api.hf.space/api/health/ready)
 [![HuggingFace](https://img.shields.io/badge/🤗%20HuggingFace-Deployed-yellow)](https://badivia-brain-ag-api.hf.space/api)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Version](https://img.shields.io/badge/version-0.0.1-green.svg)](package.json)
@@ -25,7 +25,7 @@ app_port: 7860
 [![React](https://img.shields.io/badge/React-18.3-61DAFB?style=flat&logo=react&logoColor=black)](https://react.dev)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.9-3178C6?style=flat&logo=typescript&logoColor=white)](https://www.typescriptlang.org)
 [![Redux Toolkit](https://img.shields.io/badge/Redux_Toolkit-2.5-764ABC?style=flat&logo=redux&logoColor=white)](https://redux-toolkit.js.org)
-[![TypeORM](https://img.shields.io/badge/TypeORM-0.3.27-FE0902?style=flat&logo=typeorm&logoColor=white)](https://typeorm.io)
+[![TypeORM](https://img.shields.io/badge/TypeORM-0.3-FE0902?style=flat&logo=typeorm&logoColor=white)](https://typeorm.io)
 [![Vite](https://img.shields.io/badge/Vite-6.0-646CFF?style=flat&logo=vite&logoColor=white)](https://vitejs.dev)
 [![Zod](https://img.shields.io/badge/Zod-4.1-3E67B1?style=flat&logo=zod&logoColor=white)](https://zod.dev)
 [![Radix UI](https://img.shields.io/badge/Radix_UI-Latest-161618?style=flat&logo=radix-ui&logoColor=white)](https://www.radix-ui.com)
@@ -54,6 +54,7 @@ app_port: 7860
 - [Quick Start](#quick-start)
 - [Status](#status)
 - [Documentação](#documentação)
+- [Contribuindo](#contribuindo)
 - [Notas de Design](#notas-de-design)
 
 ## Sobre o Projeto
@@ -151,24 +152,30 @@ bun run type-check   # Verificar tipos TypeScript
 
 ## Status
 
-### ✅ Funcionalidades Implementadas
+### Implementedado
 
-- **Backend API**: CRUD completo de produtores e fazendas
-- **Validação**: CPF/CNPJ e regras de área de fazendas
+- **Backend API**: CRUD completo para produtores e fazendas com validação
 - **Autenticação**: Sistema JWT com refresh tokens
-- **Documentação**: OpenAPI (Swagger + Scalar)
-- **Testes**: Suite de testes unitários no backend
+- **Banco de Dados**: TypeORM + SQLite nativo do Bun com migrations
+- **Validação**: Validadores CPF/CNPJ e restrições de área das fazendas
+- **Documentação**: OpenAPI (Swagger + Scalar) com exemplos abrangentes
+- **Logging**: Logs estruturados com Pino e IDs de correlação
 - **CI/CD**: Pipeline automatizado com GitHub Actions
-- **Deploy**: Produção no HuggingFace Spaces
+- **Deploy**: API em produção no HuggingFace Spaces
+- **Frontend**: Interfaces CRUD completas com React + Redux Toolkit
+- **Componentes UI**: Sistema de design baseado em Radix UI (30+ componentes)
+- **Formulários**: react-hook-form + validação Zod para todos os inputs
+- **Internacionalização**: i18next com suporte a Português e Inglês
 
-### 🚧 Em Desenvolvimento
+### 🚧 Em Progresso
 
-- **Dashboard UI**: Gráficos e visualizações (Recharts)
-- **Testes E2E**: Cypress para testes end-to-end
-- **Cobertura Frontend**: Expansão da suite de testes React
+- **Gráficos do Dashboard**: Recharts instalado, componentes pendentes de implementação
+- **Suite de Testes**: Infraestrutura pronta, arquivos de teste pendentes
+- **Páginas de Edição**: Formulários prontos, carregamento de dados pendente
+- **Testes E2E**: Configuração do Cypress/Playwright pendente
 
 > [!TIP]
-> Consulte [ROADMAP.md](./docs/ROADMAP.md) para o checklist detalhado e progresso completo.
+> Consulte [ROADMAP.md](./docs/ROADMAP.md) para a lista detalhada de tarefas e prioridades.
 
 ## Documentação
 
@@ -182,13 +189,13 @@ bun run type-check   # Verificar tipos TypeScript
 
 ### Configuração & Operação
 
-| Documento                                                               | Descrição                                       |
-| ----------------------------------------------------------------------- | ----------------------------------------------- |
-| [ENVIRONMENT.md](./docs/ENVIRONMENT.md)                                 | Variáveis de ambiente e configuração            |
-| [DOCKER.md](./docs/DOCKER.md)                                           | Guia de containerização e deploy                |
-| [MONITORING.md](./docs/MONITORING.md)                                   | Monitoramento, alertas e recuperação automática |
-| [Swagger UI](https://badivia-brain-ag-api.hf.space/api/docs)            | Documentação interativa da API (OpenAPI)        |
-| [Scalar Reference](https://badivia-brain-ag-api.hf.space/api/reference) | Referência moderna da API                       |
+| Documento                                                               | Descrição                                    |
+| ----------------------------------------------------------------------- | -------------------------------------------- |
+| [ENVIRONMENT.md](./docs/ENVIRONMENT.md)                                 | Variáveis de ambiente e configuração         |
+| [DOCKER.md](./docs/DOCKER.md)                                           | Guia de containerização e deploy             |
+| [CODE_QUALITY.md](./docs/CODE_QUALITY.md)                               | Estratégia de CI/CD, linting e type-checking |
+| [Swagger UI](https://badivia-brain-ag-api.hf.space/api/docs)            | Documentação interativa da API (OpenAPI)     |
+| [Scalar Reference](https://badivia-brain-ag-api.hf.space/api/reference) | Referência moderna da API                    |
 
 ### Desenvolvimento
 
@@ -198,6 +205,19 @@ Padrões de código e guias de estilo em `.github/instructions/`:
 - **Database**: Migrations, seeds, padrões TypeORM
 - **Testing**: Unit tests, integration tests, TDD
 - **TypeScript**: Strict mode, type safety, JSDoc
+
+## Contribuindo
+
+Contribuições são bem-vindas! Para contribuir:
+
+- ✅ Use `bun run lint:fix` antes de commitar
+- ✅ Execute `bun run type-check` antes de fazer push
+- ✅ Siga [Conventional Commits](https://www.conventionalcommits.org/)
+- ✅ Adicione testes para novas funcionalidades
+- ✅ Mantenha a documentação atualizada
+
+> [!TIP]
+> Consulte [CODE_QUALITY.md](./docs/CODE_QUALITY.md) para entender nossa estratégia de CI/CD e por que separamos linting, type-checking e testes.
 
 ## Notas de Design
 

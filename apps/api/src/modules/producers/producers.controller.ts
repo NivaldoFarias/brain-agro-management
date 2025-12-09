@@ -1,9 +1,27 @@
-import { Body, Controller, Delete, Get, HttpStatus, Param, Patch, Post } from "@nestjs/common";
+import { faker } from "@faker-js/faker";
+import {
+	Body,
+	Controller,
+	Delete,
+	Get,
+	HttpStatus,
+	Param,
+	Patch,
+	Post,
+	Query,
+} from "@nestjs/common";
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
+
+import type { PaginatedResponse } from "@agro/shared/types";
 
 import { ParseUUIDPipe } from "@/common";
 
-import { CreateProducerDto, ProducerResponseDto, UpdateProducerDto } from "./dto";
+import {
+	CreateProducerDto,
+	FindAllProducersDto,
+	ProducerResponseDto,
+	UpdateProducerDto,
+} from "./dto";
 import { ProducersService } from "./producers.service";
 
 /**
@@ -27,7 +45,7 @@ import { ProducersService } from "./producers.service";
  * ```
  */
 @ApiTags("Producers")
-@ApiBearerAuth("JWT-auth")
+@ApiBearerAuth("JWT")
 @Controller("producers")
 export class ProducersController {
 	constructor(private readonly producersService: ProducersService) {}
@@ -38,7 +56,7 @@ export class ProducersController {
 	 * Validates CPF/CNPJ format and checks for duplicate documents before
 	 * creating the producer record.
 	 *
-	 * @param createProducerDto - Producer data including name and document
+	 * @param createProducerDto Producer data including name and document
 	 *
 	 * @returns The created producer with generated ID and timestamps
 	 *
@@ -54,38 +72,35 @@ export class ProducersController {
 	})
 	@ApiResponse({ status: HttpStatus.BAD_REQUEST, description: "Invalid input data" })
 	@ApiResponse({ status: HttpStatus.CONFLICT, description: "Document already exists" })
-	create(@Body() createProducerDto: CreateProducerDto): Promise<ProducerResponseDto> {
+	public create(@Body() createProducerDto: CreateProducerDto): Promise<ProducerResponseDto> {
 		return this.producersService.create(createProducerDto);
 	}
 
 	/**
-	 * Retrieves all producers with pagination.
+	 * Retrieves all producers with pagination, sorting, and search.
 	 *
-	 * Returns producers ordered alphabetically by name.
-	 * For now, ignores pagination params and returns all producers (assessment requirement).
+	 * Supports filtering by name search with configurable sorting and pagination.
+	 * All query parameters are optional with sensible defaults.
 	 *
-	 * @returns Paginated producer response
+	 * @param query Query parameters for pagination, sorting, and search
+	 *
+	 * @returns Paginated producer response with metadata
 	 */
 	@Get()
-	@ApiOperation({ summary: "Get all producers" })
+	@ApiOperation({
+		summary: "Get all producers with pagination, sorting, and search",
+		description:
+			"Retrieves a paginated list of producers. Supports name search, customizable sorting, and pagination.",
+	})
 	@ApiResponse({
 		status: HttpStatus.OK,
-		description: "List of producers",
+		description: "Paginated list of producers",
 		type: [ProducerResponseDto],
 	})
-	async findAll(): Promise<{
-		data: Array<ProducerResponseDto>;
-		total: number;
-		page: number;
-		limit: number;
-	}> {
-		const producers = await this.producersService.findAll();
-		return {
-			data: producers,
-			total: producers.length,
-			page: 1,
-			limit: producers.length,
-		};
+	public findAll(
+		@Query() query: FindAllProducersDto,
+	): Promise<PaginatedResponse<ProducerResponseDto>> {
+		return this.producersService.findAll(query);
 	}
 
 	/**
@@ -93,7 +108,7 @@ export class ProducersController {
 	 *
 	 * Includes the producer's associated farms when using the relations query.
 	 *
-	 * @param id - UUID of the producer to retrieve
+	 * @param id UUID of the producer to retrieve
 	 *
 	 * @returns The producer with the specified ID
 	 *
@@ -107,7 +122,7 @@ export class ProducersController {
 		type: ProducerResponseDto,
 	})
 	@ApiResponse({ status: HttpStatus.NOT_FOUND, description: "Producer not found" })
-	findOne(@Param("id", ParseUUIDPipe) id: string): Promise<ProducerResponseDto> {
+	public findOne(@Param("id", ParseUUIDPipe) id: string): Promise<ProducerResponseDto> {
 		return this.producersService.findOne(id);
 	}
 
@@ -118,8 +133,8 @@ export class ProducersController {
 	 * If document is being updated, validates the new document and checks
 	 * for duplicates.
 	 *
-	 * @param id - UUID of the producer to update
-	 * @param updateProducerDto - Fields to update
+	 * @param id UUID of the producer to update
+	 * @param updateProducerDto Fields to update
 	 *
 	 * @returns The updated producer
 	 *
@@ -137,7 +152,7 @@ export class ProducersController {
 	@ApiResponse({ status: HttpStatus.BAD_REQUEST, description: "Invalid input data" })
 	@ApiResponse({ status: HttpStatus.NOT_FOUND, description: "Producer not found" })
 	@ApiResponse({ status: HttpStatus.CONFLICT, description: "Document already exists" })
-	update(
+	public update(
 		@Param("id", ParseUUIDPipe) id: string,
 		@Body() updateProducerDto: UpdateProducerDto,
 	): Promise<ProducerResponseDto> {
@@ -149,7 +164,7 @@ export class ProducersController {
 	 *
 	 * Also deletes all associated farms due to CASCADE constraint.
 	 *
-	 * @param id - UUID of the producer to delete
+	 * @param id UUID of the producer to delete
 	 *
 	 * @returns Void on successful deletion
 	 *
@@ -159,7 +174,26 @@ export class ProducersController {
 	@ApiOperation({ summary: "Delete producer" })
 	@ApiResponse({ status: HttpStatus.OK, description: "Producer deleted successfully" })
 	@ApiResponse({ status: HttpStatus.NOT_FOUND, description: "Producer not found" })
-	remove(@Param("id", ParseUUIDPipe) id: string): Promise<void> {
+	public remove(@Param("id", ParseUUIDPipe) id: string): Promise<void> {
 		return this.producersService.delete(id);
+	}
+
+	/**
+	 * Gets the total producer count.
+	 *
+	 * @returns Total producer count
+	 */
+	@Get("stats/count")
+	@ApiOperation({ summary: "Get total count of all producers" })
+	@ApiResponse({
+		status: HttpStatus.OK,
+		description: "Total producer count",
+		schema: {
+			type: "number",
+			example: faker.number.int({ min: 0 }) satisfies number,
+		},
+	})
+	public getTotalCount(): Promise<number> {
+		return this.producersService.getTotalCount();
 	}
 }

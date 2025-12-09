@@ -1,14 +1,14 @@
 import { Module } from "@nestjs/common";
-import { TerminusModule } from "@nestjs/terminus";
 
 import { HealthController } from "./health.controller";
+import { HealthService } from "./health.service";
 
 /**
  * Health check module for application monitoring.
  *
- * Provides health and readiness endpoints for orchestration systems,
- * load balancers, and monitoring tools. Integrates with @nestjs/terminus
- * for standardized health check patterns.
+ * Provides comprehensive health and readiness endpoints for orchestration systems,
+ * load balancers, and monitoring tools. Includes database connectivity checks,
+ * memory monitoring, disk usage tracking, and uptime metrics.
  *
  * @example
  * ```typescript
@@ -20,7 +20,8 @@ import { HealthController } from "./health.controller";
  * ```
  */
 @Module({
-	imports: [TerminusModule],
 	controllers: [HealthController],
+	providers: [HealthService],
+	exports: [HealthService],
 })
 export class HealthModule {}

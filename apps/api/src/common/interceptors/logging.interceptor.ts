@@ -121,7 +121,6 @@ export class LoggingInterceptor implements NestInterceptor {
 		const { method, url } = request;
 		const { statusCode } = response;
 
-		// Calculate response size (approximate)
 		const responseSize = data ? JSON.stringify(data).length : 0;
 
 		this.logger.info({

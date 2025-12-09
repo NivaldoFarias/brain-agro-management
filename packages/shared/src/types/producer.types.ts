@@ -1,3 +1,8 @@
+import type { BaseListFilterOptions } from "./api";
+import type { Farm } from "./farm.types";
+
+import type { ProducerSortField } from "@/enums";
+
 /**
  * Producer entity type representing rural producers and agricultural companies.
  *
@@ -11,6 +16,7 @@
  *   id: "550e8400-e29b-41d4-a716-446655440000",
  *   name: "João Silva",
  *   document: "111.444.777-35",
+ *   farms: [],
  *   createdAt: "2024-01-15T10:30:00.000Z",
  *   updatedAt: "2024-01-15T10:30:00.000Z"
  * };
@@ -30,6 +36,9 @@ export interface Producer {
 	 * - CNPJ format: "11.222.333/0001-81" or "11222333000181" (14 digits)
 	 */
 	document: string;
+
+	/** Array of farms owned by the producer */
+	farms: Array<Farm>;
 
 	/** Timestamp when the producer was created */
 	createdAt: string;
@@ -132,32 +141,4 @@ export interface ProducersListResponse {
 	limit: number;
 }
 
-/**
- * Query parameters for listing producers.
- *
- * @example
- * ```typescript
- * const params: ProducersListQuery = {
- *   page: 1,
- *   limit: 10
- * };
- * ```
- */
-export interface ProducersListQuery {
-	/**
-	 * Page number (1-indexed).
-	 *
-	 * @default 1
-	 * @minimum `1`
-	 */
-	page?: number;
-
-	/**
-	 * Number of items per page.
-	 *
-	 * @default 10
-	 * @minimum `1`
-	 * @maximum `100`
-	 */
-	limit?: number;
-}
+export type ProducersFilterOptions = BaseListFilterOptions<ProducerSortField>;

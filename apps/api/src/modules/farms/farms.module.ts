@@ -3,12 +3,11 @@ import { TypeOrmModule } from "@nestjs/typeorm";
 
 import { IsCityInStateConstraint } from "@/common/decorators/city-in-state.decorator";
 import { City } from "@/modules/cities/entities/city.entity";
-import { Producer } from "@/modules/producers/entities/producer.entity";
+import { Producer } from "@/modules/producers/entities/";
 
 import { CitiesModule } from "../cities/cities.module";
 
-import { FarmHarvestCrop } from "./entities/farm-harvest-crop.entity";
-import { Farm } from "./entities/farm.entity";
+import { Farm, FarmHarvest, FarmHarvestCrop, Harvest } from "./entities/";
 import { FarmsController } from "./farms.controller";
 import { FarmsService } from "./farms.service";
 
@@ -31,7 +30,10 @@ import { FarmsService } from "./farms.service";
  * ```
  */
 @Module({
-	imports: [TypeOrmModule.forFeature([Farm, Producer, City, FarmHarvestCrop]), CitiesModule],
+	imports: [
+		TypeOrmModule.forFeature([Farm, Producer, City, Harvest, FarmHarvest, FarmHarvestCrop]),
+		CitiesModule,
+	],
 	controllers: [FarmsController],
 	providers: [FarmsService, IsCityInStateConstraint],
 	exports: [FarmsService],

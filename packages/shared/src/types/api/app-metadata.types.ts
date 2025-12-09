@@ -17,9 +17,6 @@ export interface ApiAppMetadata {
 		/** API Reference endpoint */
 		reference: string;
 
-		/** Authentication endpoint */
-		auth: string;
-
 		/** Health check endpoint */
 		health: string;
 
@@ -31,6 +28,15 @@ export interface ApiAppMetadata {
 
 		/** Farms endpoint */
 		farms: string;
+
+		/** Authentication endpoints */
+		auth: {
+			/** Login endpoint */
+			login: string;
+
+			/** Logout endpoint */
+			logout: string;
+		};
 
 		/** Statistics endpoints */
 		statistics: {

@@ -36,7 +36,7 @@ export interface FormFieldProps extends Omit<InputProps, "id"> {
  *   label="Producer Name"
  *   required
  *   value={name}
- *   onChange={(e) => setName(e.target.value)}
+ *   onChange={(event) => setName(event.target.value)}
  *   error={errors.name?.message}
  *   helperText="Enter the full name as registered"
  * />

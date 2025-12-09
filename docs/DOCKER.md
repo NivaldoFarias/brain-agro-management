@@ -168,7 +168,7 @@ All Docker operations are available as npm scripts in `package.json`:
 
 | Script           | Command                                            | Description                              |
 | ---------------- | -------------------------------------------------- | ---------------------------------------- |
-| `docker:build`   | `docker compose build --no-cache`                  | Build Docker images (no cache)           |
+| `docker:build`   | `docker compose build`                             | Build Docker images                      |
 | `docker:up`      | `docker compose up -d`                             | Start services in detached mode          |
 | `docker:down`    | `docker compose down`                              | Stop and remove services                 |
 | `docker:restart` | `docker compose restart`                           | Restart services                         |

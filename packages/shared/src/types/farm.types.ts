@@ -1,4 +1,6 @@
-import type { BrazilianState, CropType } from "../utils/constants.util";
+import type { BaseListFilterOptions, PaginatedResponse } from "./api";
+
+import { BrazilianState, CropType, FarmSortField } from "../enums";
 
 /**
  * Farm entity type representing agricultural properties.
@@ -17,7 +19,7 @@ import type { BrazilianState, CropType } from "../utils/constants.util";
  *   totalArea: 100.5,
  *   arableArea: 70.0,
  *   vegetationArea: 25.0,
- *   crops: ["Soja", "Milho"],
+ *   crops: ["soy", "corn"],
  *   producerId: "producer-uuid",
  *   createdAt: "2024-01-15T10:30:00.000Z",
  *   updatedAt: "2024-01-15T10:30:00.000Z"
@@ -111,7 +113,7 @@ export interface Farm {
  *   totalArea: 100.5,
  *   arableArea: 70.0,
  *   vegetationArea: 25.0,
- *   crops: ["Soja", "Milho"],
+ *   crops: ["soy", "corn"],
  *   producerId: "550e8400-e29b-41d4-a716-446655440000"
  * };
  * ```
@@ -172,7 +174,7 @@ export interface CreateFarmRequest {
 	/**
 	 * Array of crop types cultivated on this farm.
 	 *
-	 * @example ["Soja", "Milho"]
+	 * @example ["soy", "corn"]
 	 * @see {@link CropType}
 	 */
 	crops: Array<CropType>;
@@ -253,50 +255,23 @@ export interface UpdateFarmRequest {
  *   data: [farm1, farm2],
  *   total: 50,
  *   page: 1,
- *   limit: 10
+ *   limit: 10,
+ *   totalPages: 5
  * };
  * ```
  */
-export interface FarmsListResponse {
-	/** Array of farm entities */
-	data: Array<Farm>;
+export type FarmsListResponse = PaginatedResponse<Farm>;
 
-	/** Total count of farms matching the query */
-	total: number;
+export interface FarmFilterOptions extends BaseListFilterOptions<FarmSortField> {
+	/** Filter by Brazilian state */
+	state?: BrazilianState;
 
-	/** Current page number (1-indexed) */
-	page: number;
+	/** Filter by city name (exact match) */
+	city?: string;
 
-	/** Number of items per page */
-	limit: number;
-}
+	/** Filter by producer ID */
+	producerId?: string;
 
-/**
- * Query parameters for listing farms.
- *
- * @example
- * ```typescript
- * const params: FarmsListQuery = {
- *   page: 1,
- *   limit: 10
- * };
- * ```
- */
-export interface FarmsListQuery {
-	/**
-	 * Page number (1-indexed).
-	 *
-	 * @default 1
-	 * @minimum `1`
-	 */
-	page?: number;
-
-	/**
-	 * Number of items per page.
-	 *
-	 * @default 10
-	 * @minimum `1`
-	 * @maximum `100`
-	 */
-	limit?: number;
+	/** Filter by crop types */
+	crops?: Array<CropType>;
 }

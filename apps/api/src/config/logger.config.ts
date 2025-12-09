@@ -1,13 +1,13 @@
 import type { Params } from "nestjs-pino";
 import type { SerializedRequest, SerializedResponse } from "pino";
 
-import { RuntimeEnvironment } from "@agro/shared/utils";
+import { RuntimeEnvironment } from "@agro/shared/enums";
 
 import { correlationIdStorage } from "@/common";
 import { env } from "@/config/env.config";
 
 /**
- * Configuration for nestjs-pino logger integration.
+ * Configuration for `nestjs-pino` logger integration.
  *
  * Provides structured JSON logging with correlation ID support via
  * AsyncLocalStorage. Configures different transports for file and console
@@ -15,7 +15,7 @@ import { env } from "@/config/env.config";
  *
  * @returns Pino logger configuration parameters for NestJS
  *
- * @see {@link https://github.com/iamolegga/nestjs-pino|nestjs-pino Documentation}
+ * @see {@link https://github.com/iamolegga/nestjs-pino|`nestjs-pino` Documentation}
  */
 export function createPinoConfig(): Params {
 	const isProduction = env.NODE_ENV === RuntimeEnvironment.Production;

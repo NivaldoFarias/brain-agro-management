@@ -2,9 +2,13 @@ import type {
 	ApiResponse,
 	CreateFarmRequest,
 	Farm,
+	FarmFilterOptions,
 	FarmsListResponse,
 	UpdateFarmRequest,
 } from "@agro/shared/types";
+
+import { ROUTE_PATHS } from "@agro/shared/constants";
+import { HttpMethod } from "@agro/shared/enums";
 
 import { api } from "./baseApi";
 
@@ -17,18 +21,47 @@ import { api } from "./baseApi";
 export const farmsApi = api.injectEndpoints({
 	endpoints: (builder) => ({
 		/**
-		 * Fetches paginated list of farms.
+		 * Fetches paginated list of farms with sorting, filtering, and search.
 		 *
 		 * @example
 		 * ```tsx
-		 * const { data, isLoading } = useGetFarmsQuery({ page: 1, limit: 10 });
+		 * const { data, isLoading } = useGetFarmsQuery({
+		 *   page: 1,
+		 *   limit: 10,
+		 *   sortBy: "totalArea",
+		 *   sortOrder: "DESC",
+		 *   state: "SP",
+		 *   search: "Fazenda"
+		 * });
 		 * ```
 		 */
-		getFarms: builder.query<FarmsListResponse, { page?: number; limit?: number }>({
-			query: ({ page = 1, limit = 10 }) => ({
-				url: "/farms",
-				params: { page, limit },
-			}),
+		getFarms: builder.query<FarmsListResponse, FarmFilterOptions>({
+			query: ({
+				page = 1,
+				limit = 10,
+				sortBy,
+				sortOrder,
+				search,
+				state,
+				city,
+				producerId,
+				crops,
+			} = {}) => {
+				return {
+					url: ROUTE_PATHS.farms,
+					params: {
+						page,
+						limit,
+						...(sortBy && { sortBy }),
+						...(sortOrder && { sortOrder }),
+						...(search && { search }),
+						...(state && { state }),
+						...(city && { city }),
+						...(producerId && { producerId }),
+						...(crops && crops.length > 0 && { crops: crops.join(",") }),
+					},
+				};
+			},
 			transformResponse: (response: ApiResponse<FarmsListResponse>) => response.data,
 			providesTags: (result) =>
 				result ?
@@ -48,7 +81,7 @@ export const farmsApi = api.injectEndpoints({
 		 * ```
 		 */
 		getFarm: builder.query<Farm, string>({
-			query: (id) => `/farms/${id}`,
+			query: (id) => `${ROUTE_PATHS.farms}/${id}`,
 			transformResponse: (response: ApiResponse<Farm>) => response.data,
 			providesTags: (result, error, id) => [{ type: "Farm", id }],
 		}),
@@ -64,12 +97,15 @@ export const farmsApi = api.injectEndpoints({
 		 */
 		createFarm: builder.mutation<Farm, CreateFarmRequest>({
 			query: (body) => ({
-				url: "/farms",
-				method: "POST",
+				url: ROUTE_PATHS.farms,
+				method: HttpMethod.POST,
 				body,
 			}),
 			transformResponse: (response: ApiResponse<Farm>) => response.data,
-			invalidatesTags: [{ type: "Farm", id: "LIST" }, { type: "DashboardStats" }],
+			invalidatesTags: [
+				{ type: "Farm", id: "LIST" },
+				{ type: "DashboardStats", id: "ALL" },
+			],
 		}),
 
 		/**
@@ -83,15 +119,15 @@ export const farmsApi = api.injectEndpoints({
 		 */
 		updateFarm: builder.mutation<Farm, { id: string } & UpdateFarmRequest>({
 			query: ({ id, ...body }) => ({
-				url: `/farms/${id}`,
-				method: "PATCH",
+				url: `${ROUTE_PATHS.farms}/${id}`,
+				method: HttpMethod.PATCH,
 				body,
 			}),
 			transformResponse: (response: ApiResponse<Farm>) => response.data,
 			invalidatesTags: (result, error, { id }) => [
 				{ type: "Farm", id },
 				{ type: "Farm", id: "LIST" },
-				{ type: "DashboardStats" },
+				{ type: "DashboardStats", id: "ALL" },
 			],
 		}),
 
@@ -106,14 +142,14 @@ export const farmsApi = api.injectEndpoints({
 		 */
 		deleteFarm: builder.mutation<unknown, string>({
 			query: (id) => ({
-				url: `/farms/${id}`,
-				method: "DELETE",
+				url: `${ROUTE_PATHS.farms}/${id}`,
+				method: HttpMethod.DELETE,
 			}),
 			transformResponse: (response: ApiResponse<unknown>) => response.data,
 			invalidatesTags: (result, error, id) => [
 				{ type: "Farm", id },
 				{ type: "Farm", id: "LIST" },
-				{ type: "DashboardStats" },
+				{ type: "DashboardStats", id: "ALL" },
 			],
 		}),
 	}),

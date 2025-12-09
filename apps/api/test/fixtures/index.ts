@@ -1,3 +1,6 @@
+import { farmFixtures } from "./farm.fixtures";
+import { producerFixtures } from "./producer.fixtures";
+
 /**
  * Test fixtures and mock data factories.
  *
@@ -7,18 +10,15 @@
  *
  * @example
  * ```typescript
- * import { ProducerFixtures, FarmFixtures, TestConstants } from './fixtures';
+ * import { fixtures, TestConstants } from './fixtures';
  *
- * const producer = ProducerFixtures.validCPF();
- * const farm = FarmFixtures.valid(producer.id);
+ * const producer = fixtures.producer.validCPF();
+ * const farm = fixtures.farm.valid(producer.id);
  * const notFoundId = TestConstants.NON_EXISTENT_UUID;
  * ```
  */
 
-import { farmFixtures } from "./farm.fixtures";
-import { producerFixtures } from "./producer.fixtures";
-
-export { TestConstants } from "./constants";
+export * from "./constants";
 
 export const fixtures = {
 	farm: farmFixtures,

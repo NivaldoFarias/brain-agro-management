@@ -17,13 +17,7 @@
  * ```
  */
 
-export type { BaseScenario, ErrorResponse, TypedResponse } from "./base.scenario";
-export { assertSuccessResponse, isErrorResponse } from "./base.scenario";
-
-export type { FarmsByStateDto, LandUseStatsDto, TotalAreaStatsDto } from "./farms.scenario";
-export { FarmsScenario } from "./farms.scenario";
-
-export { ProducersScenario } from "./producers.scenario";
-
-export type { TestScenarios } from "./scenarios.factory";
-export { createTestScenarios } from "./scenarios.factory";
+export * from "./base.scenario";
+export * from "./farms.scenario";
+export * from "./producers.scenario";
+export * from "./scenarios.factory";

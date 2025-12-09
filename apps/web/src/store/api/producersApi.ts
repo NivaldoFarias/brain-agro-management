@@ -2,12 +2,13 @@ import type {
 	ApiResponse,
 	CreateProducerRequest,
 	Producer,
-	ProducersListQuery,
+	ProducersFilterOptions,
 	ProducersListResponse,
 	UpdateProducerRequest,
 } from "@agro/shared/types";
 
-import { HttpMethod } from "@agro/shared/utils";
+import { ROUTE_PATHS } from "@agro/shared/constants";
+import { HttpMethod } from "@agro/shared/enums";
 
 import { api } from "./baseApi";
 
@@ -20,19 +21,32 @@ import { api } from "./baseApi";
 export const producersApi = api.injectEndpoints({
 	endpoints: (builder) => ({
 		/**
-		 * Fetches paginated list of producers.
+		 * Fetches paginated list of producers with sorting and search.
 		 *
 		 * @example
 		 * ```tsx
-		 * const { data, isLoading } = useGetProducersQuery({ page: 1, limit: 10 });
+		 * const { data, isLoading } = useGetProducersQuery({
+		 *   page: 1,
+		 *   limit: 10,
+		 *   sortBy: "name",
+		 *   sortOrder: "ASC",
+		 *   search: "Silva"
+		 * });
 		 * ```
 		 */
-		getProducers: builder.query<ProducersListResponse, ProducersListQuery>({
-			query: ({ page = 1, limit = 10 } = {}) => ({
-				url: "/producers",
-				params: { page, limit },
+		getProducers: builder.query<ProducersListResponse, ProducersFilterOptions>({
+			query: ({ page = 1, limit = 10, sortBy, sortOrder, search } = {}) => ({
+				url: ROUTE_PATHS.producers,
+				params: {
+					page,
+					limit,
+					...(sortBy && { sortBy }),
+					...(sortOrder && { sortOrder }),
+					...(search && { search }),
+				},
 			}),
-			transformResponse: (response: ApiResponse<ProducersListResponse>) => response.data,
+			transformResponse: (response: ApiResponse<ProducersListResponse>): ProducersListResponse =>
+				response.data,
 			providesTags: (result) =>
 				result ?
 					[
@@ -51,7 +65,7 @@ export const producersApi = api.injectEndpoints({
 		 * ```
 		 */
 		getProducer: builder.query<Producer, string>({
-			query: (id) => `/producers/${id}`,
+			query: (id) => `${ROUTE_PATHS.producers}/${id}`,
 			transformResponse: (response: ApiResponse<Producer>) => response.data,
 			providesTags: (result, error, id) => [{ type: "Producer", id }],
 		}),
@@ -67,12 +81,15 @@ export const producersApi = api.injectEndpoints({
 		 */
 		createProducer: builder.mutation<Producer, CreateProducerRequest>({
 			query: (body) => ({
-				url: "/producers",
+				url: ROUTE_PATHS.producers,
 				method: HttpMethod.POST,
 				body,
 			}),
 			transformResponse: (response: ApiResponse<Producer>) => response.data,
-			invalidatesTags: [{ type: "Producer", id: "LIST" }],
+			invalidatesTags: [
+				{ type: "Producer", id: "LIST" },
+				{ type: "DashboardStats", id: "ALL" },
+			],
 		}),
 
 		/**
@@ -86,14 +103,15 @@ export const producersApi = api.injectEndpoints({
 		 */
 		updateProducer: builder.mutation<Producer, { id: string } & UpdateProducerRequest>({
 			query: ({ id, ...body }) => ({
-				url: `/producers/${id}`,
-				method: "PATCH",
+				url: `${ROUTE_PATHS.producers}/${id}`,
+				method: HttpMethod.PATCH,
 				body,
 			}),
 			transformResponse: (response: ApiResponse<Producer>) => response.data,
 			invalidatesTags: (result, error, { id }) => [
 				{ type: "Producer", id },
 				{ type: "Producer", id: "LIST" },
+				{ type: "DashboardStats", id: "ALL" },
 			],
 		}),
 
@@ -108,13 +126,14 @@ export const producersApi = api.injectEndpoints({
 		 */
 		deleteProducer: builder.mutation<unknown, string>({
 			query: (id) => ({
-				url: `/producers/${id}`,
-				method: "DELETE",
+				url: `${ROUTE_PATHS.producers}/${id}`,
+				method: HttpMethod.DELETE,
 			}),
 			transformResponse: (response: ApiResponse<unknown>) => response.data,
 			invalidatesTags: (result, error, id) => [
 				{ type: "Producer", id },
 				{ type: "Producer", id: "LIST" },
+				{ type: "DashboardStats", id: "ALL" },
 			],
 		}),
 	}),

@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-import { BrazilianState, CropType } from "@agro/shared/utils";
+import { BrazilianState, CropType } from "@agro/shared/enums";
 import { validateFarmArea } from "@agro/shared/validators";
 
 /**
@@ -20,7 +20,7 @@ import { validateFarmArea } from "@agro/shared/validators";
  *   totalArea: 100.5,
  *   arableArea: 70.0,
  *   vegetationArea: 25.0,
- *   crops: ["Soja", "Milho"],
+ *   crops: ["soy", "corn"],
  *   producerId: "producer-uuid"
  * });
  * ```

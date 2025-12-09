@@ -4,6 +4,7 @@
  * @module types/api
  */
 
-export * from "./app-metadata.types.js";
-export * from "./response.types.js";
-export * from "./routes.types.js";
+export * from "./app-metadata.types";
+export * from "./query.types";
+export * from "./response.types";
+export * from "./routes.types";

@@ -1,6 +1,7 @@
 import { z } from "zod";
 
-import { createEnv, LogLevel, RuntimeEnvironment } from "@agro/shared/utils";
+import { LogLevel, RuntimeEnvironment } from "@agro/shared/enums";
+import { createEnv } from "@agro/shared/utils";
 
 import { environmentDefaults } from "./constants.util";
 

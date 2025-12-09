@@ -2,6 +2,7 @@ import { BadRequestException, ValidationPipe } from "@nestjs/common";
 import { NestFactory } from "@nestjs/core";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 import { apiReference } from "@scalar/nestjs-api-reference";
+import { useContainer } from "class-validator";
 import helmet from "helmet";
 import { Logger } from "nestjs-pino";
 
@@ -15,6 +16,7 @@ import { version } from "../package.json";
 
 import { AppModule } from "./app.module";
 import { HttpExceptionFilter } from "./common/filters/http-exception.filter";
+import { runMigrations } from "./database/migrations";
 
 if (import.meta.main) {
 	await bootstrap();
@@ -28,12 +30,11 @@ if (import.meta.main) {
  * isolated in its own function for maintainability.
  */
 async function bootstrap(): Promise<void> {
-	// Run migrations if enabled (before creating the app)
-	if (env.API__RUN_DB_MIGRATIONS) {
-		await runMigrations();
-	}
+	await runMigrations(AppDataSource.options);
 
 	const app = await NestFactory.create(AppModule, { bufferLogs: true });
+
+	useContainer(app.select(AppModule), { fallbackOnErrors: true });
 
 	const logger = setupLogger(app);
 	setupSecurity(app);
@@ -45,71 +46,11 @@ async function bootstrap(): Promise<void> {
 	const document = setupOpenApiDocumentation(app);
 	setupScalarApiReference(app, document);
 
-	// Seed database if enabled
 	const { SeedService } = await import("./database/seeds/seed.service");
 	const seedService = app.get(SeedService);
 	await seedService.seed();
 
 	await startServer(app, logger);
-}
-
-/**
- * Runs pending database migrations.
- *
- * Initializes a separate DataSource connection to run migrations before the
- * NestJS application starts. This ensures the database schema is up-to-date
- * before any queries are executed.
- *
- * Creates the database directory if it doesn't exist to prevent initialization failures.
- *
- * @throws {Error} If migrations fail to run
- */
-async function runMigrations(): Promise<void> {
-	process.stdout.write("[Migration] Initializing DataSource for migrations...\n");
-
-	try {
-		const path = await import("node:path");
-		const fs = await import("node:fs/promises");
-
-		const dbPath = env.API__DATABASE_PATH;
-		const dbDir = path.dirname(dbPath);
-
-		await fs.mkdir(dbDir, { recursive: true });
-		process.stdout.write(`[Migration] Ensured database directory exists: ${dbDir}\n`);
-
-		const { DataSource } = await import("typeorm");
-		const migrationDataSource = new DataSource({
-			...AppDataSource.options,
-			synchronize: false,
-		});
-
-		const dataSource = await migrationDataSource.initialize();
-		process.stdout.write("[Migration] DataSource initialized successfully\n");
-
-		const pendingMigrations = await dataSource.showMigrations();
-		process.stdout.write(`[Migration] Pending migrations: ${String(pendingMigrations)}\n`);
-
-		if (pendingMigrations) {
-			process.stdout.write("[Migration] Running pending migrations...\n");
-			const migrations = await dataSource.runMigrations({ transaction: "all" });
-			process.stdout.write(
-				`[Migration] Successfully ran ${String(migrations.length)} migration(s):\n`,
-			);
-			for (const migration of migrations) {
-				process.stdout.write(`  - ${migration.name}\n`);
-			}
-		} else {
-			process.stdout.write("[Migration] Database schema is up-to-date\n");
-		}
-
-		await dataSource.destroy();
-
-		process.stdout.write("[Migration] DataSource closed\n");
-	} catch (error) {
-		process.stderr.write(`[Migration] Failed to run migrations: ${String(error)}\n`);
-
-		throw error;
-	}
 }
 
 /**
@@ -121,7 +62,9 @@ async function runMigrations(): Promise<void> {
  */
 function setupLogger(app: INestApplication): Logger {
 	const logger = app.get(Logger);
+
 	app.useLogger(logger);
+
 	return logger;
 }
 
@@ -255,7 +198,7 @@ function setupOpenApiDocumentation(app: INestApplication): OpenAPIObject {
 				description: "Enter JWT token",
 				in: "header",
 			},
-			"JWT-auth",
+			"JWT",
 		)
 		.build();
 

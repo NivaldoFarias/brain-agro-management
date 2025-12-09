@@ -9,8 +9,9 @@ import {
 	UpdateDateColumn,
 } from "typeorm";
 
-import type { Producer } from "../../producers/entities/producer.entity";
-import type { FarmHarvest } from "./farm-harvest.entity";
+import { Producer } from "../../producers/entities/producer.entity";
+
+import { FarmHarvest } from "./farm-harvest.entity";
 
 /**
  * Farm entity representing agricultural properties in the system
@@ -30,27 +31,19 @@ import type { FarmHarvest } from "./farm-harvest.entity";
  */
 @Entity("farms")
 export class Farm {
-	/**
-	 * Unique identifier (UUID v4)
-	 */
+	/** Unique identifier (UUID v4) */
 	@PrimaryGeneratedColumn("uuid")
 	id!: string;
 
-	/**
-	 * Farm name or identification
-	 */
+	/** Farm name or identification */
 	@Column({ type: "varchar", length: 255 })
 	name!: string;
 
-	/**
-	 * City where the farm is located
-	 */
+	/** City where the farm is located */
 	@Column({ type: "varchar", length: 255 })
 	city!: string;
 
-	/**
-	 * Brazilian state (UF) where the farm is located
-	 */
+	/** Brazilian state (UF) where the farm is located */
 	@Column({ type: "varchar", length: 2 })
 	state!: string;
 
@@ -81,9 +74,7 @@ export class Farm {
 	@Column({ type: "decimal", precision: 10, scale: 2, name: "vegetation_area" })
 	vegetationArea!: number;
 
-	/**
-	 * ID of the producer who owns this farm
-	 */
+	/** ID of the producer who owns this farm */
 	@Column({ type: "uuid", name: "producer_id" })
 	producerId!: string;
 
@@ -93,9 +84,9 @@ export class Farm {
 	 * Uses forwardRef to prevent circular dependency issues.
 	 * Loaded lazily by default.
 	 */
-	@ManyToOne("Producer", "farms", { lazy: true })
+	@ManyToOne(() => Producer, (producer) => producer.farms)
 	@JoinColumn({ name: "producer_id" })
-	producer!: Promise<Producer>;
+	producer!: Producer;
 
 	/**
 	 * Harvests associated with this farm
@@ -103,18 +94,14 @@ export class Farm {
 	 * Represents the many-to-many relationship between farms and harvests
 	 * through the FarmHarvest join table.
 	 */
-	@OneToMany("FarmHarvest", "farm", { lazy: true })
-	farmHarvests!: Promise<Array<FarmHarvest>>;
+	@OneToMany(() => FarmHarvest, (farmHarvest) => farmHarvest.farm)
+	farmHarvests!: Array<FarmHarvest>;
 
-	/**
-	 * Timestamp of record creation
-	 */
+	/** Timestamp of record creation */
 	@CreateDateColumn({ name: "created_at" })
 	createdAt!: Date;
 
-	/**
-	 * Timestamp of last record update
-	 */
+	/** Timestamp of last record update */
 	@UpdateDateColumn({ name: "updated_at" })
 	updatedAt!: Date;
 }

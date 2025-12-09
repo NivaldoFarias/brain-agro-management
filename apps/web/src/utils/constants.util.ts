@@ -4,7 +4,7 @@
  * Contains configuration values unique to the frontend application.
  */
 
-import { LogLevel, RuntimeEnvironment } from "@agro/shared/utils";
+import { CropType, LogLevel, RuntimeEnvironment } from "@agro/shared/enums";
 
 import { description, version } from "../../package.json";
 
@@ -83,6 +83,9 @@ export const STORAGE_KEYS = {
 
 	/** User preferences */
 	userPreferences: "agro:user:preferences",
+
+	/** Cached cities grouped by state */
+	citiesByState: "agro:cities:byState",
 } as const;
 
 export const environmentDefaults = {
@@ -94,4 +97,12 @@ export const environmentDefaults = {
 	WEB__PORT: 5173,
 	WEB__HOST: "localhost",
 	WEB__PREVIEW_PORT: 4173,
+} as const;
+
+export const CROP_TO_COLOR = {
+	[CropType.Corn]: "green",
+	[CropType.Soy]: "blue",
+	[CropType.Coffee]: "orange",
+	[CropType.Sugarcane]: "gray",
+	[CropType.Cotton]: "red",
 } as const;

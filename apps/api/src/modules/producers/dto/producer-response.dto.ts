@@ -2,6 +2,8 @@ import { faker } from "@faker-js/faker/locale/pt_BR";
 import { ApiProperty } from "@nestjs/swagger";
 import { Exclude, Expose } from "class-transformer";
 
+import type { Farm } from "@agro/shared/types";
+
 import { generateDocument } from "@agro/shared/utils";
 
 /**
@@ -63,6 +65,32 @@ export class ProducerResponseDto {
 	})
 	@Expose()
 	document!: string;
+
+	/**
+	 * Array of farms owned by the producer.
+	 *
+	 * @example
+	 * ```json
+	 * [
+	 *   {
+	 *     "id": "770e9600-g40d-63f6-c938-668877662222",
+	 *     "name": "Fazenda Boa Vista",
+	 *     "city": "Campinas",
+	 *     "state": "SP",
+	 *     "producerId": "550e8400-e29b-41d4-a716-446655440000",
+	 *     "createdAt": "2025-11-24T10:00:00.000Z",
+	 *     "updatedAt": "2025-11-24T10:00:00.000Z"
+	 *   }
+	 * ]
+	 * ```
+	 */
+	@ApiProperty({
+		description: "Farms owned by the producer",
+		type: [Array<Farm>],
+		isArray: true,
+	})
+	@Expose()
+	farms!: Array<Farm>;
 
 	/**
 	 * Timestamp when the producer was created.

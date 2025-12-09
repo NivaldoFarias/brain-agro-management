@@ -1,8 +1,8 @@
 {
     "common": {
-        "loading": "Carregando...",
+        "loading": "Carregando",
         "error": "Erro",
-        "retry": "Tentar novamente",
+        "retry": "Tente novamente",
         "save": "Salvar",
         "cancel": "Cancelar",
         "delete": "Excluir",
@@ -15,14 +15,40 @@
         "back": "Voltar",
         "next": "Próximo",
         "previous": "Anterior",
+        "first": "Primeiro",
+        "last": "Último",
         "noData": "Nenhum registro encontrado",
-        "actions": "Ações"
+        "actions": "Ações",
+        "none": "Nenhum",
+        "submit": "Enviar",
+        "page": "Página",
+        "of": "de",
+        "total": "Total"
+    },
+    "filters": {
+        "sortBy": "Ordenar por",
+        "order": "Ordem",
+        "ascending": "Crescente (A-Z)",
+        "descending": "Decrescente (Z-A)",
+        "clear": "Limpar Filtros",
+        "activeFilters": "Filtros ativos aplicados",
+        "allStates": "Todos os Estados",
+        "allCities": "Todas as Cidades",
+        "allProducers": "Todos os Produtores"
+    },
+    "abbreviations": {
+        "hectares": "ha",
+        "kilometers": "km",
+        "meters": "m",
+        "squareMeters": "m²"
     },
     "auth": {
         "login": "Entrar",
         "logout": "Sair",
         "email": "E-mail",
+        "emailPlaceholder": "Digite seu e-mail",
         "password": "Senha",
+        "passwordPlaceholder": "Digite sua senha",
         "forgotPassword": "Esqueceu a senha?",
         "rememberMe": "Lembrar-me",
         "loginSuccess": "Login efetuado com sucesso",
@@ -31,7 +57,8 @@
         "required": "Campo obrigatório",
         "invalidEmail": "E-mail inválido",
         "welcomeBack": "Bem-vindo(a) de volta!",
-        "sessionExpired": "Sessão expirada. Faça login novamente."
+        "sessionExpired": "Sessão expirada. Faça login novamente.",
+        "demoCredentials": "Credenciais de demonstração"
     },
     "nav": {
         "dashboard": "Dashboard",
@@ -44,11 +71,14 @@
         "title": "Produtores",
         "subtitle": "Gestão de produtores rurais",
         "createProducer": "Novo Produtor",
+        "addNewProducer": "Adicionar um novo produtor rural",
         "editProducer": "Editar Produtor",
         "deleteProducer": "Excluir Produtor",
         "producerDetails": "Detalhes do Produtor",
-        "name": "Nome Completo",
-        "document": "CPF / CNPJ",
+        "name": "Nome do Produtor",
+        "nameHint": "Nome completo do produtor rural ou empresa",
+        "document": "CPF/CNPJ",
+        "documentHint": "Número do documento brasileiro (CPF ou CNPJ)",
         "farmCount": "Fazendas",
         "createdAt": "Data de Cadastro",
         "updatedAt": "Última Atualização",
@@ -61,7 +91,11 @@
         "updateError": "Erro ao atualizar produtor",
         "loadError": "Erro ao carregar produtores",
         "noProducers": "Nenhum produtor encontrado",
-        "searchPlaceholder": "Buscar por nome ou documento..."
+        "searchPlaceholder": "Buscar por nome",
+        "submitLabel": "Salvar Produtor",
+        "loadingProducers": "Carregando produtores",
+        "registerNewProducer": "Cadastre um novo produtor rural para começar a gerenciar propriedades agrícolas",
+        "producerAdded": "O produtor foi cadastrado com sucesso"
     },
     "farms": {
         "title": "Fazendas",
@@ -71,14 +105,25 @@
         "deleteFarm": "Excluir Fazenda",
         "farmDetails": "Detalhes da Fazenda",
         "name": "Nome da Propriedade",
+        "nameHint": "Nome da propriedade rural",
         "city": "Cidade",
-        "state": "Estado (UF)",
+        "cityHint": "Município brasileiro",
+        "state": "Estado",
+        "stateHint": "Estado brasileiro (UF)",
+        "selectState": "Selecione um estado",
+        "selectCity": "Buscar cidade",
+        "selectStateFirst": "Selecione um estado primeiro",
+        "noCitiesAvailable": "Nenhuma cidade disponível",
         "totalArea": "Área Total (ha)",
+        "totalAreaHint": "Área total da fazenda (ha)",
         "arableArea": "Área Agricultável (ha)",
+        "arableAreaHint": "Área agricultável da fazenda (ha)",
         "vegetationArea": "Área de Vegetação (ha)",
+        "vegetationAreaHint": "Área de vegetação da fazenda (ha)",
         "crops": "Culturas Plantadas",
+        "cropsHint": "Selecione uma ou mais culturas cultivadas nesta fazenda",
         "producer": "Produtor Responsável",
-        "selectProducer": "Selecione o produtor",
+        "selectProducer": "Buscar produtor",
         "selectCrops": "Selecione as culturas",
         "deleteConfirm": "Tem certeza de que deseja excluir esta fazenda? Esta ação não pode ser desfeita.",
         "deleteSuccess": "Fazenda excluída com sucesso",
@@ -89,24 +134,50 @@
         "updateError": "Erro ao atualizar fazenda",
         "loadError": "Erro ao carregar fazendas",
         "noFarms": "Nenhuma fazenda encontrada",
-        "areaValidation": "A soma das áreas agricultável e de vegetação não pode exceder a área total da fazenda"
+        "areaValidation": "A soma das áreas agricultável e de vegetação não pode exceder a área total da fazenda",
+        "loadingFarms": "Carregando fazendas",
+        "createFirstFarm": "Cadastre sua primeira fazenda para começar a gerenciar propriedades rurais",
+        "searchPlaceholder": "Buscar por nome",
+        "submitLabel": "Salvar Fazenda",
+        "registerNewProperty": "Cadastre uma nova propriedade agrícola",
+        "farmAdded": "A propriedade foi cadastrada com sucesso"
     },
     "dashboard": {
         "title": "Dashboard",
         "subtitle": "Visão geral e indicadores",
         "totalFarms": "Total de Fazendas",
-        "totalArea": "Área Total (ha)",
+        "totalArea": "Área Total",
         "totalProducers": "Total de Produtores",
         "averageAreaPerFarm": "Média de Área por Fazenda",
+        "farmsPerProducer": "Fazendas por Produtor",
+        "landUseEfficiency": "Eficiência de Uso do Solo",
+        "unusedLand": "Área Não Utilizada",
         "farmsByState": "Fazendas por Estado",
+        "farmsByCity": "Top 10 Cidades por Fazendas",
+        "producersByState": "Produtores por Estado",
         "landUseDistribution": "Uso do Solo",
+        "landEfficiency": "Eficiência de Uso do Solo",
         "cropsDistribution": "Distribuição de Culturas",
+        "largestFarms": "Maiores Fazendas",
+        "mostProductiveProducers": "Produtores Mais Produtivos",
         "arable": "Agricultável",
         "vegetation": "Vegetação",
+        "unused": "Não Utilizada",
         "farms": "fazendas",
-        "hectares": "hectares",
+        "crops": "Culturas",
+        "hectares": "ha",
+        "farmName": "Nome da Fazenda",
+        "producerName": "Nome do Produtor",
+        "state": "Estado",
+        "city": "Cidade",
+        "area": "Área",
+        "farmCount": "Fazendas",
+        "totalAreaOwned": "Área Total",
         "loadError": "Erro ao carregar dados do dashboard",
-        "noStats": "Nenhum indicador disponível"
+        "noStats": "Nenhum indicador disponível",
+        "geoDistribution": "Distribuição Geográfica",
+        "highlights": "Destaques",
+        "agriculturalMetrics": "Métricas Agrícolas"
     },
     "validation": {
         "required": "Campo obrigatório",
@@ -151,15 +222,24 @@
         "TO": "Tocantins"
     },
     "crops": {
-        "Soy": "Soja",
-        "Corn": "Milho",
-        "Cotton": "Algodão",
-        "Coffee": "Café",
-        "SugarcaneOrSugarCane": "Cana-de-Açúcar",
-        "Sugarcane": "Cana-de-Açúcar"
+        "soy": "Soja",
+        "corn": "Milho",
+        "cotton": "Algodão",
+        "coffee": "Café",
+        "sugarcaneOrSugarcane": "Cana-de-Açúcar",
+        "sugarcane": "Cana-de-Açúcar"
     },
     "app": {
         "title": "Brain Agriculture",
         "subtitle": "Sistema de Gestão Rural"
+    },
+    "notFoundPage": {
+        "title": "Página Não Encontrada",
+        "description": "A página que você está procurando não existe ou foi movida.",
+        "goToDashboard": "Ir para o Dashboard"
+    },
+    "form": {
+        "createdAt": "Criado em",
+        "updatedAt": "Atualizado em"
     }
 }

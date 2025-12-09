@@ -9,8 +9,6 @@ import globals from "globals";
 import tseslint from "typescript-eslint";
 
 export default defineConfig(
-	tseslint.configs.strictTypeChecked,
-	tseslint.configs.stylisticTypeChecked,
 	{
 		ignores: [
 			"**/node_modules/**",
@@ -31,6 +29,8 @@ export default defineConfig(
 			"**/coverage/**",
 		],
 	},
+	tseslint.configs.strict,
+	tseslint.configs.stylistic,
 	{
 		files: ["**/*.{js,cjs,mjs,ts,mts,cts,d.ts}"],
 		plugins: {
@@ -43,11 +43,7 @@ export default defineConfig(
 			},
 			parser: tseslint.parser,
 			parserOptions: {
-				project: [
-					"./apps/web/tsconfig.json",
-					"./apps/api/tsconfig.json",
-					"./packages/shared/tsconfig.json",
-				],
+				project: true,
 				tsconfigRootDir: import.meta.dirname,
 				ecmaVersion: "latest",
 				sourceType: "module",
@@ -93,21 +89,17 @@ export default defineConfig(
 		},
 	},
 	{
-		files: ["apps/web/**/*.{js,jsx,ts,tsx,mts,cts}"],
+		files: ["apps/web/**/*.{js,jsx,ts,tsx}"],
 		plugins: {
 			"react": eslintPluginReact,
 			"react-hooks": eslintPluginReactHooks,
 			"jsx-a11y": eslintPluginJsxA11y,
 		},
 		languageOptions: {
-			globals: {
-				...globals.browser,
-			},
+			globals: { ...globals.browser },
 			parser: tseslint.parser,
 			parserOptions: {
-				ecmaFeatures: {
-					jsx: true,
-				},
+				ecmaFeatures: { jsx: true },
 				project: ["./apps/web/tsconfig.json"],
 				tsconfigRootDir: import.meta.dirname,
 			},
