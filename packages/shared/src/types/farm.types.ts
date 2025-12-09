@@ -85,7 +85,7 @@ export interface Farm {
 	 *
 	 * @see {@link CropType}
 	 */
-	crops?: Array<CropType>;
+	crops: Array<CropType>;
 
 	/**
 	 * UUID of the producer who owns this farm.
