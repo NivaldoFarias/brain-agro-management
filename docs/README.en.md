@@ -13,7 +13,7 @@ app_port: 7860
 <div align="center">
 
 [![CI Status](https://github.com/NivaldoFarias/brain-agro-management/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/NivaldoFarias/brain-agro-management/actions/workflows/ci.yml)
-[![API Health](https://img.shields.io/website?url=https%3A%2F%2Fbadivia-brain-ag-api.hf.space%2Fapi%2Fhealth&label=API%20Status&up_message=healthy&down_message=down)](https://badivia-brain-ag-api.hf.space/api/health)
+[![API Health](https://img.shields.io/website?url=https%3A%2F%2Fbadivia-brain-ag-api.hf.space%2Fapi%2Fhealth%2Fready&label=API%20Status&up_message=healthy&down_message=down)](https://badivia-brain-ag-api.hf.space/api/health/ready)
 [![HuggingFace](https://img.shields.io/badge/🤗%20HuggingFace-Deployed-yellow)](https://badivia-brain-ag-api.hf.space/api)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Version](https://img.shields.io/badge/version-0.0.1-green.svg)](package.json)
@@ -186,14 +186,13 @@ bun run type-check   # Check TypeScript types
 
 ### Configuration & Operation
 
-| Document                                                                | Description                                |
-| ----------------------------------------------------------------------- | ------------------------------------------ |
-| [ENVIRONMENT.md](./ENVIRONMENT.md)                                      | Environment variables and configuration    |
-| [DOCKER.md](./DOCKER.md)                                                | Containerization and deployment guide      |
-| [MONITORING.md](./MONITORING.md)                                        | Monitoring, alerts, and automatic recovery |
-| [CODE_QUALITY.md](./CODE_QUALITY.md)                                    | CI/CD strategy, linting and type-checking  |
-| [Swagger UI](https://badivia-brain-ag-api.hf.space/api/docs)            | Interactive API documentation (OpenAPI)    |
-| [Scalar Reference](https://badivia-brain-ag-api.hf.space/api/reference) | Modern API reference                       |
+| Document                                                                | Description                               |
+| ----------------------------------------------------------------------- | ----------------------------------------- |
+| [ENVIRONMENT.md](./ENVIRONMENT.md)                                      | Environment variables and configuration   |
+| [DOCKER.md](./DOCKER.md)                                                | Containerization and deployment guide     |
+| [CODE_QUALITY.md](./CODE_QUALITY.md)                                    | CI/CD strategy, linting and type-checking |
+| [Swagger UI](https://badivia-brain-ag-api.hf.space/api/docs)            | Interactive API documentation (OpenAPI)   |
+| [Scalar Reference](https://badivia-brain-ag-api.hf.space/api/reference) | Modern API reference                      |
 
 ### Development
 

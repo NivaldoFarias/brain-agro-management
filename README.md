@@ -25,7 +25,7 @@ app_port: 7860
 [![React](https://img.shields.io/badge/React-18.3-61DAFB?style=flat&logo=react&logoColor=black)](https://react.dev)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.9-3178C6?style=flat&logo=typescript&logoColor=white)](https://www.typescriptlang.org)
 [![Redux Toolkit](https://img.shields.io/badge/Redux_Toolkit-2.5-764ABC?style=flat&logo=redux&logoColor=white)](https://redux-toolkit.js.org)
-[![TypeORM](https://img.shields.io/badge/TypeORM-0.3.27-FE0902?style=flat&logo=typeorm&logoColor=white)](https://typeorm.io)
+[![TypeORM](https://img.shields.io/badge/TypeORM-0.3-FE0902?style=flat&logo=typeorm&logoColor=white)](https://typeorm.io)
 [![Vite](https://img.shields.io/badge/Vite-6.0-646CFF?style=flat&logo=vite&logoColor=white)](https://vitejs.dev)
 [![Zod](https://img.shields.io/badge/Zod-4.1-3E67B1?style=flat&logo=zod&logoColor=white)](https://zod.dev)
 [![Radix UI](https://img.shields.io/badge/Radix_UI-Latest-161618?style=flat&logo=radix-ui&logoColor=white)](https://www.radix-ui.com)
@@ -189,14 +189,13 @@ bun run type-check   # Verificar tipos TypeScript
 
 ### Configuração & Operação
 
-| Documento                                                               | Descrição                                       |
-| ----------------------------------------------------------------------- | ----------------------------------------------- |
-| [ENVIRONMENT.md](./docs/ENVIRONMENT.md)                                 | Variáveis de ambiente e configuração            |
-| [DOCKER.md](./docs/DOCKER.md)                                           | Guia de containerização e deploy                |
-| [MONITORING.md](./docs/MONITORING.md)                                   | Monitoramento, alertas e recuperação automática |
-| [CODE_QUALITY.md](./docs/CODE_QUALITY.md)                               | Estratégia de CI/CD, linting e type-checking    |
-| [Swagger UI](https://badivia-brain-ag-api.hf.space/api/docs)            | Documentação interativa da API (OpenAPI)        |
-| [Scalar Reference](https://badivia-brain-ag-api.hf.space/api/reference) | Referência moderna da API                       |
+| Documento                                                               | Descrição                                    |
+| ----------------------------------------------------------------------- | -------------------------------------------- |
+| [ENVIRONMENT.md](./docs/ENVIRONMENT.md)                                 | Variáveis de ambiente e configuração         |
+| [DOCKER.md](./docs/DOCKER.md)                                           | Guia de containerização e deploy             |
+| [CODE_QUALITY.md](./docs/CODE_QUALITY.md)                               | Estratégia de CI/CD, linting e type-checking |
+| [Swagger UI](https://badivia-brain-ag-api.hf.space/api/docs)            | Documentação interativa da API (OpenAPI)     |
+| [Scalar Reference](https://badivia-brain-ag-api.hf.space/api/reference) | Referência moderna da API                    |
 
 ### Desenvolvimento
 
@@ -209,19 +208,13 @@ Padrões de código e guias de estilo em `.github/instructions/`:
 
 ## Contribuindo
 
-Contribuições são bem-vindas! Por favor, leia nosso [Guia de Contribuição](./CONTRIBUTING.md) para entender:
+Contribuições são bem-vindas! Para contribuir:
 
-- ✅ Workflow de desenvolvimento
-- ✅ Padrões de código e qualidade
-- ✅ Processo de Pull Request
-- ✅ Configuração do ambiente de desenvolvimento
-
-**Principais pontos**:
-- Use `bun run lint:fix` antes de commitar
-- Execute `bun run type-check` antes de fazer push
-- Siga [Conventional Commits](https://www.conventionalcommits.org/)
-- Adicione testes para novas funcionalidades
-- Mantenha a documentação atualizada
+- ✅ Use `bun run lint:fix` antes de commitar
+- ✅ Execute `bun run type-check` antes de fazer push
+- ✅ Siga [Conventional Commits](https://www.conventionalcommits.org/)
+- ✅ Adicione testes para novas funcionalidades
+- ✅ Mantenha a documentação atualizada
 
 > [!TIP]
 > Consulte [CODE_QUALITY.md](./docs/CODE_QUALITY.md) para entender nossa estratégia de CI/CD e por que separamos linting, type-checking e testes.
