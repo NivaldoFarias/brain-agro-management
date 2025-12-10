@@ -8,11 +8,9 @@
 import { BadRequestException, ConflictException, NotFoundException } from "@nestjs/common";
 import { Test, TestingModule } from "@nestjs/testing";
 import { getRepositoryToken } from "@nestjs/typeorm";
-import { beforeEach, describe, expect, it, jest } from "bun:test";
+import { beforeEach, describe, expect, it, mock } from "bun:test";
 import { fixtures, TestConstants } from "test/fixtures";
 import { Repository } from "typeorm";
-
-import { SortOrder } from "@agro/shared/enums";
 
 import { UpdateProducerDto } from "./dto";
 import { Producer } from "./entities/producer.entity";
@@ -23,14 +21,65 @@ describe("ProducersService", () => {
 	let repository: Repository<Producer>;
 
 	/**
-	 * Mock repository with common methods.
+	 * Mock repositories with common methods.
 	 */
+	interface MockQueryBuilder {
+		leftJoinAndSelect: ReturnType<typeof mock>;
+		where: ReturnType<typeof mock>;
+		andWhere: ReturnType<typeof mock>;
+		orderBy: ReturnType<typeof mock>;
+		skip: ReturnType<typeof mock>;
+		take: ReturnType<typeof mock>;
+		select: ReturnType<typeof mock>;
+		addSelect: ReturnType<typeof mock>;
+		groupBy: ReturnType<typeof mock>;
+		getRawMany: ReturnType<typeof mock>;
+		getMany: ReturnType<typeof mock>;
+		getOne: ReturnType<typeof mock>;
+		getManyAndCount: ReturnType<typeof mock>;
+		getRawOne: ReturnType<typeof mock>;
+	}
+
+	const createMockQueryBuilder = (): MockQueryBuilder => {
+		const qb: Partial<MockQueryBuilder> = {
+			getRawMany: mock(),
+			getMany: mock(),
+			getOne: mock(),
+			getManyAndCount: mock(),
+			getRawOne: mock(),
+		};
+
+		qb.leftJoinAndSelect = mock(() => qb);
+		qb.where = mock(() => qb);
+		qb.andWhere = mock(() => qb);
+		qb.orderBy = mock(() => qb);
+		qb.skip = mock(() => qb);
+		qb.take = mock(() => qb);
+		qb.select = mock(() => qb);
+		qb.addSelect = mock(() => qb);
+		qb.groupBy = mock(() => qb);
+
+		return qb as MockQueryBuilder;
+	};
+
+	/** Mock repository with common methods */
 	const mockRepository = {
-		create: jest.fn(),
-		save: jest.fn(),
-		find: jest.fn(),
-		findOne: jest.fn(),
-		delete: jest.fn(),
+		create: mock(),
+		save: mock(),
+		find: mock(),
+		findOne: mock(),
+		delete: mock(),
+		createQueryBuilder: mock(createMockQueryBuilder) as ReturnType<
+			typeof mock<() => Partial<MockQueryBuilder>>
+		>,
+	};
+
+	const mockLogger = {
+		setContext: mock(),
+		info: mock(),
+		warn: mock(),
+		error: mock(),
+		debug: mock(),
 	};
 
 	beforeEach(async () => {
@@ -41,13 +90,22 @@ describe("ProducersService", () => {
 					provide: getRepositoryToken(Producer),
 					useValue: mockRepository,
 				},
+				{
+					provide: `PinoLogger:${ProducersService.name}`,
+					useValue: mockLogger,
+				},
 			],
 		}).compile();
 
 		service = module.get<ProducersService>(ProducersService);
 		repository = module.get<Repository<Producer>>(getRepositoryToken(Producer));
 
-		jest.clearAllMocks();
+		mockRepository.create.mockReset();
+		mockRepository.save.mockReset();
+		mockRepository.find.mockReset();
+		mockRepository.findOne.mockReset();
+		mockRepository.delete.mockReset();
+		mockRepository.createQueryBuilder.mockReset();
 	});
 
 	it("should be defined", () => {
@@ -92,11 +150,9 @@ describe("ProducersService", () => {
 
 		it("should create a producer with valid CNPJ", async () => {
 			const cnpjDto = fixtures.producer.validCNPJ();
-			const cleanCnpj = cnpjDto.document.replaceAll(/\D/g, "");
 			const mockProducerCNPJ: Producer = {
 				...mockProducer,
-				name: cnpjDto.name,
-				document: cleanCnpj,
+				...cnpjDto,
 			};
 			mockRepository.findOne.mockResolvedValue(null);
 			mockRepository.create.mockReturnValue(mockProducerCNPJ);
@@ -104,28 +160,28 @@ describe("ProducersService", () => {
 
 			const result = await service.create(cnpjDto);
 
-			expect(result.document).toBe(cleanCnpj);
+			expect(result.document).toBe(cnpjDto.document);
 			expect(mockRepository.create).toHaveBeenCalled();
 		});
 
 		it("should throw BadRequestException for invalid CPF", async () => {
 			const invalidDto = fixtures.producer.invalidCPF();
 
-			expect(await service.create(invalidDto)).rejects.toThrow(BadRequestException);
+			expect(service.create(invalidDto)).rejects.toThrow(BadRequestException);
 			expect(mockRepository.create).not.toHaveBeenCalled();
 		});
 
 		it("should throw BadRequestException for invalid CNPJ", async () => {
 			const invalidDto = fixtures.producer.invalidCNPJ();
 
-			expect(await service.create(invalidDto)).rejects.toThrow(BadRequestException);
+			expect(service.create(invalidDto)).rejects.toThrow(BadRequestException);
 			expect(mockRepository.create).not.toHaveBeenCalled();
 		});
 
 		it("should throw ConflictException for duplicate document", async () => {
 			mockRepository.findOne.mockResolvedValue(mockProducer);
 
-			expect(await service.create(createDto)).rejects.toThrow(ConflictException);
+			expect(service.create(createDto)).rejects.toThrow(ConflictException);
 			expect(mockRepository.create).not.toHaveBeenCalled();
 		});
 	});
@@ -151,28 +207,31 @@ describe("ProducersService", () => {
 				},
 			];
 
-			mockRepository.find.mockResolvedValue(mockProducers);
+			const mockQueryBuilder = createMockQueryBuilder();
+			mockQueryBuilder.getManyAndCount.mockResolvedValue([mockProducers, mockProducers.length]);
+			mockRepository.createQueryBuilder.mockReturnValue(mockQueryBuilder);
 
 			const result = await service.findAll();
 
-			expect(result.data).toHaveLength(2);
+			expect(result.data).toHaveLength(mockProducers.length);
 
-			const first = result.data[0];
-			const second = result.data[1];
+			const first = result.data.at(0);
+			const second = result.data.at(1);
 
 			expect(first).toBeDefined();
 
-			if (first) expect(first.name).toBe("João da Silva");
+			if (first) expect(first.name).toBe(mockProducers[0]?.name ?? "");
 
 			expect(second).toBeDefined();
 
-			if (second) expect(second.name).toBe("Maria Santos");
-
-			expect(mockRepository.find).toHaveBeenCalledWith({ order: { name: SortOrder.Ascending } });
+			if (second) expect(second.name).toBe(mockProducers[1]?.name ?? "");
+			expect(mockRepository.createQueryBuilder).toHaveBeenCalledWith("producer");
 		});
 
 		it("should return an empty array when no producers exist", async () => {
-			mockRepository.find.mockResolvedValue([]);
+			const mockQueryBuilder = createMockQueryBuilder();
+			mockQueryBuilder.getManyAndCount.mockResolvedValue([[], 0]);
+			mockRepository.createQueryBuilder.mockReturnValue(mockQueryBuilder);
 
 			const result = await service.findAll();
 
@@ -191,22 +250,26 @@ describe("ProducersService", () => {
 		};
 
 		it("should return a producer by ID", async () => {
-			mockRepository.findOne.mockResolvedValue(mockProducer);
+			const mockQueryBuilder = createMockQueryBuilder();
+			mockQueryBuilder.getOne.mockResolvedValue(mockProducer);
+			mockRepository.createQueryBuilder.mockReturnValue(mockQueryBuilder);
 
 			const result = await service.findOne(mockProducer.id);
 
 			expect(result.id).toBe(mockProducer.id);
 			expect(result.name).toBe(mockProducer.name);
-			expect(mockRepository.findOne).toHaveBeenCalledWith({
-				where: { id: mockProducer.id },
-				relations: ["farms"],
+			expect(mockRepository.createQueryBuilder).toHaveBeenCalledWith("producer");
+			expect(mockQueryBuilder.where).toHaveBeenCalledWith("producer.id = :id", {
+				id: mockProducer.id,
 			});
 		});
 
 		it("should throw NotFoundException when producer does not exist", async () => {
-			mockRepository.findOne.mockResolvedValue(null);
+			const mockQueryBuilder = createMockQueryBuilder();
+			mockQueryBuilder.getOne.mockResolvedValue(null);
+			mockRepository.createQueryBuilder.mockReturnValue(mockQueryBuilder);
 
-			expect(await service.findOne("nonexistent-id")).rejects.toThrow(NotFoundException);
+			expect(service.findOne("nonexistent-id")).rejects.toThrow(NotFoundException);
 		});
 	});
 
@@ -246,14 +309,14 @@ describe("ProducersService", () => {
 
 			const result = await service.update(mockProducer.id, updateDto);
 
-			expect(result.document).toBe("22255588846");
+			expect(result.document).toBe(newProducer.document.replaceAll(/\D/g, ""));
 		});
 
 		it("should throw NotFoundException when producer does not exist", async () => {
 			const updateDto: UpdateProducerDto = { name: "New Name" };
 			mockRepository.findOne.mockResolvedValue(null);
 
-			expect(await service.update("nonexistent-id", updateDto)).rejects.toThrow(NotFoundException);
+			expect(service.update("nonexistent-id", updateDto)).rejects.toThrow(NotFoundException);
 			expect(mockRepository.save).not.toHaveBeenCalled();
 		});
 
@@ -261,7 +324,7 @@ describe("ProducersService", () => {
 			const updateDto: UpdateProducerDto = { document: fixtures.producer.invalidCPF().document };
 			mockRepository.findOne.mockResolvedValue(mockProducer);
 
-			expect(await service.update(mockProducer.id, updateDto)).rejects.toThrow(BadRequestException);
+			expect(service.update(mockProducer.id, updateDto)).rejects.toThrow(BadRequestException);
 			expect(mockRepository.save).not.toHaveBeenCalled();
 		});
 
@@ -275,8 +338,6 @@ describe("ProducersService", () => {
 				document: newCpfClean,
 			};
 
-			// First call: find the producer being updated
-			// Second call: find existing producer with the new document
 			mockRepository.findOne.mockImplementation(
 				(options: { where?: { id?: string; document?: string } }) => {
 					if (options.where?.id === mockProducer.id) {
@@ -289,7 +350,7 @@ describe("ProducersService", () => {
 				},
 			);
 
-			expect(await service.update(mockProducer.id, updateDto)).rejects.toThrow(ConflictException);
+			expect(service.update(mockProducer.id, updateDto)).rejects.toThrow(ConflictException);
 			expect(mockRepository.save).not.toHaveBeenCalled();
 		});
 	});
@@ -306,7 +367,7 @@ describe("ProducersService", () => {
 		it("should throw NotFoundException when producer does not exist", async () => {
 			mockRepository.delete.mockResolvedValue({ affected: 0, raw: {} });
 
-			expect(await service.delete("nonexistent-id")).rejects.toThrow(NotFoundException);
+			expect(service.delete("nonexistent-id")).rejects.toThrow(NotFoundException);
 		});
 	});
 });

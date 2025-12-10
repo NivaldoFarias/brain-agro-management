@@ -11,7 +11,7 @@ import { of, throwError } from "rxjs";
 
 import type { CallHandler, ExecutionContext } from "@nestjs/common";
 
-import { API_ROUTES } from "@agro/shared/constants";
+import { ROUTES } from "@agro/shared/constants";
 import { HttpMethod } from "@agro/shared/enums";
 
 import { correlationIdStorage } from "./correlation-id.interceptor";
@@ -29,7 +29,7 @@ describe("LoggingInterceptor", () => {
 
 	const mockRequest = {
 		method: HttpMethod.GET,
-		url: API_ROUTES.producers,
+		url: ROUTES.api.producers.base,
 		query: { page: "1" },
 		headers: {
 			"user-agent": "Jest Test",
@@ -83,8 +83,8 @@ describe("LoggingInterceptor", () => {
 							msg: "Incoming request",
 							correlationId,
 							http: expect.objectContaining({
-								method: "GET",
-								url: "/api/producers",
+								method: HttpMethod.GET,
+								url: ROUTES.api.producers.base,
 								query: { page: "1" },
 								userAgent: "Jest Test",
 								ip: "192.168.1.1",
@@ -105,8 +105,8 @@ describe("LoggingInterceptor", () => {
 							msg: "Outgoing response",
 							correlationId,
 							http: expect.objectContaining({
-								method: "GET",
-								url: "/api/producers",
+								method: HttpMethod.GET,
+								url: ROUTES.api.producers.base,
 								statusCode: 200,
 								duration: expect.any(Number),
 								responseSize: expect.any(Number),
@@ -131,8 +131,8 @@ describe("LoggingInterceptor", () => {
 								msg: "Request failed",
 								correlationId,
 								http: expect.objectContaining({
-									method: "GET",
-									url: "/api/producers",
+									method: HttpMethod.GET,
+									url: ROUTES.api.producers.base,
 									duration: expect.any(Number),
 								}),
 								error: {

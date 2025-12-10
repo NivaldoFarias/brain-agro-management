@@ -301,8 +301,8 @@ function generateAreas(
 	const totalArea =
 		defaults?.totalArea ??
 		faker.number.float({
-			min: faker.number.int({ min: range.min, max: range.max }),
-			max: faker.number.int({ min: range.min, max: range.max }),
+			min: range.min,
+			max: range.max,
 			fractionDigits: 2,
 		});
 
@@ -317,7 +317,12 @@ function generateAreas(
 			fractionDigits: 2,
 		});
 
-	const vegetationArea = defaults?.vegetationArea ?? Number((totalArea - arableArea).toFixed(2));
+	let vegetationArea = defaults?.vegetationArea ?? Number((totalArea - arableArea).toFixed(2));
+
+	const sum = Number((arableArea + vegetationArea).toFixed(2));
+	if (sum > totalArea) {
+		vegetationArea = Number((totalArea - arableArea).toFixed(2));
+	}
 
 	return { totalArea, arableArea, vegetationArea };
 }

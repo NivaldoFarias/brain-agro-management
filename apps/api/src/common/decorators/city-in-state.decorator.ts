@@ -7,6 +7,7 @@ import {
 	ValidatorConstraint,
 	ValidatorConstraintInterface,
 } from "class-validator";
+import { InjectPinoLogger, PinoLogger } from "nestjs-pino";
 import { Repository } from "typeorm";
 
 import { City } from "@/modules/cities/entities/city.entity";
@@ -35,6 +36,9 @@ export class IsCityInStateConstraint implements ValidatorConstraintInterface {
 	constructor(
 		@InjectRepository(City)
 		private readonly cityRepository: Repository<City>,
+
+		@InjectPinoLogger(IsCityInStateConstraint.name)
+		private readonly logger: PinoLogger,
 	) {}
 
 	/**
@@ -48,7 +52,7 @@ export class IsCityInStateConstraint implements ValidatorConstraintInterface {
 	 *
 	 * @returns `true` if city exists in state, `false` otherwise
 	 */
-	async validate(city: string, args: ValidationArguments): Promise<boolean> {
+	public async validate(city: string, args: ValidationArguments): Promise<boolean> {
 		if (!city) return false;
 
 		const dto = args.object as { state?: string };
@@ -64,7 +68,15 @@ export class IsCityInStateConstraint implements ValidatorConstraintInterface {
 				.getExists();
 
 			return cityExists;
-		} catch {
+		} catch (error) {
+			this.logger.error(
+				{
+					err: error,
+					city,
+					state,
+				},
+				"Failed to validate city-state combination",
+			);
 			return false;
 		}
 	}
@@ -76,7 +88,7 @@ export class IsCityInStateConstraint implements ValidatorConstraintInterface {
 	 *
 	 * @returns Error message string
 	 */
-	defaultMessage(args: ValidationArguments): string {
+	public defaultMessage(args: ValidationArguments): string {
 		const dto = args.object as { state?: string };
 		const city = args.value as string;
 		const state = dto.state;

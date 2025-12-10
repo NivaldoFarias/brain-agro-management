@@ -89,7 +89,7 @@ describe("HttpExceptionFilter", () => {
 						statusCode: HttpStatus.BAD_REQUEST,
 						message: "Invalid input",
 						error: "Bad Request",
-						timestamp: expect(String),
+						timestamp: expect.any(String),
 						path: "/api/producers",
 						correlationId,
 					}),
@@ -131,9 +131,13 @@ describe("HttpExceptionFilter", () => {
 
 			expect(logger.warn).toHaveBeenCalledWith(
 				expect.objectContaining({
-					msg: "Exception caught",
+					msg: "Client error occurred",
 					http: expect.objectContaining({
 						statusCode: HttpStatus.BAD_REQUEST,
+					}),
+					exception: expect.objectContaining({
+						name: "BadRequestException",
+						message: "Bad input",
 					}),
 				}),
 			);
@@ -146,9 +150,14 @@ describe("HttpExceptionFilter", () => {
 
 			expect(logger.error).toHaveBeenCalledWith(
 				expect.objectContaining({
-					msg: "Exception caught",
+					msg: "Server error occurred",
 					http: expect.objectContaining({
 						statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+					}),
+					exception: expect.objectContaining({
+						name: "HttpException",
+						message: "Server error",
+						stack: expect.any(String),
 					}),
 				}),
 			);
@@ -161,10 +170,11 @@ describe("HttpExceptionFilter", () => {
 
 			expect(logger.error).toHaveBeenCalledWith(
 				expect.objectContaining({
+					msg: "Server error occurred",
 					exception: expect.objectContaining({
 						name: "Error",
 						message: "Test error",
-						stack: expect(String),
+						stack: expect.any(String),
 					}),
 				}),
 			);

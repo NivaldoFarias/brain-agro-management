@@ -461,8 +461,8 @@ Test business logic in isolation with mocked dependencies:
 ```typescript
 // Example: producers.service.spec.ts
 const mockRepository = {
-	findOne: jest.fn(),
-	save: jest.fn(),
+	findOne: mock(),
+	save: mock(),
 } as unknown as Repository<Producer>;
 
 const module = await Test.createTestingModule({

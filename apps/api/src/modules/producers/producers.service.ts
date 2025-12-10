@@ -5,7 +5,10 @@ import {
 	NotFoundException,
 } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
+import { InjectPinoLogger } from "nestjs-pino";
 import { Repository } from "typeorm";
+
+import type { PinoLogger } from "nestjs-pino";
 
 import type { BrazilianState, CropType } from "@agro/shared/enums";
 import type { Farm as FarmType, PaginatedResponse } from "@agro/shared/types";
@@ -55,6 +58,9 @@ export class ProducersService {
 	constructor(
 		@InjectRepository(Producer)
 		private readonly producerRepository: Repository<Producer>,
+
+		@InjectPinoLogger(ProducersService.name)
+		private readonly logger: PinoLogger,
 	) {}
 
 	/**
@@ -81,6 +87,8 @@ export class ProducersService {
 	public async create(createProducerDto: CreateProducerDto): Promise<ProducerResponseDto> {
 		const { name, document } = createProducerDto;
 
+		this.logger.debug({ name }, "Creating new producer");
+
 		const strippedDocument = this.validateAndStripDocument(document);
 
 		await this.checkDuplicateDocument(strippedDocument);
@@ -91,6 +99,8 @@ export class ProducersService {
 		});
 
 		const savedProducer = await this.producerRepository.save(producer);
+
+		this.logger.info({ producerId: savedProducer.id, name }, "Producer created successfully");
 
 		return this.mapToResponseDto(savedProducer);
 	}
@@ -128,6 +138,8 @@ export class ProducersService {
 			search,
 		} = query;
 
+		this.logger.debug({ page, limit, search, sortBy }, "Fetching producers");
+
 		const qb = this.producerRepository
 			.createQueryBuilder("producer")
 			.leftJoinAndSelect("producer.farms", "farms")
@@ -142,6 +154,16 @@ export class ProducersService {
 		qb.skip(skip).take(limit);
 
 		const [producers, total] = await qb.getManyAndCount();
+
+		this.logger.debug(
+			{
+				totalFound: total,
+				returnedCount: producers.length,
+				page,
+				totalPages: Math.ceil(total / limit),
+			},
+			"Producers query completed",
+		);
 
 		return {
 			data: producers.map((producer) => this.mapToResponseDto(producer)),
@@ -167,6 +189,8 @@ export class ProducersService {
 	 * ```
 	 */
 	public async findOne(id: string): Promise<ProducerResponseDto> {
+		this.logger.debug({ producerId: id }, "Fetching producer by ID");
+
 		const producer = await this.producerRepository
 			.createQueryBuilder("producer")
 			.leftJoinAndSelect("producer.farms", "farms")
@@ -176,8 +200,11 @@ export class ProducersService {
 			.getOne();
 
 		if (!producer) {
+			this.logger.warn({ producerId: id }, "Producer not found");
 			throw new NotFoundException(`Producer with ID ${id} not found`);
 		}
+
+		this.logger.debug({ producerId: id, name: producer.name }, "Producer retrieved successfully");
 
 		return this.mapToResponseDto(producer);
 	}
@@ -210,13 +237,20 @@ export class ProducersService {
 		id: string,
 		updateProducerDto: UpdateProducerDto,
 	): Promise<ProducerResponseDto> {
+		this.logger.debug(
+			{ producerId: id, updates: Object.keys(updateProducerDto) },
+			"Updating producer",
+		);
+
 		const producer = await this.producerRepository.findOne({ where: { id } });
 
 		if (!producer) {
+			this.logger.warn({ producerId: id }, "Producer not found for update");
 			throw new NotFoundException(`Producer with ID ${id} not found`);
 		}
 
 		if (updateProducerDto.document) {
+			this.logger.debug({ producerId: id }, "Validating new document");
 			const strippedDocument = this.validateAndStripDocument(updateProducerDto.document);
 
 			if (strippedDocument !== producer.document) {
@@ -227,6 +261,11 @@ export class ProducersService {
 
 		Object.assign(producer, updateProducerDto);
 		const updatedProducer = await this.producerRepository.save(producer);
+
+		this.logger.info(
+			{ producerId: updatedProducer.id, name: updatedProducer.name },
+			"Producer updated successfully",
+		);
 
 		return this.mapToResponseDto(updatedProducer);
 	}
@@ -247,11 +286,16 @@ export class ProducersService {
 	 * ```
 	 */
 	public async delete(id: string): Promise<void> {
+		this.logger.debug({ producerId: id }, "Deleting producer");
+
 		const result = await this.producerRepository.delete(id);
 
 		if (result.affected === 0) {
+			this.logger.warn({ producerId: id }, "Producer not found for deletion");
 			throw new NotFoundException(`Producer with ID ${id} not found`);
 		}
+
+		this.logger.info({ producerId: id }, "Producer deleted successfully");
 	}
 
 	/**
@@ -266,7 +310,7 @@ export class ProducersService {
 	/**
 	 * Validates a Brazilian document (CPF or CNPJ) and strips formatting.
 	 *
-	 * Determines whether the document is CPF (11 digits) or CNPJ (14 digits)
+	 * Determines whether the document is CPF (11 digits) or CNPJ
 	 * and validates using the appropriate algorithm.
 	 *
 	 * @param document The document to validate (formatted or unformatted)
@@ -279,19 +323,28 @@ export class ProducersService {
 	private validateAndStripDocument(document: string): string {
 		const digitsOnly = document.replaceAll(/\D/g, "");
 
+		this.logger.debug({ documentLength: digitsOnly.length }, "Validating document format");
+
 		if (digitsOnly.length === 11) {
-			if (!validateCPF(document)) throw new BadRequestException("Invalid CPF format");
+			if (!validateCPF(document)) {
+				this.logger.warn("Invalid CPF format provided");
+				throw new BadRequestException("Invalid CPF format");
+			}
+
+			this.logger.debug("CPF validated successfully");
 
 			return stripCPFFormatting(document);
-		}
+		} else {
+			if (!validateCNPJ(document)) {
+				this.logger.warn("Invalid CNPJ format provided");
 
-		if (digitsOnly.length === 14) {
-			if (!validateCNPJ(document)) throw new BadRequestException("Invalid CNPJ format");
+				throw new BadRequestException("Invalid CNPJ format");
+			}
+
+			this.logger.debug("CNPJ validated successfully");
 
 			return stripCNPJFormatting(document);
 		}
-
-		throw new BadRequestException("Document must be a valid CPF or CNPJ");
 	}
 
 	/**
@@ -304,13 +357,21 @@ export class ProducersService {
 	 *
 	 */
 	private async checkDuplicateDocument(document: string, excludeId?: string): Promise<void> {
+		this.logger.debug({ documentLength: document.length }, "Checking for duplicate document");
+
 		const existingProducer = await this.producerRepository.findOne({
 			where: { document },
 		});
 
 		if (existingProducer && existingProducer.id !== excludeId) {
+			this.logger.warn(
+				{ existingProducerId: existingProducer.id, excludeId },
+				"Duplicate document detected",
+			);
 			throw new ConflictException(`Producer with document ${document} already exists`);
 		}
+
+		this.logger.debug("Document uniqueness verified");
 	}
 
 	/**

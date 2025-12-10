@@ -1,6 +1,12 @@
-import { Test, TestingModule } from "@nestjs/testing";
+/**
+ * @fileoverview Tests for {@link IsCityInStateConstraint}.
+ *
+ * Verifies city-state validation logic using IBGE city data.
+ */
+
+import { Test } from "@nestjs/testing";
 import { getRepositoryToken } from "@nestjs/typeorm";
-import { beforeEach, describe, expect, it, jest } from "bun:test";
+import { beforeEach, describe, expect, it, mock, spyOn } from "bun:test";
 import { PinoLogger } from "nestjs-pino";
 
 import type { Repository } from "typeorm";
@@ -11,12 +17,6 @@ import { City } from "@/modules/cities/entities/city.entity";
 
 import { IsCityInStateConstraint } from "./city-in-state.decorator";
 
-/**
- * @fileoverview Tests for {@link IsCityInStateConstraint}.
- *
- * Verifies city-state validation logic using IBGE city data.
- */
-
 describe("IsCityInStateConstraint", () => {
 	let validator: IsCityInStateConstraint;
 	let cityRepository: Repository<City>;
@@ -24,22 +24,22 @@ describe("IsCityInStateConstraint", () => {
 	let logger: PinoLogger;
 
 	beforeEach(async () => {
-		const module: TestingModule = await Test.createTestingModule({
+		const module = await Test.createTestingModule({
 			providers: [
 				IsCityInStateConstraint,
 				{
 					provide: getRepositoryToken(City),
 					useValue: {
-						createQueryBuilder: jest.fn(),
+						createQueryBuilder: mock(),
 					},
 				},
 				{
-					provide: PinoLogger,
+					provide: `PinoLogger:${IsCityInStateConstraint.name}`,
 					useValue: {
-						setContext: jest.fn(),
-						error: jest.fn(),
-						warn: jest.fn(),
-						info: jest.fn(),
+						setContext: mock(),
+						error: mock(),
+						warn: mock(),
+						info: mock(),
 					},
 				},
 			],
@@ -47,18 +47,18 @@ describe("IsCityInStateConstraint", () => {
 
 		validator = module.get<IsCityInStateConstraint>(IsCityInStateConstraint);
 		cityRepository = module.get<Repository<City>>(getRepositoryToken(City));
-		logger = module.get<PinoLogger>(PinoLogger);
+		logger = module.get<PinoLogger>(`PinoLogger:${IsCityInStateConstraint.name}`);
 	});
 
 	describe("validate", () => {
 		it("should return true when city exists in the specified state", async () => {
 			const mockQueryBuilder = {
-				where: jest.fn().mockReturnThis(),
-				andWhere: jest.fn().mockReturnThis(),
-				getExists: jest.fn().mockResolvedValue(true),
+				where: mock().mockReturnThis(),
+				andWhere: mock().mockReturnThis(),
+				getExists: mock().mockResolvedValue(true),
 			};
 
-			jest.spyOn(cityRepository, "createQueryBuilder").mockReturnValue(mockQueryBuilder as never);
+			spyOn(cityRepository, "createQueryBuilder").mockReturnValue(mockQueryBuilder as never);
 
 			const result = await validator.validate("Campinas", {
 				object: { state: BrazilianState.SP },
@@ -79,12 +79,12 @@ describe("IsCityInStateConstraint", () => {
 
 		it("should return false when city does not exist in the specified state", async () => {
 			const mockQueryBuilder = {
-				where: jest.fn().mockReturnThis(),
-				andWhere: jest.fn().mockReturnThis(),
-				getExists: jest.fn().mockResolvedValue(false),
+				where: mock().mockReturnThis(),
+				andWhere: mock().mockReturnThis(),
+				getExists: mock().mockResolvedValue(false),
 			};
 
-			jest.spyOn(cityRepository, "createQueryBuilder").mockReturnValue(mockQueryBuilder as never);
+			spyOn(cityRepository, "createQueryBuilder").mockReturnValue(mockQueryBuilder as never);
 
 			const result = await validator.validate("InvalidCity", {
 				object: { state: BrazilianState.SP },
@@ -123,12 +123,12 @@ describe("IsCityInStateConstraint", () => {
 
 		it("should return false and log error when database query fails", async () => {
 			const mockQueryBuilder = {
-				where: jest.fn().mockReturnThis(),
-				andWhere: jest.fn().mockReturnThis(),
-				getExists: jest.fn().mockRejectedValue(new Error("Database error")),
+				where: mock().mockReturnThis(),
+				andWhere: mock().mockReturnThis(),
+				getExists: mock().mockRejectedValue(new Error("Database error")),
 			};
 
-			jest.spyOn(cityRepository, "createQueryBuilder").mockReturnValue(mockQueryBuilder as never);
+			spyOn(cityRepository, "createQueryBuilder").mockReturnValue(mockQueryBuilder);
 
 			const result = await validator.validate("Campinas", {
 				object: { state: BrazilianState.SP },
@@ -151,12 +151,12 @@ describe("IsCityInStateConstraint", () => {
 
 		it("should perform case-insensitive city name matching", async () => {
 			const mockQueryBuilder = {
-				where: jest.fn().mockReturnThis(),
-				andWhere: jest.fn().mockReturnThis(),
-				getExists: jest.fn().mockResolvedValue(true),
+				where: mock().mockReturnThis(),
+				andWhere: mock().mockReturnThis(),
+				getExists: mock().mockResolvedValue(true),
 			};
 
-			jest.spyOn(cityRepository, "createQueryBuilder").mockReturnValue(mockQueryBuilder as never);
+			spyOn(cityRepository, "createQueryBuilder").mockReturnValue(mockQueryBuilder);
 
 			await validator.validate("CAMPINAS", {
 				object: { state: BrazilianState.SP },

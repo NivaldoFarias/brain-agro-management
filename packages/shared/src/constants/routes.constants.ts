@@ -206,36 +206,3 @@ export const ROUTES = {
 		},
 	},
 } as const;
-
-// ============================================================================
-// Legacy exports for backward compatibility
-// @deprecated Use `ROUTES.api.*` instead
-// ============================================================================
-
-/** @deprecated Use `ROUTES.api.base` instead */
-export const API_BASE = ROUTES.api.base;
-
-/** @deprecated Use `ROUTES.api.*` instead */
-export const API_ROUTES = ROUTES.api;
-
-/** @deprecated Use `ROUTES.web.*` or `ROUTES.api.*` instead */
-export const ROUTE_PATHS = {
-	home: ROUTES.web.home,
-	producers: "/producers",
-	farms: "/farms",
-	farmStatsTotalArea: "/farms/stats/total-area",
-	farmStatsByState: "/farms/stats/by-state",
-	farmStatsCropsDistribution: "/farms/stats/crops-distribution",
-	farmStatsLandUse: "/farms/stats/land-use",
-	authLogin: "/auth/login",
-	authLogout: "/auth/logout",
-	health: "/health",
-	healthReady: "/health/ready",
-	cities: "/cities",
-	citiesCount: "/cities/count",
-	citiesByIbgeCode: "/cities/by-ibge-code",
-	citiesGroupedByState: "/cities/all/grouped-by-state",
-	docs: "/docs",
-	reference: "/reference",
-	dashboardStats: "/dashboard/stats",
-} as const;

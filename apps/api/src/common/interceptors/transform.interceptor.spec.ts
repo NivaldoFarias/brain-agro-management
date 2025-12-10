@@ -110,7 +110,7 @@ describe("TransformInterceptor", () => {
 
 		it("should handle undefined response", (done) => {
 			const mockCallHandler: CallHandler = {
-				handle: () => of(),
+				handle: () => of(undefined),
 			};
 
 			correlationIdStorage.run(DEFAULT_CORRELATION_ID, () => {
