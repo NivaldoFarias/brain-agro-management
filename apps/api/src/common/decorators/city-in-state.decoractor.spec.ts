@@ -6,7 +6,7 @@
 
 import { Test } from "@nestjs/testing";
 import { getRepositoryToken } from "@nestjs/typeorm";
-import { beforeEach, describe, expect, it, mock, spyOn } from "bun:test";
+import { beforeEach, describe, expect, it, mock } from "bun:test";
 import { PinoLogger } from "nestjs-pino";
 
 import type { Repository } from "typeorm";
@@ -20,8 +20,71 @@ import { IsCityInStateConstraint } from "./city-in-state.decorator";
 describe("IsCityInStateConstraint", () => {
 	let validator: IsCityInStateConstraint;
 	let cityRepository: Repository<City>;
-
 	let logger: PinoLogger;
+
+	/**
+	 * Mock repositories with common methods.
+	 */
+	interface MockQueryBuilder {
+		leftJoinAndSelect: ReturnType<typeof mock>;
+		where: ReturnType<typeof mock>;
+		andWhere: ReturnType<typeof mock>;
+		orderBy: ReturnType<typeof mock>;
+		skip: ReturnType<typeof mock>;
+		take: ReturnType<typeof mock>;
+		select: ReturnType<typeof mock>;
+		addSelect: ReturnType<typeof mock>;
+		groupBy: ReturnType<typeof mock>;
+		getExists: ReturnType<typeof mock>;
+		getRawMany: ReturnType<typeof mock>;
+		getMany: ReturnType<typeof mock>;
+		getOne: ReturnType<typeof mock>;
+		getManyAndCount: ReturnType<typeof mock>;
+		getRawOne: ReturnType<typeof mock>;
+	}
+
+	const createMockQueryBuilder = (): MockQueryBuilder => {
+		const qb: Partial<MockQueryBuilder> = {
+			getRawMany: mock(),
+			getMany: mock(),
+			getOne: mock(),
+			getManyAndCount: mock(),
+			getRawOne: mock(),
+			getExists: mock(),
+		};
+
+		qb.leftJoinAndSelect = mock(() => qb);
+		qb.where = mock(() => qb);
+		qb.andWhere = mock(() => qb);
+		qb.orderBy = mock(() => qb);
+		qb.skip = mock(() => qb);
+		qb.take = mock(() => qb);
+		qb.select = mock(() => qb);
+		qb.addSelect = mock(() => qb);
+		qb.groupBy = mock(() => qb);
+
+		return qb as MockQueryBuilder;
+	};
+
+	/** Mock repository with common methods */
+	const mockRepository = {
+		create: mock(),
+		save: mock(),
+		find: mock(),
+		findOne: mock(),
+		delete: mock(),
+		createQueryBuilder: mock(createMockQueryBuilder) as ReturnType<
+			typeof mock<() => Partial<MockQueryBuilder>>
+		>,
+	};
+
+	const mockLogger = {
+		setContext: mock(),
+		info: mock(),
+		warn: mock(),
+		error: mock(),
+		debug: mock(),
+	};
 
 	beforeEach(async () => {
 		const module = await Test.createTestingModule({
@@ -29,18 +92,11 @@ describe("IsCityInStateConstraint", () => {
 				IsCityInStateConstraint,
 				{
 					provide: getRepositoryToken(City),
-					useValue: {
-						createQueryBuilder: mock(),
-					},
+					useValue: mockRepository,
 				},
 				{
 					provide: `PinoLogger:${IsCityInStateConstraint.name}`,
-					useValue: {
-						setContext: mock(),
-						error: mock(),
-						warn: mock(),
-						info: mock(),
-					},
+					useValue: mockLogger,
 				},
 			],
 		}).compile();
@@ -48,17 +104,25 @@ describe("IsCityInStateConstraint", () => {
 		validator = module.get<IsCityInStateConstraint>(IsCityInStateConstraint);
 		cityRepository = module.get<Repository<City>>(getRepositoryToken(City));
 		logger = module.get<PinoLogger>(`PinoLogger:${IsCityInStateConstraint.name}`);
+
+		mockRepository.create.mockReset();
+		mockRepository.save.mockReset();
+		mockRepository.find.mockReset();
+		mockRepository.findOne.mockReset();
+		mockRepository.delete.mockReset();
+		mockRepository.createQueryBuilder.mockReset();
+	});
+
+	it("should be defined", () => {
+		expect(validator).toBeDefined();
+		expect(cityRepository).toBeDefined();
 	});
 
 	describe("validate", () => {
 		it("should return true when city exists in the specified state", async () => {
-			const mockQueryBuilder = {
-				where: mock().mockReturnThis(),
-				andWhere: mock().mockReturnThis(),
-				getExists: mock().mockResolvedValue(true),
-			};
-
-			spyOn(cityRepository, "createQueryBuilder").mockReturnValue(mockQueryBuilder as never);
+			const mockQueryBuilder = createMockQueryBuilder();
+			mockQueryBuilder.getExists.mockResolvedValue(true);
+			mockRepository.createQueryBuilder.mockReturnValue(mockQueryBuilder);
 
 			const result = await validator.validate("Campinas", {
 				object: { state: BrazilianState.SP },
@@ -69,6 +133,7 @@ describe("IsCityInStateConstraint", () => {
 			});
 
 			expect(result).toBe(true);
+			expect(mockRepository.createQueryBuilder).toHaveBeenCalledWith("city");
 			expect(mockQueryBuilder.where).toHaveBeenCalledWith("LOWER(city.name) = LOWER(:name)", {
 				name: "Campinas",
 			});
@@ -78,13 +143,9 @@ describe("IsCityInStateConstraint", () => {
 		});
 
 		it("should return false when city does not exist in the specified state", async () => {
-			const mockQueryBuilder = {
-				where: mock().mockReturnThis(),
-				andWhere: mock().mockReturnThis(),
-				getExists: mock().mockResolvedValue(false),
-			};
-
-			spyOn(cityRepository, "createQueryBuilder").mockReturnValue(mockQueryBuilder as never);
+			const mockQueryBuilder = createMockQueryBuilder();
+			mockQueryBuilder.getExists.mockResolvedValue(false);
+			mockRepository.createQueryBuilder.mockReturnValue(mockQueryBuilder);
 
 			const result = await validator.validate("InvalidCity", {
 				object: { state: BrazilianState.SP },
@@ -94,6 +155,7 @@ describe("IsCityInStateConstraint", () => {
 				targetName: "CreateFarmDto",
 			});
 
+			expect(mockRepository.createQueryBuilder).toHaveBeenCalledWith("city");
 			expect(result).toBe(false);
 		});
 
@@ -122,13 +184,9 @@ describe("IsCityInStateConstraint", () => {
 		});
 
 		it("should return false and log error when database query fails", async () => {
-			const mockQueryBuilder = {
-				where: mock().mockReturnThis(),
-				andWhere: mock().mockReturnThis(),
-				getExists: mock().mockRejectedValue(new Error("Database error")),
-			};
-
-			spyOn(cityRepository, "createQueryBuilder").mockReturnValue(mockQueryBuilder);
+			const mockQueryBuilder = createMockQueryBuilder();
+			mockQueryBuilder.getExists.mockRejectedValue(new Error("Database error"));
+			mockRepository.createQueryBuilder.mockReturnValue(mockQueryBuilder);
 
 			const result = await validator.validate("Campinas", {
 				object: { state: BrazilianState.SP },
@@ -139,6 +197,7 @@ describe("IsCityInStateConstraint", () => {
 			});
 
 			expect(result).toBe(false);
+			expect(mockRepository.createQueryBuilder).toHaveBeenCalledWith("city");
 			expect(logger.error).toHaveBeenCalledWith(
 				expect.objectContaining({
 					err: expect.any(Error),
@@ -150,15 +209,11 @@ describe("IsCityInStateConstraint", () => {
 		});
 
 		it("should perform case-insensitive city name matching", async () => {
-			const mockQueryBuilder = {
-				where: mock().mockReturnThis(),
-				andWhere: mock().mockReturnThis(),
-				getExists: mock().mockResolvedValue(true),
-			};
+			const mockQueryBuilder = createMockQueryBuilder();
+			mockQueryBuilder.getExists.mockResolvedValue(true);
+			mockRepository.createQueryBuilder.mockReturnValue(mockQueryBuilder);
 
-			spyOn(cityRepository, "createQueryBuilder").mockReturnValue(mockQueryBuilder);
-
-			await validator.validate("CAMPINAS", {
+			const result = await validator.validate("CAMPINAS", {
 				object: { state: BrazilianState.SP },
 				property: "city",
 				value: "CAMPINAS",
@@ -166,6 +221,8 @@ describe("IsCityInStateConstraint", () => {
 				targetName: "CreateFarmDto",
 			});
 
+			expect(result).toBe(true);
+			expect(mockRepository.createQueryBuilder).toHaveBeenCalledWith("city");
 			expect(mockQueryBuilder.where).toHaveBeenCalledWith("LOWER(city.name) = LOWER(:name)", {
 				name: "CAMPINAS",
 			});
