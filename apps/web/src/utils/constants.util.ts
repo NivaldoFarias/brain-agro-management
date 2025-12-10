@@ -1,38 +1,6 @@
-/**
- * @fileoverview Web application constants.
- *
- * Contains configuration values unique to the frontend application.
- */
-
 import { CropType, LogLevel, RuntimeEnvironment } from "@agro/shared/enums";
 
 import { description, version } from "../../package.json";
-
-/**
- * Route constants for Brain Agriculture application.
- *
- * Centralized route definitions to avoid magic strings and enable
- * type-safe navigation throughout the application.
- */
-export const ROUTES = {
-	home: "/",
-	dashboard: "/dashboard",
-	auth: {
-		login: "/login",
-	},
-	producers: {
-		list: "/producers",
-		create: "/producers/new",
-		edit: (id: string): string => `/producers/${id}/edit`,
-		view: (id: string): string => `/producers/${id}`,
-	},
-	farms: {
-		list: "/farms",
-		create: "/farms/new",
-		edit: (id: string): string => `/farms/${id}/edit`,
-		view: (id: string): string => `/farms/${id}`,
-	},
-} as const;
 
 /** Application metadata */
 export const APP_INFO = {
@@ -73,7 +41,7 @@ export const API_CONFIG = {
 	retryDelayMs: 1000,
 } as const;
 
-/** Storage keys for localStorage/sessionStorage */
+/** Storage keys for {@link localStorage}/{@link sessionStorage} */
 export const STORAGE_KEYS = {
 	/** Theme preference (light/dark) */
 	theme: "agro:theme",

@@ -7,7 +7,7 @@ import type {
 	UpdateProducerRequest,
 } from "@agro/shared/types";
 
-import { ROUTE_PATHS } from "@agro/shared/constants";
+import { ROUTES } from "@agro/shared/constants";
 import { HttpMethod } from "@agro/shared/enums";
 
 import { api } from "./baseApi";
@@ -36,7 +36,7 @@ export const producersApi = api.injectEndpoints({
 		 */
 		getProducers: builder.query<ProducersListResponse, ProducersFilterOptions>({
 			query: ({ page = 1, limit = 10, sortBy, sortOrder, search } = {}) => ({
-				url: ROUTE_PATHS.producers,
+				url: ROUTES.api.producers.base,
 				params: {
 					page,
 					limit,
@@ -61,11 +61,11 @@ export const producersApi = api.injectEndpoints({
 		 *
 		 * @example
 		 * ```tsx
-		 * const { data, isLoading } = useGetProducerQuery(producerId);
+		 * const { data, isLoading } = useGetProducerByIdQuery(producerId);
 		 * ```
 		 */
-		getProducer: builder.query<Producer, string>({
-			query: (id) => `${ROUTE_PATHS.producers}/${id}`,
+		getProducerById: builder.query<Producer, string>({
+			query: (id) => ROUTES.api.producers.byId(id),
 			transformResponse: (response: ApiResponse<Producer>) => response.data,
 			providesTags: (result, error, id) => [{ type: "Producer", id }],
 		}),
@@ -81,7 +81,7 @@ export const producersApi = api.injectEndpoints({
 		 */
 		createProducer: builder.mutation<Producer, CreateProducerRequest>({
 			query: (body) => ({
-				url: ROUTE_PATHS.producers,
+				url: ROUTES.api.producers.base,
 				method: HttpMethod.POST,
 				body,
 			}),
@@ -103,7 +103,7 @@ export const producersApi = api.injectEndpoints({
 		 */
 		updateProducer: builder.mutation<Producer, { id: string } & UpdateProducerRequest>({
 			query: ({ id, ...body }) => ({
-				url: `${ROUTE_PATHS.producers}/${id}`,
+				url: ROUTES.api.producers.update(id),
 				method: HttpMethod.PATCH,
 				body,
 			}),
@@ -126,7 +126,7 @@ export const producersApi = api.injectEndpoints({
 		 */
 		deleteProducer: builder.mutation<unknown, string>({
 			query: (id) => ({
-				url: `${ROUTE_PATHS.producers}/${id}`,
+				url: ROUTES.api.producers.delete(id),
 				method: HttpMethod.DELETE,
 			}),
 			transformResponse: (response: ApiResponse<unknown>) => response.data,
@@ -141,7 +141,7 @@ export const producersApi = api.injectEndpoints({
 
 export const {
 	useGetProducersQuery,
-	useGetProducerQuery,
+	useGetProducerByIdQuery,
 	useCreateProducerMutation,
 	useUpdateProducerMutation,
 	useDeleteProducerMutation,

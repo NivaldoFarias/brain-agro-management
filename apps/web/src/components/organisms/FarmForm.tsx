@@ -12,7 +12,7 @@ import { BrazilianState, CropType } from "@agro/shared/enums";
 
 import { useLocalStorageContext } from "@/contexts/LocalStorageContext";
 import { createFarmSchema } from "@/schemas";
-import { CROP_TO_COLOR, STORAGE_KEYS } from "@/utils/constants.util";
+import { CROP_TO_COLOR, STORAGE_KEYS } from "@/utils";
 
 /** Props for the FarmForm component */
 export interface FarmFormProps {

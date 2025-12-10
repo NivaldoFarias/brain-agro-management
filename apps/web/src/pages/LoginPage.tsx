@@ -5,7 +5,7 @@ import styled from "styled-components";
 
 import type { FormEvent, ReactElement } from "react";
 
-import { DEMO_CREDENTIALS } from "@agro/shared/constants";
+import { DEMO_CREDENTIALS, ROUTES } from "@agro/shared/constants";
 
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
@@ -16,7 +16,6 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/contexts/ToastContext";
 import { useLogger } from "@/hooks";
 import { useLoginMutation } from "@/store/api/authApi";
-import { ROUTES } from "@/utils/";
 
 /**
  * Login page component with authentication form.
@@ -65,7 +64,7 @@ export function LoginPage(): ReactElement {
 			);
 
 			logger.debug("Navigating to dashboard...");
-			await navigate(ROUTES.dashboard, { replace: true });
+			await navigate(ROUTES.web.dashboard, { replace: true });
 		} catch (error) {
 			logger.error("Login failed:", error);
 			const errorMsg = t(($) => $.auth.loginError);

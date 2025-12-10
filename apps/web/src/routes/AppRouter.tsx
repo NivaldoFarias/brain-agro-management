@@ -3,9 +3,10 @@ import { Navigate, Route, BrowserRouter as Router, Routes } from "react-router-d
 
 import type { ReactElement } from "react";
 
+import { ROUTES } from "@agro/shared/constants";
+
 import { LoadingState, ProtectedRoute } from "@/components/molecules";
 import { MainLayout } from "@/components/templates/MainLayout";
-import { ROUTES } from "@/utils/";
 
 /**
  * Lazy-loaded page components for code splitting.
@@ -35,12 +36,12 @@ export function AppRouter(): ReactElement {
 			<Suspense fallback={<LoadingState fullPage message="Loading page..." />}>
 				<Routes>
 					{/* Public routes */}
-					<Route path={ROUTES.auth.login} element={<LoginPage />} />
+					<Route path={ROUTES.web.auth.login} element={<LoginPage />} />
 
 					{/* Protected routes with layout */}
-					<Route path={ROUTES.home} element={<Navigate to={ROUTES.dashboard} replace />} />
+					<Route path={ROUTES.web.home} element={<Navigate to={ROUTES.web.dashboard} replace />} />
 					<Route
-						path={ROUTES.dashboard}
+						path={ROUTES.web.dashboard}
 						element={
 							<ProtectedRoute>
 								<MainLayout>
@@ -50,7 +51,7 @@ export function AppRouter(): ReactElement {
 						}
 					/>
 					<Route
-						path={ROUTES.producers.list}
+						path={ROUTES.web.producers.list}
 						element={
 							<ProtectedRoute>
 								<MainLayout>
@@ -60,7 +61,7 @@ export function AppRouter(): ReactElement {
 						}
 					/>
 					<Route
-						path={ROUTES.producers.create}
+						path={ROUTES.web.producers.create}
 						element={
 							<ProtectedRoute>
 								<MainLayout>
@@ -80,7 +81,7 @@ export function AppRouter(): ReactElement {
 						}
 					/>
 					<Route
-						path={ROUTES.farms.list}
+						path={ROUTES.web.farms.list}
 						element={
 							<ProtectedRoute>
 								<MainLayout>
@@ -90,7 +91,7 @@ export function AppRouter(): ReactElement {
 						}
 					/>
 					<Route
-						path={ROUTES.farms.create}
+						path={ROUTES.web.farms.create}
 						element={
 							<ProtectedRoute>
 								<MainLayout>

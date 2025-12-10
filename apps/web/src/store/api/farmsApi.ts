@@ -7,7 +7,7 @@ import type {
 	UpdateFarmRequest,
 } from "@agro/shared/types";
 
-import { ROUTE_PATHS } from "@agro/shared/constants";
+import { ROUTES } from "@agro/shared/constants";
 import { HttpMethod } from "@agro/shared/enums";
 
 import { api } from "./baseApi";
@@ -48,7 +48,7 @@ export const farmsApi = api.injectEndpoints({
 				crops,
 			} = {}) => {
 				return {
-					url: ROUTE_PATHS.farms,
+					url: ROUTES.api.farms.base,
 					params: {
 						page,
 						limit,
@@ -77,11 +77,11 @@ export const farmsApi = api.injectEndpoints({
 		 *
 		 * @example
 		 * ```tsx
-		 * const { data, isLoading } = useGetFarmQuery(farmId);
+		 * const { data, isLoading } = useGetFarmByIdQuery(farmId);
 		 * ```
 		 */
-		getFarm: builder.query<Farm, string>({
-			query: (id) => `${ROUTE_PATHS.farms}/${id}`,
+		getFarmById: builder.query<Farm, string>({
+			query: (id) => ROUTES.api.farms.byId(id),
 			transformResponse: (response: ApiResponse<Farm>) => response.data,
 			providesTags: (result, error, id) => [{ type: "Farm", id }],
 		}),
@@ -97,7 +97,7 @@ export const farmsApi = api.injectEndpoints({
 		 */
 		createFarm: builder.mutation<Farm, CreateFarmRequest>({
 			query: (body) => ({
-				url: ROUTE_PATHS.farms,
+				url: ROUTES.api.farms.base,
 				method: HttpMethod.POST,
 				body,
 			}),
@@ -119,7 +119,7 @@ export const farmsApi = api.injectEndpoints({
 		 */
 		updateFarm: builder.mutation<Farm, { id: string } & UpdateFarmRequest>({
 			query: ({ id, ...body }) => ({
-				url: `${ROUTE_PATHS.farms}/${id}`,
+				url: ROUTES.api.farms.byId(id),
 				method: HttpMethod.PATCH,
 				body,
 			}),
@@ -142,7 +142,7 @@ export const farmsApi = api.injectEndpoints({
 		 */
 		deleteFarm: builder.mutation<unknown, string>({
 			query: (id) => ({
-				url: `${ROUTE_PATHS.farms}/${id}`,
+				url: ROUTES.api.farms.delete(id),
 				method: HttpMethod.DELETE,
 			}),
 			transformResponse: (response: ApiResponse<unknown>) => response.data,
@@ -157,7 +157,7 @@ export const farmsApi = api.injectEndpoints({
 
 export const {
 	useGetFarmsQuery,
-	useGetFarmQuery,
+	useGetFarmByIdQuery,
 	useCreateFarmMutation,
 	useUpdateFarmMutation,
 	useDeleteFarmMutation,

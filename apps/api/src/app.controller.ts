@@ -3,7 +3,7 @@ import { ApiExcludeController } from "@nestjs/swagger";
 
 import type { ApiAppMetadata } from "@agro/shared/types";
 
-import { API_ROUTES } from "@agro/shared/constants";
+import { ROUTES } from "@agro/shared/constants";
 
 import { Public } from "@/common/decorators/public.decorator";
 
@@ -35,21 +35,21 @@ export class AppController {
 			version: APP_INFO.version,
 			description: APP_INFO.description,
 			endpoints: {
-				documentation: API_ROUTES.docs.docs,
-				reference: API_ROUTES.docs.reference,
-				health: API_ROUTES.health.health,
-				healthReady: API_ROUTES.health.ready,
-				producers: API_ROUTES.producers.base,
-				farms: API_ROUTES.farms.base,
+				documentation: ROUTES.api.docs.swagger,
+				reference: ROUTES.api.docs.reference,
+				health: ROUTES.api.health.base,
+				healthReady: ROUTES.api.health.ready,
+				producers: ROUTES.api.producers.base,
+				farms: ROUTES.api.farms.base,
 				auth: {
-					login: API_ROUTES.auth.login,
-					logout: API_ROUTES.auth.logout,
+					login: ROUTES.api.auth.login,
+					logout: ROUTES.api.auth.logout,
 				},
 				statistics: {
-					totalArea: API_ROUTES.farms.stats.totalArea,
-					byState: API_ROUTES.farms.stats.byState,
-					landUse: API_ROUTES.farms.stats.landUse,
-					cropsDistribution: API_ROUTES.farms.stats.cropsDistribution,
+					totalArea: ROUTES.api.farms.stats.totalArea,
+					byState: ROUTES.api.farms.stats.byState,
+					landUse: ROUTES.api.farms.stats.landUse,
+					cropsDistribution: ROUTES.api.farms.stats.cropsDistribution,
 				},
 			},
 		};

@@ -1,4 +1,5 @@
 import { BadRequestException, HttpException, HttpStatus } from "@nestjs/common";
+import { afterEach, beforeEach, describe, expect, it, mock } from "bun:test";
 import { Logger } from "nestjs-pino";
 
 import type { ArgumentsHost } from "@nestjs/common";
@@ -15,10 +16,14 @@ import { HttpExceptionFilter } from "./http-exception.filter";
  */
 describe("HttpExceptionFilter", () => {
 	let filter: HttpExceptionFilter;
-	let logger: jest.Mocked<Logger>;
+	let logger: Logger & {
+		error: ReturnType<typeof mock>;
+		warn: ReturnType<typeof mock>;
+		debug: ReturnType<typeof mock>;
+	};
 	let mockResponse: {
-		status: jest.Mock;
-		json: jest.Mock;
+		status: ReturnType<typeof mock>;
+		json: ReturnType<typeof mock>;
 	};
 	let mockRequest: {
 		url: string;
@@ -30,15 +35,22 @@ describe("HttpExceptionFilter", () => {
 	let mockHost: ArgumentsHost;
 
 	beforeEach(() => {
+		const statusMock = mock(() => mockResponse);
+		const jsonMock = mock(() => undefined);
+
 		logger = {
-			error: jest.fn(),
-			warn: jest.fn(),
-			debug: jest.fn(),
-		} as unknown as jest.Mocked<Logger>;
+			error: mock(() => undefined),
+			warn: mock(() => undefined),
+			debug: mock(() => undefined),
+		} as unknown as Logger & {
+			error: ReturnType<typeof mock>;
+			warn: ReturnType<typeof mock>;
+			debug: ReturnType<typeof mock>;
+		};
 
 		mockResponse = {
-			status: jest.fn().mockReturnThis(),
-			json: jest.fn(),
+			status: statusMock,
+			json: jsonMock,
 		};
 
 		mockRequest = {
@@ -60,7 +72,7 @@ describe("HttpExceptionFilter", () => {
 	});
 
 	afterEach(() => {
-		jest.clearAllMocks();
+		mock.restore();
 	});
 
 	describe("catch", () => {

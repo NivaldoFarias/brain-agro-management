@@ -134,18 +134,6 @@ export default defineConfig(
 			"**/tests/**",
 			"**/test/**",
 		],
-		languageOptions: {
-			globals: {
-				jest: "readonly",
-				describe: "readonly",
-				it: "readonly",
-				expect: "readonly",
-				beforeEach: "readonly",
-				afterEach: "readonly",
-				beforeAll: "readonly",
-				afterAll: "readonly",
-			},
-		},
 		rules: {
 			/* Disable strict type linting for test files where mocks and expect matchers are common */
 			"@typescript-eslint/no-unsafe-assignment": "off",

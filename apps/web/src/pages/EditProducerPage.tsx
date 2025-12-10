@@ -6,13 +6,14 @@ import type { ReactElement } from "react";
 
 import type { UpdateProducerRequest } from "@agro/shared/types";
 
+import { ROUTES } from "@agro/shared/constants";
+
 import { Typography } from "@/components/atoms";
 import { Card, LoadingState } from "@/components/ui/";
 import { useToast } from "@/contexts";
 import { ProducerForm } from "@/features";
 import { useLogger } from "@/hooks";
-import { useGetProducerQuery, useUpdateProducerMutation } from "@/store/api";
-import { ROUTES } from "@/utils/";
+import { useGetProducerByIdQuery, useUpdateProducerMutation } from "@/store/api";
 
 /**
  * Edit producer page component for updating existing rural producers.
@@ -31,11 +32,11 @@ export function EditProducerPage(): ReactElement {
 		data: producer,
 		isLoading: isLoadingProducer,
 		error: loadError,
-	} = useGetProducerQuery(id ?? "", { skip: !id });
+	} = useGetProducerByIdQuery(id ?? "", { skip: !id });
 	const [updateProducer, { isLoading: isUpdating }] = useUpdateProducerMutation();
 
 	if (!id) {
-		return <Navigate to={ROUTES.dashboard} replace />;
+		return <Navigate to={ROUTES.web.dashboard} replace />;
 	}
 
 	const handleSubmit = async (data: UpdateProducerRequest) => {
@@ -44,7 +45,7 @@ export function EditProducerPage(): ReactElement {
 
 			toast.success(t(($) => $.producers.updateSuccess));
 
-			await navigate(ROUTES.producers.list);
+			await navigate(ROUTES.web.producers.list);
 		} catch (error) {
 			logger.error(
 				t(($) => $.producers.updateError),
@@ -66,7 +67,7 @@ export function EditProducerPage(): ReactElement {
 	}
 
 	if (loadError || !producer) {
-		return <Navigate to={ROUTES.producers.list} replace />;
+		return <Navigate to={ROUTES.web.producers.list} replace />;
 	}
 
 	return (

@@ -7,6 +7,7 @@ import type { ReactElement } from "react";
 
 import type { FarmFilterOptions } from "@agro/shared/types";
 
+import { ROUTES } from "@agro/shared/constants";
 import { FarmSortField, SortOrder } from "@agro/shared/enums";
 
 import { FilterControls } from "@/components/atoms";
@@ -16,7 +17,6 @@ import { useToast } from "@/contexts/ToastContext";
 import { FarmList } from "@/features";
 import { useLogger } from "@/hooks";
 import { useDeleteFarmMutation, useGetFarmsQuery, useGetProducersQuery } from "@/store/api";
-import { ROUTES } from "@/utils/";
 
 /**
  * Farms list page component displaying all registered farms.
@@ -53,7 +53,7 @@ export function FarmsPage(): ReactElement {
 	const [deleteFarm] = useDeleteFarmMutation();
 
 	const handleCreate = () => {
-		void navigate(ROUTES.farms.create);
+		void navigate(ROUTES.web.farms.create);
 	};
 
 	const handleFiltersChange = (newFilters: FarmFilterOptions) => {

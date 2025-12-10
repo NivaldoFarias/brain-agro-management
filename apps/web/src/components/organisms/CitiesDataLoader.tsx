@@ -5,7 +5,7 @@ import type { ReactElement, ReactNode } from "react";
 import { useLocalStorageContext } from "@/contexts/LocalStorageContext";
 import { useLogger } from "@/hooks";
 import { useGetAllCitiesByStateQuery } from "@/store/api/citiesApi";
-import { STORAGE_KEYS } from "@/utils/constants.util";
+import { STORAGE_KEYS } from "@/utils";
 
 /**
  * Props for CitiesDataLoader component.

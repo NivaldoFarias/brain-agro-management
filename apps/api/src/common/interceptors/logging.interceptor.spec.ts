@@ -4,24 +4,32 @@
  * Verifies request/response logging, IP extraction, sensitive field sanitization,
  * and health check endpoint exclusion.
  */
-
+import { HttpStatus } from "@nestjs/common";
+import { afterEach, beforeEach, describe, expect, it, mock } from "bun:test";
 import { PinoLogger } from "nestjs-pino";
 import { of, throwError } from "rxjs";
 
 import type { CallHandler, ExecutionContext } from "@nestjs/common";
+
+import { API_ROUTES } from "@agro/shared/constants";
+import { HttpMethod } from "@agro/shared/enums";
 
 import { correlationIdStorage } from "./correlation-id.interceptor";
 import { LoggingInterceptor } from "./logging.interceptor";
 
 describe("LoggingInterceptor", () => {
 	let interceptor: LoggingInterceptor;
-	let logger: jest.Mocked<PinoLogger>;
+	let logger: PinoLogger & {
+		setContext: ReturnType<typeof mock>;
+		info: ReturnType<typeof mock>;
+		error: ReturnType<typeof mock>;
+	};
 	let mockContext: ExecutionContext;
 	let mockCallHandler: CallHandler;
 
 	const mockRequest = {
-		method: "GET",
-		url: "/api/producers",
+		method: HttpMethod.GET,
+		url: API_ROUTES.producers,
 		query: { page: "1" },
 		headers: {
 			"user-agent": "Jest Test",
@@ -32,16 +40,20 @@ describe("LoggingInterceptor", () => {
 	};
 
 	const mockResponse = {
-		statusCode: 200,
-		setHeader: jest.fn(),
+		statusCode: HttpStatus.OK,
+		setHeader: mock(() => undefined),
 	};
 
 	beforeEach(() => {
 		logger = {
-			setContext: jest.fn(),
-			info: jest.fn(),
-			error: jest.fn(),
-		} as unknown as jest.Mocked<PinoLogger>;
+			setContext: mock(() => undefined),
+			info: mock(() => undefined),
+			error: mock(() => undefined),
+		} as unknown as PinoLogger & {
+			setContext: ReturnType<typeof mock>;
+			info: ReturnType<typeof mock>;
+			error: ReturnType<typeof mock>;
+		};
 
 		interceptor = new LoggingInterceptor(logger);
 
@@ -53,12 +65,12 @@ describe("LoggingInterceptor", () => {
 		} as unknown as ExecutionContext;
 
 		mockCallHandler = {
-			handle: jest.fn(() => of({ data: "test response" })),
+			handle: mock(() => of({ data: "test response" })),
 		};
 	});
 
 	afterEach(() => {
-		jest.clearAllMocks();
+		mock.restore();
 	});
 
 	describe("intercept", () => {
@@ -108,7 +120,7 @@ describe("LoggingInterceptor", () => {
 
 		it("should log error when request fails", (done) => {
 			const error = new Error("Test error");
-			mockCallHandler.handle = jest.fn(() => throwError(() => error));
+			mockCallHandler.handle = mock(() => throwError(() => error));
 
 			const correlationId = "test-correlation-id";
 			correlationIdStorage.run(correlationId, () => {

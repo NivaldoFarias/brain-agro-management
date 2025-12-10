@@ -1,6 +1,6 @@
 import type { ApiResponse, DashboardStats } from "@agro/shared/types";
 
-import { ROUTE_PATHS } from "@agro/shared/constants";
+import { ROUTES } from "@agro/shared/constants";
 
 import { api } from "./baseApi";
 
@@ -58,7 +58,7 @@ export const dashboardApi = api.injectEndpoints({
 		 * ```
 		 */
 		getDashboardStats: builder.query<DashboardStats, undefined>({
-			query: () => ROUTE_PATHS.dashboardStats,
+			query: () => ROUTES.api.dashboard.stats,
 			transformResponse: (response: ApiResponse<DashboardStats>) => response.data,
 			providesTags: [{ type: "DashboardStats", id: "ALL" }],
 		}),

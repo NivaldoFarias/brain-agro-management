@@ -13,10 +13,11 @@ import styled from "styled-components";
 
 import type { ReactElement, ReactNode } from "react";
 
+import { ROUTES } from "@agro/shared/constants";
+
 import { Button } from "@/components/ui/Button";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/contexts/ToastContext";
-import { ROUTES } from "@/utils/constants.util";
 
 /**
  * Props for MainLayout component.
@@ -44,7 +45,7 @@ export function MainLayout({ children }: MainLayoutProps): ReactElement {
 			t(($) => $.auth.logoutSuccess),
 			t(($) => $.auth.logoutSuccess),
 		);
-		void navigate(ROUTES.auth.login, { replace: true });
+		void navigate(ROUTES.web.auth.login, { replace: true });
 	};
 
 	return (
@@ -78,15 +79,15 @@ export function MainLayout({ children }: MainLayoutProps): ReactElement {
 			<ContentWrapper>
 				<Sidebar $isOpen={isSidebarOpen}>
 					<SidebarNav>
-						<NavItem to={ROUTES.dashboard}>
+						<NavItem to={ROUTES.web.dashboard}>
 							<ChartIcon size={20} />
 							<NavText>{t(($) => $.nav.dashboard)}</NavText>
 						</NavItem>
-						<NavItem to={ROUTES.producers.list}>
+						<NavItem to={ROUTES.web.producers.list}>
 							<UsersIcon size={20} />
 							<NavText>{t(($) => $.nav.producers)}</NavText>
 						</NavItem>
-						<NavItem to={ROUTES.farms.list}>
+						<NavItem to={ROUTES.web.farms.list}>
 							<FarmIcon size={20} />
 							<NavText>{t(($) => $.nav.farms)}</NavText>
 						</NavItem>

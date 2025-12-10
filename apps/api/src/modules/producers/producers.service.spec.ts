@@ -8,6 +8,7 @@
 import { BadRequestException, ConflictException, NotFoundException } from "@nestjs/common";
 import { Test, TestingModule } from "@nestjs/testing";
 import { getRepositoryToken } from "@nestjs/typeorm";
+import { beforeEach, describe, expect, it, jest } from "bun:test";
 import { fixtures, TestConstants } from "test/fixtures";
 import { Repository } from "typeorm";
 
@@ -81,6 +82,7 @@ describe("ProducersService", () => {
 				id: mockProducer.id,
 				name: mockProducer.name,
 				document: mockProducer.document,
+				farms: [],
 				createdAt: mockProducer.createdAt,
 				updatedAt: mockProducer.updatedAt,
 			});
@@ -109,21 +111,21 @@ describe("ProducersService", () => {
 		it("should throw BadRequestException for invalid CPF", async () => {
 			const invalidDto = fixtures.producer.invalidCPF();
 
-			await expect(service.create(invalidDto)).rejects.toThrow(BadRequestException);
+			expect(await service.create(invalidDto)).rejects.toThrow(BadRequestException);
 			expect(mockRepository.create).not.toHaveBeenCalled();
 		});
 
 		it("should throw BadRequestException for invalid CNPJ", async () => {
 			const invalidDto = fixtures.producer.invalidCNPJ();
 
-			await expect(service.create(invalidDto)).rejects.toThrow(BadRequestException);
+			expect(await service.create(invalidDto)).rejects.toThrow(BadRequestException);
 			expect(mockRepository.create).not.toHaveBeenCalled();
 		});
 
 		it("should throw ConflictException for duplicate document", async () => {
 			mockRepository.findOne.mockResolvedValue(mockProducer);
 
-			await expect(service.create(createDto)).rejects.toThrow(ConflictException);
+			expect(await service.create(createDto)).rejects.toThrow(ConflictException);
 			expect(mockRepository.create).not.toHaveBeenCalled();
 		});
 	});
@@ -174,7 +176,7 @@ describe("ProducersService", () => {
 
 			const result = await service.findAll();
 
-			expect(result).toEqual([]);
+			expect(result.data).toEqual([]);
 		});
 	});
 
@@ -204,7 +206,7 @@ describe("ProducersService", () => {
 		it("should throw NotFoundException when producer does not exist", async () => {
 			mockRepository.findOne.mockResolvedValue(null);
 
-			await expect(service.findOne("nonexistent-id")).rejects.toThrow(NotFoundException);
+			expect(await service.findOne("nonexistent-id")).rejects.toThrow(NotFoundException);
 		});
 	});
 
@@ -251,7 +253,7 @@ describe("ProducersService", () => {
 			const updateDto: UpdateProducerDto = { name: "New Name" };
 			mockRepository.findOne.mockResolvedValue(null);
 
-			await expect(service.update("nonexistent-id", updateDto)).rejects.toThrow(NotFoundException);
+			expect(await service.update("nonexistent-id", updateDto)).rejects.toThrow(NotFoundException);
 			expect(mockRepository.save).not.toHaveBeenCalled();
 		});
 
@@ -259,7 +261,7 @@ describe("ProducersService", () => {
 			const updateDto: UpdateProducerDto = { document: fixtures.producer.invalidCPF().document };
 			mockRepository.findOne.mockResolvedValue(mockProducer);
 
-			await expect(service.update(mockProducer.id, updateDto)).rejects.toThrow(BadRequestException);
+			expect(await service.update(mockProducer.id, updateDto)).rejects.toThrow(BadRequestException);
 			expect(mockRepository.save).not.toHaveBeenCalled();
 		});
 
@@ -287,7 +289,7 @@ describe("ProducersService", () => {
 				},
 			);
 
-			await expect(service.update(mockProducer.id, updateDto)).rejects.toThrow(ConflictException);
+			expect(await service.update(mockProducer.id, updateDto)).rejects.toThrow(ConflictException);
 			expect(mockRepository.save).not.toHaveBeenCalled();
 		});
 	});
@@ -304,7 +306,7 @@ describe("ProducersService", () => {
 		it("should throw NotFoundException when producer does not exist", async () => {
 			mockRepository.delete.mockResolvedValue({ affected: 0, raw: {} });
 
-			await expect(service.delete("nonexistent-id")).rejects.toThrow(NotFoundException);
+			expect(await service.delete("nonexistent-id")).rejects.toThrow(NotFoundException);
 		});
 	});
 });

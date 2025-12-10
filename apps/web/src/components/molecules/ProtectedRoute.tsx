@@ -2,9 +2,10 @@ import { Navigate, useLocation } from "react-router-dom";
 
 import type { ReactElement, ReactNode } from "react";
 
+import { ROUTES } from "@agro/shared/constants";
+
 import { useAuth } from "@/contexts/AuthContext";
 import { useLogger } from "@/hooks";
-import { ROUTES } from "@/utils/";
 
 /**
  * Props for ProtectedRoute component.
@@ -44,7 +45,7 @@ export function ProtectedRoute({ children }: ProtectedRouteProps): ReactElement 
 	if (!isAuthenticated) {
 		logger.debug("Not authenticated - redirecting to login");
 
-		return <Navigate to={ROUTES.auth.login} state={{ from: location }} replace />;
+		return <Navigate to={ROUTES.web.auth.login} state={{ from: location }} replace />;
 	}
 
 	logger.debug("Authenticated - rendering children");

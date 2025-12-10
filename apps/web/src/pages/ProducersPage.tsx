@@ -7,6 +7,7 @@ import type { ReactElement } from "react";
 
 import type { ProducersFilterOptions } from "@agro/shared/types";
 
+import { ROUTES } from "@agro/shared/constants";
 import { ProducerSortField, SortOrder } from "@agro/shared/enums";
 
 import { FilterControls } from "@/components/atoms";
@@ -16,7 +17,6 @@ import { useToast } from "@/contexts/ToastContext";
 import { ProducerList } from "@/features";
 import { useLogger } from "@/hooks";
 import { useDeleteProducerMutation, useGetProducersQuery } from "@/store/api";
-import { ROUTES } from "@/utils/";
 
 /**
  * Producers list page component displaying all rural producers.
@@ -50,7 +50,7 @@ export function ProducersPage(): ReactElement {
 	const [deleteProducer] = useDeleteProducerMutation();
 
 	const handleCreate = () => {
-		void navigate(ROUTES.producers.create);
+		void navigate(ROUTES.web.producers.create);
 	};
 
 	const handleFiltersChange = (newFilters: ProducersFilterOptions) => {

@@ -1,6 +1,6 @@
 import type { ApiResponse, AuthResponseDto, LoginDto } from "@agro/shared/types";
 
-import { ROUTE_PATHS } from "@agro/shared/constants";
+import { ROUTES } from "@agro/shared/constants";
 import { HttpMethod } from "@agro/shared/enums";
 
 import { api } from "./baseApi";
@@ -23,7 +23,7 @@ export const authApi = api.injectEndpoints({
 		 */
 		login: builder.mutation<AuthResponseDto, LoginDto>({
 			query: (credentials) => ({
-				url: ROUTE_PATHS.authLogin,
+				url: ROUTES.api.auth.login,
 				method: HttpMethod.POST,
 				body: credentials,
 			}),

@@ -6,13 +6,14 @@ import type { ReactElement } from "react";
 
 import type { CreateProducerRequest } from "@agro/shared/types";
 
+import { ROUTES } from "@agro/shared/constants";
+
 import { Typography } from "@/components/atoms";
 import { Card } from "@/components/ui/";
 import { useToast } from "@/contexts";
 import { ProducerForm } from "@/features";
 import { useLogger } from "@/hooks";
 import { useCreateProducerMutation } from "@/store/api";
-import { ROUTES } from "@/utils/";
 
 /**
  * Create producer page component for adding new rural producers.
@@ -36,7 +37,7 @@ export function CreateProducerPage(): ReactElement {
 				t(($) => $.producers.producerAdded),
 			);
 
-			await navigate(ROUTES.producers.list);
+			await navigate(ROUTES.web.producers.list);
 		} catch (error) {
 			logger.error(
 				t(($) => $.producers.createError),

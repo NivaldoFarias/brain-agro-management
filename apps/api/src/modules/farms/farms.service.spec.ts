@@ -8,8 +8,11 @@
 import { BadRequestException, NotFoundException } from "@nestjs/common";
 import { Test, TestingModule } from "@nestjs/testing";
 import { getRepositoryToken } from "@nestjs/typeorm";
+import { beforeEach, describe, expect, it, jest } from "bun:test";
 import { fixtures, TestConstants } from "test/fixtures";
 import { Repository } from "typeorm";
+
+import type { SetRequired } from "type-fest";
 
 import { BrazilianState, CropType, SortOrder } from "@agro/shared/enums";
 
@@ -114,6 +117,7 @@ describe("FarmsService", () => {
 				arableArea: mockFarm.arableArea,
 				vegetationArea: mockFarm.vegetationArea,
 				producerId: mockFarm.producerId,
+				crops: [],
 				createdAt: mockFarm.createdAt,
 				updatedAt: mockFarm.updatedAt,
 			});
@@ -126,7 +130,7 @@ describe("FarmsService", () => {
 		it("should throw NotFoundException when producer does not exist", async () => {
 			mockProducerRepository.exists.mockResolvedValue(false);
 
-			await expect(service.create(createDto)).rejects.toThrow(NotFoundException);
+			expect(await service.create(createDto)).rejects.toThrow(NotFoundException);
 			expect(mockFarmRepository.create).not.toHaveBeenCalled();
 		});
 
@@ -140,7 +144,7 @@ describe("FarmsService", () => {
 
 			mockProducerRepository.exists.mockResolvedValue(true);
 
-			await expect(service.create(invalidDto)).rejects.toThrow(BadRequestException);
+			expect(await service.create(invalidDto)).rejects.toThrow(BadRequestException);
 			expect(mockFarmRepository.create).not.toHaveBeenCalled();
 		});
 
@@ -152,7 +156,7 @@ describe("FarmsService", () => {
 
 			mockProducerRepository.exists.mockResolvedValue(true);
 
-			await expect(service.create(invalidDto)).rejects.toThrow(BadRequestException);
+			expect(await service.create(invalidDto)).rejects.toThrow(BadRequestException);
 		});
 	});
 
@@ -227,7 +231,7 @@ describe("FarmsService", () => {
 		it("should throw NotFoundException when farm does not exist", async () => {
 			mockFarmRepository.findOne.mockResolvedValue(null);
 
-			await expect(service.findOne("nonexistent-id")).rejects.toThrow(NotFoundException);
+			expect(await service.findOne("nonexistent-id")).rejects.toThrow(NotFoundException);
 		});
 	});
 
@@ -261,7 +265,9 @@ describe("FarmsService", () => {
 		});
 
 		it("should update farm with new producer", async () => {
-			const updateDto: UpdateFarmDto = { producerId: "660e9500-f30c-52e5-b827-557766551111" };
+			const updateDto: SetRequired<UpdateFarmDto, "producerId"> = {
+				producerId: "660e9500-f30c-52e5-b827-557766551111",
+			};
 			const updatedFarm = { ...mockFarm, producerId: updateDto.producerId };
 
 			mockFarmRepository.findOne.mockResolvedValue(mockFarm);
@@ -280,7 +286,7 @@ describe("FarmsService", () => {
 			const updateDto: UpdateFarmDto = { name: "New Name" };
 			mockFarmRepository.findOne.mockResolvedValue(null);
 
-			await expect(service.update("nonexistent-id", updateDto)).rejects.toThrow(NotFoundException);
+			expect(await service.update("nonexistent-id", updateDto)).rejects.toThrow(NotFoundException);
 			expect(mockFarmRepository.save).not.toHaveBeenCalled();
 		});
 
@@ -289,7 +295,7 @@ describe("FarmsService", () => {
 			mockFarmRepository.findOne.mockResolvedValue(mockFarm);
 			mockProducerRepository.exists.mockResolvedValue(false);
 
-			await expect(service.update(mockFarm.id, updateDto)).rejects.toThrow(NotFoundException);
+			expect(await service.update(mockFarm.id, updateDto)).rejects.toThrow(NotFoundException);
 			expect(mockFarmRepository.save).not.toHaveBeenCalled();
 		});
 
@@ -297,7 +303,7 @@ describe("FarmsService", () => {
 			const updateDto: UpdateFarmDto = { arableArea: 90 };
 			mockFarmRepository.findOne.mockResolvedValue(mockFarm);
 
-			await expect(service.update(mockFarm.id, updateDto)).rejects.toThrow(BadRequestException);
+			expect(await service.update(mockFarm.id, updateDto)).rejects.toThrow(BadRequestException);
 			expect(mockFarmRepository.save).not.toHaveBeenCalled();
 		});
 	});
@@ -316,7 +322,7 @@ describe("FarmsService", () => {
 		it("should throw NotFoundException when farm does not exist", async () => {
 			mockFarmRepository.delete.mockResolvedValue({ affected: 0, raw: {} });
 
-			await expect(service.delete("nonexistent-id")).rejects.toThrow(NotFoundException);
+			expect(await service.delete("nonexistent-id")).rejects.toThrow(NotFoundException);
 		});
 	});
 
@@ -428,8 +434,8 @@ describe("FarmsService", () => {
 			const result = await service.countByState();
 
 			expect(result).toEqual([
-				{ state: "SP", count: 15 },
-				{ state: "MG", count: 8 },
+				{ state: BrazilianState.SP, count: 15 },
+				{ state: BrazilianState.MG, count: 8 },
 			]);
 			expect(mockQueryBuilder.groupBy).toHaveBeenCalledWith("farm.state");
 			expect(mockQueryBuilder.orderBy).toHaveBeenCalledWith("count", "DESC");

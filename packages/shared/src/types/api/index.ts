@@ -7,4 +7,3 @@
 export * from "./app-metadata.types";
 export * from "./query.types";
 export * from "./response.types";
-export * from "./routes.types";

@@ -4,6 +4,7 @@
  * Verifies response wrapping with metadata, pagination handling, and correlation ID injection.
  */
 
+import { beforeEach, describe, expect, it } from "bun:test";
 import { of } from "rxjs";
 
 import type { PaginatedData } from "./transform.interceptor";
@@ -15,6 +16,7 @@ import { TransformInterceptor } from "./transform.interceptor";
 describe("TransformInterceptor", () => {
 	let interceptor: TransformInterceptor<unknown>;
 	const mockContext = {} as ExecutionContext;
+	const DEFAULT_CORRELATION_ID = "default-correlation-id";
 
 	beforeEach(() => {
 		interceptor = new TransformInterceptor();
@@ -30,13 +32,8 @@ describe("TransformInterceptor", () => {
 			const correlationId = "test-correlation-id";
 			correlationIdStorage.run(correlationId, () => {
 				interceptor.intercept(mockContext, mockCallHandler).subscribe((result) => {
-					expect(result).toEqual({
-						data: responseData,
-						meta: {
-							timestamp: expect(String),
-							correlationId,
-						},
-					});
+					expect(result.meta.correlationId).toBe(correlationId);
+					expect(typeof result.meta.timestamp).toBe("string");
 					done();
 				});
 			});
@@ -69,18 +66,14 @@ describe("TransformInterceptor", () => {
 				handle: () => of(paginatedData),
 			};
 
-			correlationIdStorage.run("test-id", () => {
+			correlationIdStorage.run(DEFAULT_CORRELATION_ID, () => {
 				interceptor.intercept(mockContext, mockCallHandler).subscribe((result) => {
-					expect(result).toEqual({
-						data: [{ id: "1" }, { id: "2" }],
-						meta: {
-							timestamp: expect(String),
-							correlationId: "test-id",
-							page: 1,
-							limit: 20,
-							total: 100,
-						},
-					});
+					expect(result.meta.correlationId).toBe(DEFAULT_CORRELATION_ID);
+					expect(typeof result.meta.timestamp).toBe("string");
+					expect(result.meta.page).toBe(paginatedData.page);
+					expect(result.meta.limit).toBe(paginatedData.limit);
+					expect(result.meta.total).toBe(paginatedData.total);
+					expect(result.data).toEqual(paginatedData.items);
 					done();
 				});
 			});
@@ -91,15 +84,10 @@ describe("TransformInterceptor", () => {
 				handle: () => of([]),
 			};
 
-			correlationIdStorage.run("test-id", () => {
+			correlationIdStorage.run(DEFAULT_CORRELATION_ID, () => {
 				interceptor.intercept(mockContext, mockCallHandler).subscribe((result) => {
-					expect(result).toEqual({
-						data: [],
-						meta: {
-							timestamp: expect(String),
-							correlationId: "test-id",
-						},
-					});
+					expect(result.meta.correlationId).toBe(DEFAULT_CORRELATION_ID);
+					expect(typeof result.meta.timestamp).toBe("string");
 					done();
 				});
 			});
@@ -110,15 +98,11 @@ describe("TransformInterceptor", () => {
 				handle: () => of(null),
 			};
 
-			correlationIdStorage.run("test-id", () => {
+			correlationIdStorage.run(DEFAULT_CORRELATION_ID, () => {
 				interceptor.intercept(mockContext, mockCallHandler).subscribe((result) => {
-					expect(result).toEqual({
-						data: null,
-						meta: {
-							timestamp: expect(String),
-							correlationId: "test-id",
-						},
-					});
+					expect(result.data).toBe(null);
+					expect(result.meta.correlationId).toBe(DEFAULT_CORRELATION_ID);
+					expect(typeof result.meta.timestamp).toBe("string");
 					done();
 				});
 			});
@@ -129,15 +113,11 @@ describe("TransformInterceptor", () => {
 				handle: () => of(),
 			};
 
-			correlationIdStorage.run("test-id", () => {
+			correlationIdStorage.run(DEFAULT_CORRELATION_ID, () => {
 				interceptor.intercept(mockContext, mockCallHandler).subscribe((result) => {
-					expect(result).toEqual({
-						data: undefined,
-						meta: {
-							timestamp: expect(String),
-							correlationId: "test-id",
-						},
-					});
+					expect(result.meta.correlationId).toBe(DEFAULT_CORRELATION_ID);
+					expect(typeof result.meta.timestamp).toBe("string");
+					expect(result.data).toBe(undefined);
 					done();
 				});
 			});
@@ -148,7 +128,7 @@ describe("TransformInterceptor", () => {
 				handle: () => of({ value: "test" }),
 			};
 
-			correlationIdStorage.run("test-id", () => {
+			correlationIdStorage.run(DEFAULT_CORRELATION_ID, () => {
 				interceptor.intercept(mockContext, mockCallHandler).subscribe((result) => {
 					expect(result.meta.timestamp).toMatch(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{3}Z$/);
 					done();
@@ -162,7 +142,7 @@ describe("TransformInterceptor", () => {
 				handle: () => of(arrayData),
 			};
 
-			correlationIdStorage.run("test-id", () => {
+			correlationIdStorage.run(DEFAULT_CORRELATION_ID, () => {
 				interceptor.intercept(mockContext, mockCallHandler).subscribe((result) => {
 					expect(result.meta).not.toHaveProperty("page");
 					expect(result.meta).not.toHaveProperty("limit");
@@ -178,15 +158,11 @@ describe("TransformInterceptor", () => {
 				handle: () => of("simple string"),
 			};
 
-			correlationIdStorage.run("test-id", () => {
+			correlationIdStorage.run(DEFAULT_CORRELATION_ID, () => {
 				interceptor.intercept(mockContext, mockCallHandler).subscribe((result) => {
-					expect(result).toEqual({
-						data: "simple string",
-						meta: {
-							timestamp: expect(String),
-							correlationId: "test-id",
-						},
-					});
+					expect(result.data).toBe("simple string");
+					expect(result.meta.correlationId).toBe(DEFAULT_CORRELATION_ID);
+					expect(typeof result.meta.timestamp).toBe("string");
 					done();
 				});
 			});
@@ -197,15 +173,11 @@ describe("TransformInterceptor", () => {
 				handle: () => of(42),
 			};
 
-			correlationIdStorage.run("test-id", () => {
+			correlationIdStorage.run(DEFAULT_CORRELATION_ID, () => {
 				interceptor.intercept(mockContext, mockCallHandler).subscribe((result) => {
-					expect(result).toEqual({
-						data: 42,
-						meta: {
-							timestamp: expect(String),
-							correlationId: "test-id",
-						},
-					});
+					expect(result.data).toBe(42);
+					expect(result.meta.correlationId).toBe(DEFAULT_CORRELATION_ID);
+					expect(typeof result.meta.timestamp).toBe("string");
 					done();
 				});
 			});

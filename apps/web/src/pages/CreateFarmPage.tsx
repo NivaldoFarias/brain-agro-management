@@ -6,13 +6,14 @@ import type { ReactElement } from "react";
 
 import type { CreateFarmFormData } from "@/schemas";
 
+import { ROUTES } from "@agro/shared/constants";
+
 import { Typography } from "@/components/atoms";
 import { Card, EmptyState, LoadingState } from "@/components/ui/";
 import { useToast } from "@/contexts";
 import { FarmForm } from "@/features";
 import { useLogger } from "@/hooks";
 import { useCreateFarmMutation, useGetProducersQuery } from "@/store/api";
-import { ROUTES } from "@/utils/";
 
 /**
  * Create farm page component for adding new agricultural farms.
@@ -41,7 +42,7 @@ export function CreateFarmPage(): ReactElement {
 				t(($) => $.farms.farmAdded),
 			);
 
-			await navigate(ROUTES.farms.list);
+			await navigate(ROUTES.web.farms.list);
 		} catch (error) {
 			logger.error(
 				t(($) => $.farms.createError),
@@ -71,7 +72,7 @@ export function CreateFarmPage(): ReactElement {
 					action={
 						<button
 							onClick={() => {
-								void navigate(ROUTES.producers.create);
+								void navigate(ROUTES.web.producers.create);
 							}}
 							style={{ cursor: "pointer" }}
 						>

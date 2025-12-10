@@ -6,13 +6,14 @@ import type { ReactElement } from "react";
 
 import type { UpdateFarmRequest } from "@agro/shared/types";
 
+import { ROUTES } from "@agro/shared/constants";
+
 import { Typography } from "@/components/atoms";
 import { Card, LoadingState } from "@/components/ui/";
 import { useToast } from "@/contexts";
 import { FarmForm } from "@/features";
 import { useLogger } from "@/hooks";
-import { useGetFarmQuery, useUpdateFarmMutation } from "@/store/api";
-import { ROUTES } from "@/utils/";
+import { useGetFarmByIdQuery, useUpdateFarmMutation } from "@/store/api";
 
 /**
  * Edit farm page component for updating existing agricultural farms.
@@ -27,11 +28,11 @@ export function EditFarmPage(): ReactElement {
 	const toast = useToast();
 	const { id } = useParams<{ id: string }>();
 
-	const { data: farm, isLoading: isLoadingFarm, error: loadError } = useGetFarmQuery(id ?? "", { skip: !id });
+	const { data: farm, isLoading: isLoadingFarm, error: loadError } = useGetFarmByIdQuery(id ?? "", { skip: !id });
 	const [updateFarm, { isLoading: isUpdating }] = useUpdateFarmMutation();
 
 	if (!id) {
-		return <Navigate to={ROUTES.dashboard} replace />;
+		return <Navigate to={ROUTES.web.dashboard} replace />;
 	}
 
 	const handleSubmit = async (data: UpdateFarmRequest) => {
@@ -40,7 +41,7 @@ export function EditFarmPage(): ReactElement {
 
 			toast.success(t(($) => $.farms.updateSuccess));
 
-			await navigate(ROUTES.farms.list);
+			await navigate(ROUTES.web.farms.list);
 		} catch (error) {
 			logger.error(
 				t(($) => $.farms.updateError),
@@ -62,7 +63,7 @@ export function EditFarmPage(): ReactElement {
 	}
 
 	if (loadError || !farm) {
-		return <Navigate to={ROUTES.farms.list} replace />;
+		return <Navigate to={ROUTES.web.farms.list} replace />;
 	}
 
 	return (

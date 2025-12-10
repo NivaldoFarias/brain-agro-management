@@ -1,6 +1,6 @@
 import type { ApiResponse, CitiesByState, CityData, ListAllData } from "@agro/shared/types";
 
-import { ROUTE_PATHS } from "@agro/shared/constants";
+import { ROUTES } from "@agro/shared/constants";
 
 import { api } from "./baseApi";
 
@@ -22,7 +22,7 @@ export const citiesApi = api.injectEndpoints({
 		 */
 		getCities: builder.query<ListAllData<CityData>, { page?: number; limit?: number }>({
 			query: ({ page = 1, limit = 100 }) => ({
-				url: ROUTE_PATHS.cities,
+				url: ROUTES.api.cities.base,
 				params: { page, limit },
 			}),
 			transformResponse: (response: ApiResponse<ListAllData<CityData>>) => response.data,
@@ -42,7 +42,7 @@ export const citiesApi = api.injectEndpoints({
 		 * ```
 		 */
 		getAllCitiesByState: builder.query<CitiesByState, undefined>({
-			query: () => ROUTE_PATHS.citiesGroupedByState,
+			query: () => ROUTES.api.cities.groupedByState,
 			transformResponse: (response: ApiResponse<CitiesByState>) => response.data,
 			providesTags: [{ type: "Cities", id: "ALL_BY_STATE" }],
 		}),
@@ -56,7 +56,7 @@ export const citiesApi = api.injectEndpoints({
 		 * ```
 		 */
 		getCitiesCount: builder.query<{ total: number }, undefined>({
-			query: () => ROUTE_PATHS.citiesCount,
+			query: () => ROUTES.api.cities.count,
 			transformResponse: (response: ApiResponse<{ total: number }>) => response.data,
 			providesTags: [{ type: "Cities", id: "COUNT" }],
 		}),
@@ -73,7 +73,7 @@ export const citiesApi = api.injectEndpoints({
 		 * ```
 		 */
 		getCityByIbgeCode: builder.query<CityData | null, string>({
-			query: (ibgeCode) => `${ROUTE_PATHS.citiesByIbgeCode}/${ibgeCode}`,
+			query: (ibgeCode) => ROUTES.api.cities.byIbgeCode(ibgeCode),
 			transformResponse: (response: ApiResponse<CityData | null>) => response.data,
 			providesTags: (result, error, ibgeCode) => [{ type: "Cities", id: `IBGE_${ibgeCode}` }],
 		}),
